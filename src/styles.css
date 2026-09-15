@@ -157,5 +157,35 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
   }
 }
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes glowpulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@utility animate-floaty {
+  animation: floaty 6s ease-in-out infinite;
+}
+
+@utility animate-glow {
+  animation: glowpulse 7s ease-in-out infinite;
+}
+
