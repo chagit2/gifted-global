@@ -10,6 +10,8 @@ export const Route = createFileRoute("/cart")({
       { name: "description", content: "הסל שלכם: מתנות, מכתבים אישיים וסכום לתשלום." },
       { property: "og:title", content: "סל הקניות · מתנות" },
       { property: "og:description", content: "הסל שלכם: מתנות, מכתבים אישיים וסכום לתשלום." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: CartPage,
