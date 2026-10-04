@@ -15,6 +15,8 @@ export const Route = createFileRoute("/about")({
         property: "og:description",
         content: "מקרבים לבבות בין יבשות — מתנות יוקרה עם מכתב אישי.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AboutPage,
