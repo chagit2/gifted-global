@@ -22,11 +22,28 @@ const panel =
 const itemCls =
   "block w-full rounded-xl px-3 py-2 text-start text-sm text-ivory/70 hover:bg-white/5 hover:text-gold-2 transition-colors";
 
-function Dropdown({ label, items }: { label: string; items: { slug: string; label: string }[] }) {
+function Dropdown({
+  label,
+  items,
+  className = "",
+}: {
+  label: string;
+  items: { slug: string; label: string }[];
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
+  const ref = useClickOutside(() => setOpen(false));
   return (
-    <li className="relative" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-1 text-ivory/60 hover:text-ivory transition-colors">
+    <div
+      ref={ref}
+      className={`relative ${className}`}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-1 whitespace-nowrap text-sm text-ivory/60 hover:text-ivory transition-colors"
+      >
         {label} <ChevronDown className="size-3.5 text-gold-2/70" />
       </button>
       {open && (
@@ -40,7 +57,7 @@ function Dropdown({ label, items }: { label: string; items: { slug: string; labe
           ))}
         </ul>
       )}
-    </li>
+    </div>
   );
 }
 
@@ -58,7 +75,7 @@ function LangMenu() {
         <Globe className="size-5" />
       </button>
       {open && (
-        <ul className={`${panel} start-0 w-40`}>
+        <ul className={`${panel} end-0 w-40`}>
           {LANGS.map((l) => (
             <li key={l.code}>
               <button
@@ -117,10 +134,8 @@ export function SiteHeader() {
 
   const holidays = categories.filter((c) => c.group === "holidays").map((c) => ({ slug: c.slug, label: tl(c.label) }));
   const birthdays = categories.filter((c) => c.group === "birthday").map((c) => ({ slug: c.slug, label: tl(c.label) }));
-  const linkClass = "text-ivory/60 hover:text-ivory transition-colors";
 
   const mobileLinks = [
-    ...holidays,
     { slug: "shabbat", label: t("navShabbat") },
     ...birthdays,
     { slug: "baby", label: t("navBaby") },
@@ -131,38 +146,43 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-navy-2/85 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <div className="flex items-center gap-2">
-          <LangMenu />
-          <MobileGifts links={mobileLinks} />
-          <Link to="/" className="ms-2 flex items-center gap-2">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        {/* Start side (right in Hebrew): logo, always-visible holidays menu, mobile menu */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link to="/" className="flex items-center gap-2">
             <span className="grid size-9 place-items-center rounded-full bg-gold font-display text-lg font-bold text-navy">מ</span>
             <span className="hidden font-heb text-lg leading-none text-ivory sm:block">{t("brandName")}</span>
           </Link>
+          <Dropdown label={t("navHolidays")} items={holidays} />
+          <MobileGifts links={mobileLinks} />
         </div>
 
+        {/* Desktop nav */}
         <ul className="hidden items-center gap-6 text-sm lg:flex">
-          <Dropdown label={t("navHolidays")} items={holidays} />
-          <li><Link to="/c/$slug" params={{ slug: "shabbat" }} className={linkClass}>{t("navShabbat")}</Link></li>
+          <li><Link to="/c/$slug" params={{ slug: "shabbat" }} className="text-ivory/60 hover:text-ivory transition-colors">{t("navShabbat")}</Link></li>
           <Dropdown label={t("navBirthday")} items={birthdays} />
-          <li><Link to="/c/$slug" params={{ slug: "baby" }} className={linkClass}>{t("navBaby")}</Link></li>
-          <li><Link to="/c/$slug" params={{ slug: "bar-mitzvah" }} className={linkClass}>{t("navBar")}</Link></li>
-          <li><Link to="/c/$slug" params={{ slug: "bat-mitzvah" }} className={linkClass}>{t("navBat")}</Link></li>
-          <li><Link to="/about" className={linkClass}>{t("navAbout")}</Link></li>
+          <li><Link to="/c/$slug" params={{ slug: "baby" }} className="text-ivory/60 hover:text-ivory transition-colors">{t("navBaby")}</Link></li>
+          <li><Link to="/c/$slug" params={{ slug: "bar-mitzvah" }} className="text-ivory/60 hover:text-ivory transition-colors">{t("navBar")}</Link></li>
+          <li><Link to="/c/$slug" params={{ slug: "bat-mitzvah" }} className="text-ivory/60 hover:text-ivory transition-colors">{t("navBat")}</Link></li>
+          <li><Link to="/about" className="text-ivory/60 hover:text-ivory transition-colors">{t("navAbout")}</Link></li>
         </ul>
 
-        <Link
-          to="/cart"
-          aria-label={t("cart")}
-          className="relative grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 text-ivory hover:text-gold-2 transition"
-        >
-          <ShoppingBag className="size-5" />
-          {count > 0 && (
-            <span className="absolute -top-1 -end-1 grid size-5 place-items-center rounded-full bg-gold text-[10px] font-bold text-navy">
-              {count}
-            </span>
-          )}
-        </Link>
+        {/* End side (left in Hebrew): language icon next to cart */}
+        <div className="flex items-center gap-2">
+          <LangMenu />
+          <Link
+            to="/cart"
+            aria-label={t("cart")}
+            className="relative grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 text-ivory hover:text-gold-2 transition"
+          >
+            <ShoppingBag className="size-5" />
+            {count > 0 && (
+              <span className="absolute -top-1 -end-1 grid size-5 place-items-center rounded-full bg-gold text-[10px] font-bold text-navy">
+                {count}
+              </span>
+            )}
+          </Link>
+        </div>
       </div>
     </header>
   );
