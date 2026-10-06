@@ -4,9 +4,9 @@ export type Lang = "he" | "fr" | "en";
 export type L = { he: string; fr: string; en: string };
 
 export const LANGS: { code: Lang; label: string }[] = [
-  { code: "he", label: "עברית" },
-  { code: "fr", label: "Français" },
   { code: "en", label: "English" },
+  { code: "fr", label: "Français" },
+  { code: "he", label: "עברית" },
 ];
 
 const dict = {
@@ -19,6 +19,9 @@ const dict = {
   navBaby: { he: "לתינוק", fr: "Bébé", en: "Baby" },
   navBar: { he: "בר מצווה", fr: "Bar Mitsva", en: "Bar Mitzvah" },
   navBat: { he: "בת מצווה", fr: "Bat Mitsva", en: "Bat Mitzvah" },
+  navJudaica: { he: "יודאיקה", fr: "Judaïca", en: "Judaica" },
+  navForBoy: { he: "לבן", fr: "Garçon", en: "Boy" },
+  navForGirl: { he: "לבת", fr: "Fille", en: "Girl" },
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },

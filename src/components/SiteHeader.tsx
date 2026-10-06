@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Globe, ShoppingBag, Menu, ChevronDown } from "lucide-react";
+import { Globe, ShoppingBag, Home, ChevronDown } from "lucide-react";
 import { categories } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
 import { LANGS, useI18n } from "@/lib/i18n";
@@ -21,6 +21,10 @@ const panel =
   "absolute top-full z-50 mt-2 rounded-2xl border border-white/10 bg-navy-2/95 p-2 backdrop-blur-xl shadow-2xl shadow-black/40";
 const itemCls =
   "block w-full rounded-xl px-3 py-2 text-start text-sm text-ivory/70 hover:bg-white/5 hover:text-gold-2 transition-colors";
+
+const navLink = "whitespace-nowrap text-sm text-ivory/60 hover:text-ivory transition-colors";
+const iconBtn =
+  "grid size-9 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-ivory hover:text-gold-2 transition sm:size-10";
 
 function Dropdown({
   label,
@@ -70,7 +74,7 @@ function LangMenu() {
       <button
         aria-label="Language"
         onClick={() => setOpen((o) => !o)}
-        className="grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 text-ivory hover:text-gold-2 transition"
+        className={iconBtn}
       >
         <Globe className="size-5" />
       </button>
@@ -95,86 +99,28 @@ function LangMenu() {
   );
 }
 
-function MobileGifts({ links }: { links: { label: string; slug?: string; to?: "/about" }[] }) {
-  const [open, setOpen] = useState(false);
-  const ref = useClickOutside(() => setOpen(false));
-  return (
-    <div ref={ref} className="relative lg:hidden">
-      <button
-        aria-label="Menu"
-        onClick={() => setOpen((o) => !o)}
-        className="grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 text-ivory hover:text-gold-2 transition"
-      >
-        <Menu className="size-5" />
-      </button>
-      {open && (
-        <ul className={`${panel} start-0 max-h-[70vh] w-60 overflow-y-auto`}>
-          {links.map((l) => (
-            <li key={l.label}>
-              {l.slug ? (
-                <Link to="/c/$slug" params={{ slug: l.slug }} onClick={() => setOpen(false)} className={itemCls}>
-                  {l.label}
-                </Link>
-              ) : (
-                <Link to={l.to ?? "/"} onClick={() => setOpen(false)} className={itemCls}>
-                  {l.label}
-                </Link>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
 export function SiteHeader() {
   const { t, tl } = useI18n();
   const { count } = useCart();
 
   const holidays = categories.filter((c) => c.group === "holidays").map((c) => ({ slug: c.slug, label: tl(c.label) }));
-  const birthdays = categories.filter((c) => c.group === "birthday").map((c) => ({ slug: c.slug, label: tl(c.label) }));
-
-  const mobileLinks = [
-    { slug: "shabbat", label: t("navShabbat") },
-    ...birthdays,
-    { slug: "baby", label: t("navBaby") },
-    { slug: "bar-mitzvah", label: t("navBar") },
-    { slug: "bat-mitzvah", label: t("navBat") },
-    { to: "/about" as const, label: t("navAbout") },
-  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-navy-2/85 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        {/* Start side (right in Hebrew): logo, always-visible holidays menu, mobile menu */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-full bg-gold font-display text-lg font-bold text-navy">מ</span>
-            <span className="hidden font-heb text-lg leading-none text-ivory sm:block">{t("brandName")}</span>
-          </Link>
-          <Dropdown label={t("navHolidays")} items={holidays} />
-          <MobileGifts links={mobileLinks} />
-        </div>
+      <nav className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
+        {/* Start side (right in Hebrew): home icon, then the menu labels */}
+        <Link to="/" aria-label={t("navHome")} className={iconBtn}>
+          <Home className="size-5" />
+        </Link>
+        <Dropdown label={t("navHolidays")} items={holidays} />
+        <Link to="/c/$slug" params={{ slug: "judaica" }} className={navLink}>{t("navJudaica")}</Link>
+        <Link to="/c/$slug" params={{ slug: "for-boy" }} className={navLink}>{t("navForBoy")}</Link>
+        <Link to="/c/$slug" params={{ slug: "for-girl" }} className={navLink}>{t("navForGirl")}</Link>
 
-        {/* Desktop nav */}
-        <ul className="hidden items-center gap-6 text-sm lg:flex">
-          <li><Link to="/c/$slug" params={{ slug: "shabbat" }} className="text-ivory/60 hover:text-ivory transition-colors">{t("navShabbat")}</Link></li>
-          <Dropdown label={t("navBirthday")} items={birthdays} />
-          <li><Link to="/c/$slug" params={{ slug: "baby" }} className="text-ivory/60 hover:text-ivory transition-colors">{t("navBaby")}</Link></li>
-          <li><Link to="/c/$slug" params={{ slug: "bar-mitzvah" }} className="text-ivory/60 hover:text-ivory transition-colors">{t("navBar")}</Link></li>
-          <li><Link to="/c/$slug" params={{ slug: "bat-mitzvah" }} className="text-ivory/60 hover:text-ivory transition-colors">{t("navBat")}</Link></li>
-          <li><Link to="/about" className="text-ivory/60 hover:text-ivory transition-colors">{t("navAbout")}</Link></li>
-        </ul>
-
-        {/* End side (left in Hebrew): language icon next to cart */}
-        <div className="flex items-center gap-2">
+        {/* End side (left in Hebrew): language menu, then cart */}
+        <div className="ms-auto flex items-center gap-2">
           <LangMenu />
-          <Link
-            to="/cart"
-            aria-label={t("cart")}
-            className="relative grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 text-ivory hover:text-gold-2 transition"
-          >
+          <Link to="/cart" aria-label={t("cart")} className={`relative ${iconBtn}`}>
             <ShoppingBag className="size-5" />
             {count > 0 && (
               <span className="absolute -top-1 -end-1 grid size-5 place-items-center rounded-full bg-gold text-[10px] font-bold text-navy">
@@ -183,7 +129,7 @@ export function SiteHeader() {
             )}
           </Link>
         </div>
-      </div>
+      </nav>
     </header>
   );
 }
