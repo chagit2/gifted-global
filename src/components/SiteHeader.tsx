@@ -109,7 +109,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-white/5 bg-navy-2/85 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
         {/* Start side (right in Hebrew): home icon, then the menu labels */}
-        <Link to="/" aria-label={t("navHome")} className={iconBtn}>
+        <Link to="/about" aria-label={t("navAbout")} className={iconBtn}>
           <Home className="size-5" />
         </Link>
         <Dropdown label={t("navHolidays")} items={holidays} />

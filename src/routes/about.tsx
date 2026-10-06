@@ -70,7 +70,7 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="relative mx-auto max-w-7xl px-6 pb-24">
+      <section className="relative mx-auto max-w-7xl px-6 pb-16">
         <div className="rounded-[2rem] border border-gold/25 bg-gold/10 px-6 py-12 text-center">
           <p className="mx-auto max-w-2xl font-heb text-2xl leading-snug text-ivory sm:text-3xl">{t("aboutClosing")}</p>
           <Link
@@ -80,6 +80,28 @@ function AboutPage() {
             {t("ctaBrowse")}
           </Link>
         </div>
+      </section>
+
+      <section className="relative mx-auto max-w-7xl px-6 pb-24">
+        <h2 className="font-heb text-2xl font-bold text-ivory">{t("howTitle")}</h2>
+        <ol className="mt-5 grid grid-cols-3 gap-3 sm:gap-5">
+          {[
+            [t("how1"), t("how1t")],
+            [t("how2"), t("how2t")],
+            [t("how3"), t("how3t")],
+          ].map(([title, sub], i) => (
+            <li
+              key={title}
+              className="flex flex-col gap-1 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl sm:flex-row sm:items-center sm:gap-4 sm:p-4"
+            >
+              <span className="font-display text-2xl leading-none text-gold/70 sm:text-3xl">{i + 1}</span>
+              <span>
+                <span className="block font-heb text-sm text-ivory sm:text-base">{title}</span>
+                <span className="block text-xs text-ivory/55">{sub}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
       </section>
     </main>
   );

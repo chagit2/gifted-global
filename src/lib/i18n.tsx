@@ -27,7 +27,6 @@ const dict = {
   items: { he: "פריטים", fr: "articles", en: "items" },
   ctaBrowse: { he: "צפייה במתנות", fr: "Voir les cadeaux", en: "Browse gifts" },
 
-  ctaHow: { he: "איך זה עובד?", fr: "Comment ça marche ?", en: "How it works" },
   suggested: { he: "מוצע עבורך", fr: "Suggéré pour vous", en: "Suggested for you" },
 
   recommendedCats: { he: "קטגוריות מומלצות", fr: "Catégories phares", en: "Featured categories" },

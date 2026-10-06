@@ -64,26 +64,6 @@ function Index() {
         </div>
       </section>
 
-      <section id="how" className="relative mx-auto max-w-7xl px-6 pb-28">
-        <h2 className="font-heb text-3xl font-bold text-ivory">{t("howTitle")}</h2>
-        <div className="mt-8 grid gap-5 sm:grid-cols-3">
-          {[
-            [t("how1"), t("how1t")],
-            [t("how2"), t("how2t")],
-            [t("how3"), t("how3t")],
-          ].map(([title, sub], i) => (
-            <div
-              key={title}
-              className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
-            >
-              <span className="font-display text-4xl text-gold/60">{i + 1}</span>
-              <h3 className="mt-3 font-heb text-lg text-ivory">{title}</h3>
-              <p className="mt-1 text-sm text-ivory/60">{sub}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
       <ProductModal product={preview} onClose={() => setPreview(null)} />
     </main>
   );
