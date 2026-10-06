@@ -39,9 +39,8 @@ function Index() {
       <section className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 pt-16 pb-24 lg:grid-cols-2">
         <div>
           <div className="flex flex-wrap gap-3">
-
-
             <Link
+
               to="/c/$slug"
               params={{ slug: "bat-mitzvah" }}
               className="rounded-full bg-gold px-7 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2"
@@ -57,8 +56,8 @@ function Index() {
           </div>
         </div>
 
-
         <div className="relative">
+
           <div className="absolute inset-0 -z-10 rounded-[2rem] bg-gold/10 blur-3xl" />
           <img
             src={heroGift}
