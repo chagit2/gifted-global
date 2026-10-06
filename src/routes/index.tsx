@@ -38,18 +38,8 @@ function Index() {
 
       <section className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 pt-16 pb-24 lg:grid-cols-2">
         <div>
-          <span className="inline-block rounded-full border border-gold/30 px-4 py-1 text-xs tracking-widest text-gold-2">
-            {t("heroBadge")}
-          </span>
-          <h1 className="mt-6 font-heb text-5xl leading-tight font-bold text-ivory sm:text-6xl">
-            {t("heroLine1")}
-            <br />
-            <span className="text-gold-2">{t("heroLine2")}</span>
-            <br />
-            {t("heroLine3")}
-          </h1>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-ivory/70">{t("heroText")}</p>
           <div className="mt-8 flex flex-wrap gap-3">
+
             <Link
               to="/c/$slug"
               params={{ slug: "bat-mitzvah" }}
