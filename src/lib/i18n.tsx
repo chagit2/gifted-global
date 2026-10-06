@@ -4,9 +4,9 @@ export type Lang = "he" | "fr" | "en";
 export type L = { he: string; fr: string; en: string };
 
 export const LANGS: { code: Lang; label: string }[] = [
-  { code: "he", label: "עברית" },
-  { code: "fr", label: "Français" },
   { code: "en", label: "English" },
+  { code: "fr", label: "Français" },
+  { code: "he", label: "עברית" },
 ];
 
 const dict = {
@@ -19,12 +19,14 @@ const dict = {
   navBaby: { he: "לתינוק", fr: "Bébé", en: "Baby" },
   navBar: { he: "בר מצווה", fr: "Bar Mitsva", en: "Bar Mitzvah" },
   navBat: { he: "בת מצווה", fr: "Bat Mitsva", en: "Bat Mitzvah" },
+  navJudaica: { he: "יודאיקה", fr: "Judaïca", en: "Judaica" },
+  navForBoy: { he: "לבן", fr: "Garçon", en: "Boy" },
+  navForGirl: { he: "לבת", fr: "Fille", en: "Girl" },
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },
   ctaBrowse: { he: "צפייה במתנות", fr: "Voir les cadeaux", en: "Browse gifts" },
 
-  ctaHow: { he: "איך זה עובד?", fr: "Comment ça marche ?", en: "How it works" },
   suggested: { he: "מוצע עבורך", fr: "Suggéré pour vous", en: "Suggested for you" },
 
   recommendedCats: { he: "קטגוריות מומלצות", fr: "Catégories phares", en: "Featured categories" },
@@ -83,14 +85,63 @@ const dict = {
   required: { he: "שדה חובה", fr: "Champ requis", en: "Required field" },
   aboutTitle: { he: "אודות", fr: "À propos", en: "About" },
   aboutLead: {
-    he: "אנחנו מקרבים לבבות בין יבשות — מתנה אחת בכל פעם.",
-    fr: "Nous rapprochons les cœurs entre continents — un cadeau à la fois.",
-    en: "We bring hearts closer across continents — one gift at a time.",
+    he: "רחוקים מהעין, קרובים ללב.",
+    fr: "Loin des yeux, près du cœur.",
+    en: "Far from sight, close to heart.",
   },
-  aboutBody: {
-    he: "הכול התחיל מסבא בפריז שרצה לשלוח מתנת בת מצווה לנכדתו בירושלים, ולא ידע איך. היום אנחנו בוחרים עבורכם מתנות יוקרתיות לכל חג ולכל אירוע, אורזים אותן בעבודת יד, מצרפים מכתב אישי בכתב ידכם, ושולחים עד הבית. בעברית, בצרפתית ובאנגלית.",
-    fr: "Tout a commencé avec un grand-père à Paris qui voulait envoyer un cadeau de Bat Mitsva à sa petite-fille à Jérusalem. Aujourd'hui nous sélectionnons des cadeaux d'exception pour chaque fête, les emballons à la main, y joignons votre lettre personnelle et les livrons à domicile. En hébreu, en français et en anglais.",
-    en: "It began with a grandfather in Paris who wanted to send a Bat Mitzvah gift to his granddaughter in Jerusalem. Today we curate exceptional gifts for every holiday and milestone, wrap them by hand, add your personal letter and deliver to the door. In Hebrew, French and English.",
+  aboutP1: {
+    he: "אנחנו יודעים איך זה מרגיש. השמחה המשפחתית מתקרבת – יום הולדת, חתונה, חנוכת בית או פשוט רצון לשמח ולהפתיע את האנשים שאתם הכי אוהבים בארץ – ואתם נמצאים מעבר לים.",
+    fr: "Nous savons ce que l'on ressent. Une joie familiale approche – un anniversaire, un mariage, une crémaillère, ou simplement l'envie de faire plaisir et de surprendre ceux que vous aimez le plus en Israël – et vous êtes de l'autre côté de la mer.",
+    en: "We know how it feels. A family celebration is coming up – a birthday, a wedding, a housewarming, or simply the wish to delight and surprise the people you love most in Israel – and you are across the sea.",
+  },
+  aboutP2: {
+    he: "המרחק הפיזי עלול לפעמים להרגיש מורכב: איך מוצאים מתנה באמת מיוחדת? איך דואגים שהיא תגיע בזמן? ואיך מספקים את התחושה שאתם שם, מחבקים ומפנקים מקרוב?",
+    fr: "La distance peut parfois sembler compliquée : comment trouver un cadeau vraiment spécial ? Comment s'assurer qu'il arrive à temps ? Et comment donner le sentiment que vous êtes là, à les serrer dans vos bras et à les gâter de près ?",
+    en: "The physical distance can sometimes feel complicated: how do you find a truly special gift? How do you make sure it arrives on time? And how do you give the feeling that you are right there, hugging and spoiling them up close?",
+  },
+  aboutP3: {
+    he: "בדיוק בשביל זה אנחנו כאן.",
+    fr: "C'est exactement pour cela que nous sommes là.",
+    en: "That is exactly why we are here.",
+  },
+  aboutP4: {
+    he: "מותג “מתנות” נולד מתוך רצון לגשר על המרחק, ולספק לכם דרך קלה, נוחה ויוקרתית לשלוח אהבה ותשומת לב לכל פינה בישראל.",
+    fr: "La marque « Matanot » est née de l'envie de combler la distance et de vous offrir un moyen simple, pratique et élégant d'envoyer amour et attention aux quatre coins d'Israël.",
+    en: "The Matanot brand was born from a wish to bridge the distance, giving you an easy, convenient and elegant way to send love and care to every corner of Israel.",
+  },
+  aboutValuesTitle: {
+    he: "מה משקף את העשייה שלנו?",
+    fr: "Ce qui reflète notre travail",
+    en: "What our work stands for",
+  },
+  aboutV1t: { he: "עיצוב בטוב טעם", fr: "Un design de bon goût", en: "Tasteful design" },
+  aboutV1: {
+    he: "כל מתנה אצלנו נבחרת ומעוצבת בסטייל יוקרתי, עדכני ומוקפד, כדי להבטיח שהיא תכבד אתכם ותביא איתה רושם מרשים ומשמח.",
+    fr: "Chaque cadeau est choisi et conçu dans un style luxueux, actuel et soigné, pour vous faire honneur et laisser une impression marquante et joyeuse.",
+    en: "Every gift is chosen and designed in a luxurious, contemporary and meticulous style, so it does you proud and leaves a striking, joyful impression.",
+  },
+  aboutV2t: { he: "מתנות לכל אירוע", fr: "Des cadeaux pour chaque occasion", en: "Gifts for every occasion" },
+  aboutV2: {
+    he: "מגוון פתרונות מעוצבים המותאמים במיוחד לחתונה, חנוכת בית, ימי הולדת או פשוט כדי להגיד “אני חושב עליך”.",
+    fr: "Un large choix de créations adaptées au mariage, à la crémaillère, aux anniversaires, ou simplement pour dire « je pense à toi ».",
+    en: "A range of designed gifts tailored for weddings, housewarmings and birthdays, or simply to say “I'm thinking of you”.",
+  },
+  aboutV3t: { he: "המגע האישי שלכם", fr: "Votre touche personnelle", en: "Your personal touch" },
+  aboutV3: {
+    he: "כדי שהמתנה תהיה אישית באמת, אנו מציעים אפשרות להוסיף את הברכה האישית שלכם, שתודפס על גבי דף מעוצב ויפהפה ותצורף למארז.",
+    fr: "Pour que le cadeau soit vraiment personnel, vous pouvez ajouter votre message, imprimé sur une belle page élégante et joint au coffret.",
+    en: "To make the gift truly personal, you can add your own greeting, printed on a beautifully designed page and included in the box.",
+  },
+  aboutV4t: { he: "ראש שקט ורוגע מלא", fr: "Une totale tranquillité d'esprit", en: "Complete peace of mind" },
+  aboutV4: {
+    he: "אתם יכולים להיות בטוחים שהמחווה שלכם תגיע בצורה מושלמת, תכבד את האירוע ותעניק ליקירכם את ההרגשה שחשבתם עליהם מכל הלב – גם כשאתם רחוקים.",
+    fr: "Soyez assurés que votre attention arrivera parfaitement, honorera l'événement et donnera à vos proches le sentiment que vous avez pensé à eux de tout votre cœur – même de loin.",
+    en: "Rest assured that your gesture will arrive perfectly, honor the occasion and give your loved ones the feeling that you thought of them with all your heart – even from afar.",
+  },
+  aboutClosing: {
+    he: "אנחנו מזמינים אתכם לבחור את המתנה המושלמת, ולהרגיש הכי קרובים שיש.",
+    fr: "Nous vous invitons à choisir le cadeau parfait, et à vous sentir plus proches que jamais.",
+    en: "We invite you to choose the perfect gift, and to feel as close as can be.",
   },
   footerRights: { he: "כל הזכויות שמורות", fr: "Tous droits réservés", en: "All rights reserved" },
   terms: { he: "תנאי שימוש", fr: "Conditions", en: "Terms" },
