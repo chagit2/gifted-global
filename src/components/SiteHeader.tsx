@@ -57,8 +57,8 @@ export function SiteHeader() {
   return (
     <header>
       <div className="border-b border-white/5 bg-navy-2/50 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2 text-[11px] tracking-wide text-ivory/60">
-          <span>{t("tagline")}</span>
+        <div className="mx-auto flex max-w-7xl items-center justify-end px-6 py-2 text-[11px] tracking-wide text-ivory/60">
+
           <div className="flex items-center gap-1">
             {LANGS.map((l) => (
               <button

@@ -11,12 +11,8 @@ export const LANGS: { code: Lang; label: string }[] = [
 
 const dict = {
   brandName: { he: "מתנות", fr: "Matanot", en: "Matanot" },
-  tagline: {
-    he: "שולחים מתנות בין צרפת לישראל ולכל העולם",
-    fr: "Des cadeaux entre la France, Israël et le monde",
-    en: "Sending gifts between France, Israel and the world",
-  },
   navHome: { he: "בית", fr: "Accueil", en: "Home" },
+
   navHolidays: { he: "חגים", fr: "Fêtes", en: "Holidays" },
   navShabbat: { he: "שבת", fr: "Chabbat", en: "Shabbat" },
   navBirthday: { he: "יומולדת", fr: "Anniversaire", en: "Birthday" },
@@ -26,21 +22,11 @@ const dict = {
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },
-  heroBadge: { he: "צרפת · ישראל · העולם", fr: "France · Israël · Monde", en: "France · Israel · World" },
-  heroLine1: { he: "מתנת בת מצווה", fr: "Un cadeau de Bat Mitsva", en: "A Bat Mitzvah gift" },
-  heroLine2: { he: "לנכדה בישראל", fr: "pour ma petite-fille", en: "for a granddaughter" },
-  heroLine3: { he: "מאהבה", fr: "avec amour", en: "with love" },
-  heroText: {
-    he: "בחרו מתנה עדינה לאהובים, כתבו מכתב אישי, ואנחנו נשלח אותה ישירות לכתובת — באריזה יוקרתית וסרט זהב.",
-    fr: "Choisissez un cadeau délicat, écrivez une lettre personnelle, et nous l'envoyons directement — dans un écrin luxueux au ruban doré.",
-    en: "Choose a delicate gift, write a personal letter, and we deliver it to the door — in a luxurious box with a gold ribbon.",
-  },
   ctaBrowse: { he: "צפייה במתנות", fr: "Voir les cadeaux", en: "Browse gifts" },
+
   ctaHow: { he: "איך זה עובד?", fr: "Comment ça marche ?", en: "How it works" },
-  statRating: { he: "★ 4.9 (1,240)", fr: "★ 4.9 (1 240)", en: "★ 4.9 (1,240)" },
-  statShipping: { he: "משלוח תוך 3 ימים", fr: "Livraison en 3 jours", en: "Delivery in 3 days" },
-  statLangs: { he: "3 שפות", fr: "3 langues", en: "3 languages" },
   suggested: { he: "מוצע עבורך", fr: "Suggéré pour vous", en: "Suggested for you" },
+
   recommendedCats: { he: "קטגוריות מומלצות", fr: "Catégories phares", en: "Featured categories" },
   catsNote: {
     he: "7 חגים · 3 גילאי יומולדת · תינוק · בר ובת מצווה",
