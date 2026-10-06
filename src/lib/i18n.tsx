@@ -25,10 +25,8 @@ const dict = {
   ctaBrowse: { he: "צפייה במתנות", fr: "Voir les cadeaux", en: "Browse gifts" },
 
   ctaHow: { he: "איך זה עובד?", fr: "Comment ça marche ?", en: "How it works" },
-  statRating: { he: "★ 4.9 (1,240)", fr: "★ 4.9 (1 240)", en: "★ 4.9 (1,240)" },
-  statShipping: { he: "משלוח תוך 3 ימים", fr: "Livraison en 3 jours", en: "Delivery in 3 days" },
-  statLangs: { he: "3 שפות", fr: "3 langues", en: "3 languages" },
   suggested: { he: "מוצע עבורך", fr: "Suggéré pour vous", en: "Suggested for you" },
+
   recommendedCats: { he: "קטגוריות מומלצות", fr: "Catégories phares", en: "Featured categories" },
   catsNote: {
     he: "7 חגים · 3 גילאי יומולדת · תינוק · בר ובת מצווה",
