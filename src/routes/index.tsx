@@ -38,7 +38,8 @@ function Index() {
 
       <section className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 pt-16 pb-24 lg:grid-cols-2">
         <div>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3">
+
 
             <Link
               to="/c/$slug"
@@ -54,18 +55,14 @@ function Index() {
               {t("ctaHow")}
             </a>
           </div>
-          <div className="mt-10 flex flex-wrap gap-6 text-xs text-ivory/60">
-            <span>{t("statRating")}</span>
-            <span>{t("statShipping")}</span>
-            <span>{t("statLangs")}</span>
-          </div>
         </div>
+
 
         <div className="relative">
           <div className="absolute inset-0 -z-10 rounded-[2rem] bg-gold/10 blur-3xl" />
           <img
             src={heroGift}
-            alt={t("heroLine1")}
+            alt=""
             width={1024}
             height={1024}
             className="w-full rounded-[2rem] border border-white/10 object-cover shadow-2xl animate-floaty"
