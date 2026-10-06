@@ -11,12 +11,8 @@ export const LANGS: { code: Lang; label: string }[] = [
 
 const dict = {
   brandName: { he: "מתנות", fr: "Matanot", en: "Matanot" },
-  tagline: {
-    he: "שולחים מתנות בין צרפת לישראל ולכל העולם",
-    fr: "Des cadeaux entre la France, Israël et le monde",
-    en: "Sending gifts between France, Israel and the world",
-  },
   navHome: { he: "בית", fr: "Accueil", en: "Home" },
+
   navHolidays: { he: "חגים", fr: "Fêtes", en: "Holidays" },
   navShabbat: { he: "שבת", fr: "Chabbat", en: "Shabbat" },
   navBirthday: { he: "יומולדת", fr: "Anniversaire", en: "Birthday" },
