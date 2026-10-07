@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useCart } from "@/lib/cart";
 import { getProduct } from "@/lib/catalog";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
+import { getCities, getStreets, type City, type Street } from "@/lib/address.functions";
+import { Combobox } from "@/components/Combobox";
 
 export const Route = createFileRoute("/checkout")({
   head: () => {
@@ -34,9 +36,23 @@ function CheckoutPage() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const address = useAddressLists();
+  const [cityCode, setCityCode] = useState<string | null>(null);
+  const [streetName, setStreetName] = useState<string | null>(null);
+  const [attempted, setAttempted] = useState(false);
+
+  useEffect(() => {
+    setStreetName(null);
+    if (cityCode) address.loadStreets(Number(cityCode));
+  }, [cityCode]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const city = address.cities?.find((c) => String(c.code) === cityCode) ?? null;
+  const streets = cityCode ? address.streets[Number(cityCode)] : undefined;
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setAttempted(true);
+    if (!city || !streetName) return;
     setBusy(true);
     setError(null);
     const fd = new FormData(e.currentTarget);
@@ -45,10 +61,10 @@ function CheckoutPage() {
         data: {
           senderName: String(fd.get("senderName") ?? ""),
           phone: String(fd.get("phone") ?? ""),
-          street: String(fd.get("street") ?? ""),
-          city: String(fd.get("city") ?? ""),
+          street: `${streetName} ${String(fd.get("houseNumber") ?? "").trim()}`,
+          city: city.he,
           zip: String(fd.get("zip") ?? ""),
-          country: String(fd.get("country") ?? ""),
+          country: "Israel",
           language: lang,
           total,
           // One order line per gift copy, each with its own letter.
@@ -122,24 +138,77 @@ function CheckoutPage() {
 
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
             <h2 className="font-heb text-lg text-ivory">{t("shippingTitle")}</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <span className={label}>{t("street")}</span>
-                <input name="street" required className={field} />
+            {address.failed ? (
+              <p className="mt-4 rounded-lg border border-red-300/30 bg-red-300/10 px-3 py-2 text-xs text-red-200">
+                {t("listLoadError")}{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    address.retry();
+                    if (cityCode) address.loadStreets(Number(cityCode));
+                  }}
+                  className="underline"
+                >
+                  {t("retry")}
+                </button>
+              </p>
+            ) : (
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <span className={label}>{t("city")}</span>
+                  <Combobox
+                    options={(address.cities ?? []).map((c) => ({
+                      key: String(c.code),
+                      label: lang === "he" || !c.en ? c.he : `${c.he} · ${c.en}`,
+                      search: c.en,
+                    }))}
+                    value={cityCode}
+                    onChange={setCityCode}
+                    disabled={!address.cities}
+                    placeholder={t("cityPlaceholder")}
+                    invalid={attempted && !city}
+                    invalidText={t("chooseFromList")}
+                    emptyText={t("noResults")}
+                    className={field}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <span className={label}>{t("street")}</span>
+                  <Combobox
+                    key={cityCode ?? "none"}
+                    options={(streets ?? []).map((st) => ({ key: st.name, label: st.name }))}
+                    value={streetName}
+                    onChange={setStreetName}
+                    disabled={!streets}
+                    placeholder={cityCode ? t("streetPlaceholder") : t("chooseCityFirst")}
+                    invalid={attempted && !streetName}
+                    invalidText={t("chooseFromList")}
+                    emptyText={t("noResults")}
+                    className={field}
+                  />
+                  {lang !== "he" && <p className="mt-1 text-[11px] text-ivory/40">{t("streetsHebrewNote")}</p>}
+                </div>
+                <div>
+                  <span className={label}>{t("houseNumber")}</span>
+                  <input
+                    name="houseNumber"
+                    required
+                    maxLength={10}
+                    pattern="[0-9]+[A-Za-z\u05D0-\u05EA]?"
+                    inputMode="numeric"
+                    className={field}
+                  />
+                </div>
+                <div>
+                  <span className={label}>{t("zip")}</span>
+                  <input name="zip" required inputMode="numeric" maxLength={7} className={field} />
+                </div>
+                <div className="sm:col-span-2">
+                  <span className={label}>{t("country")}</span>
+                  <p className={`${field} text-ivory/70`}>{t("israel")}</p>
+                </div>
               </div>
-              <div>
-                <span className={label}>{t("city")}</span>
-                <input name="city" required className={field} />
-              </div>
-              <div>
-                <span className={label}>{t("zip")}</span>
-                <input name="zip" required className={field} />
-              </div>
-              <div className="sm:col-span-2">
-                <span className={label}>{t("country")}</span>
-                <input name="country" required className={field} />
-              </div>
-            </div>
+            )}
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
@@ -239,4 +308,27 @@ function CheckoutPage() {
       </form>
     </main>
   );
+}
+
+// City list loads once; each city's streets load when it is chosen.
+function useAddressLists() {
+  const [cities, setCities] = useState<City[] | null>(null);
+  const [streets, setStreets] = useState<Record<number, Street[]>>({});
+  const [failed, setFailed] = useState(false);
+
+  const loadCities = useCallback(() => {
+    setFailed(false);
+    getCities()
+      .then(setCities)
+      .catch(() => setFailed(true));
+  }, []);
+  useEffect(loadCities, [loadCities]);
+
+  const loadStreets = useCallback((cityCode: number) => {
+    getStreets({ data: { cityCode } })
+      .then((list) => setStreets((prev) => ({ ...prev, [cityCode]: list })))
+      .catch(() => setFailed(true));
+  }, []);
+
+  return { cities, streets, failed, loadStreets, retry: loadCities };
 }
