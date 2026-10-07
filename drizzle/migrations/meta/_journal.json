@@ -15,6 +15,13 @@
       "when": 1791375998380,
       "tag": "0001_add_order_recipient_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791376890715,
+      "tag": "0002_create_products_table",
+      "breakpoints": true
     }
   ]
 }
