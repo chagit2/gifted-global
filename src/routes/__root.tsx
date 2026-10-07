@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "@/lib/i18n";
 import { CartProvider } from "@/lib/cart";
+import { AuthProvider } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -126,6 +127,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
+        <AuthProvider>
         <CartProvider>
           <div className="flex min-h-screen flex-col bg-navy">
             <SiteHeader />
@@ -136,6 +138,7 @@ function RootComponent() {
             <SiteFooter />
           </div>
         </CartProvider>
+        </AuthProvider>
       </I18nProvider>
     </QueryClientProvider>
   );

@@ -4,6 +4,7 @@ import { useCart } from "@/lib/cart";
 import { getProduct } from "@/lib/catalog";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/checkout")({
   head: () => {
@@ -31,6 +32,7 @@ function CheckoutPage() {
   const { t, tl, lang } = useI18n();
   const { lines, total, setLetter, clear } = useCart();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +46,8 @@ function CheckoutPage() {
         data: {
           senderName: String(fd.get("senderName") ?? ""),
           phone: String(fd.get("phone") ?? ""),
+          recipientName: String(fd.get("recipientName") ?? "").trim(),
+          recipientPhone: String(fd.get("recipientPhone") ?? "").trim(),
           street: `${String(fd.get("street") ?? "").trim()} ${String(fd.get("houseNumber") ?? "").trim()}`,
           city: String(fd.get("city") ?? "").trim(),
           country: "Israel",
@@ -53,6 +57,7 @@ function CheckoutPage() {
           items: lines.flatMap((l) =>
             l.letters.map((letter) => ({
               productId: l.productId,
+              productName: getProduct(l.productId)?.name.he ?? "",
               qty: 1,
               letter,
               unitPrice: getProduct(l.productId)?.price ?? 0,
@@ -98,6 +103,14 @@ function CheckoutPage() {
   return (
     <main className="mx-auto max-w-5xl px-6 pt-14 pb-24">
       <h1 className="font-heb text-4xl font-bold text-ivory">{t("checkout")}</h1>
+      {!user && (
+        <p className="mt-4 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-gold-2">
+          {t("loginForOrders")}{" "}
+          <Link to="/login" className="font-semibold underline">
+            {t("login")}
+          </Link>
+        </p>
+      )}
 
       <form onSubmit={onSubmit} className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-6">
@@ -113,14 +126,27 @@ function CheckoutPage() {
               </div>
               <div className="sm:col-span-2">
                 <span className={label}>{t("phone")}</span>
-                <input name="phone" type="tel" required className={field} />
+                <input name="phone" type="tel" required dir="ltr" maxLength={40} className={field} />
+                <p className="mt-1 text-[11px] text-ivory/40">{t("phoneNote")}</p>
               </div>
             </div>
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-            <h2 className="font-heb text-lg text-ivory">{t("shippingTitle")}</h2>
+            <h2 className="font-heb text-lg text-ivory">{t("recipientTitle")}</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div>
+                <span className={label}>{t("recipientName")}</span>
+                <input name="recipientName" required maxLength={120} className={field} />
+              </div>
+              <div>
+                <span className={label}>{t("recipientPhone")}</span>
+                <input name="recipientPhone" type="tel" required dir="ltr" maxLength={40} className={field} />
+              </div>
+              <p className="-mt-2 text-[11px] text-ivory/40 sm:col-span-2">{t("recipientPhoneNote")}</p>
+            </div>
+            <h3 className="mt-6 text-sm text-ivory/80">{t("shippingTitle")}</h3>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <span className={label}>{t("city")}</span>
                 <input name="city" required maxLength={120} className={field} />
