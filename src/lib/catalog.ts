@@ -29,9 +29,6 @@ export const categories: Category[] = [
   { slug: "baby", group: "main", label: { he: "לתינוק", fr: "Bébé", en: "Baby" } },
   { slug: "bar-mitzvah", group: "main", label: { he: "בר מצווה", fr: "Bar Mitsva", en: "Bar Mitzvah" } },
   { slug: "bat-mitzvah", group: "main", label: { he: "בת מצווה", fr: "Bat Mitsva", en: "Bat Mitzvah" } },
-  { slug: "judaica", group: "main", label: { he: "יודאיקה", fr: "Judaïca", en: "Judaica" } },
-  { slug: "for-boy", group: "main", label: { he: "לבן", fr: "Garçon", en: "Boy" } },
-  { slug: "for-girl", group: "main", label: { he: "לבת", fr: "Fille", en: "Girl" } },
 ];
 
 export const getCategory = (slug: string) => categories.find((c) => c.slug === slug);
@@ -153,9 +150,6 @@ const pool: Base[] = [
     },
   },
 ];
-
-// Home-page banner slides (placeholder ads built from the existing gift images).
-export const bannerSlides = pool.map((b) => ({ key: b.key, img: b.img, name: b.name, subtitle: b.subtitle }));
 
 const galleryFor = (img: string) => {
   const others = [heroGift, candlesticks, sweets].filter((i) => i !== img).slice(0, 3);
