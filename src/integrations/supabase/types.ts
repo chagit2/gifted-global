@@ -59,6 +59,8 @@ export type Database = {
           id: string
           language: string
           phone: string
+          recipient_name: string
+          recipient_phone: string
           sender_name: string
           ship_city: string
           ship_country: string
@@ -74,6 +76,8 @@ export type Database = {
           id?: string
           language?: string
           phone: string
+          recipient_name?: string
+          recipient_phone?: string
           sender_name: string
           ship_city: string
           ship_country: string
@@ -89,6 +93,8 @@ export type Database = {
           id?: string
           language?: string
           phone?: string
+          recipient_name?: string
+          recipient_phone?: string
           sender_name?: string
           ship_city?: string
           ship_country?: string

@@ -6,6 +6,8 @@ import { ORDER_STATUSES } from "./orders";
 const schema = z.object({
   senderName: z.string().min(1).max(120),
   phone: z.string().min(3).max(40),
+  recipientName: z.string().min(1).max(120),
+  recipientPhone: z.string().min(3).max(40),
   street: z.string().min(1).max(200),
   city: z.string().min(1).max(120),
   zip: z.string().max(30).default(""),
@@ -44,6 +46,8 @@ export const placeOrder = createServerFn({ method: "POST" })
       .insert({
         sender_name: data.senderName,
         phone: data.phone,
+        recipient_name: data.recipientName,
+        recipient_phone: data.recipientPhone,
         ship_street: data.street,
         ship_city: data.city,
         ship_zip: data.zip,

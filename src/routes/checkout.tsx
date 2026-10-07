@@ -46,6 +46,8 @@ function CheckoutPage() {
         data: {
           senderName: String(fd.get("senderName") ?? ""),
           phone: String(fd.get("phone") ?? ""),
+          recipientName: String(fd.get("recipientName") ?? "").trim(),
+          recipientPhone: String(fd.get("recipientPhone") ?? "").trim(),
           street: `${String(fd.get("street") ?? "").trim()} ${String(fd.get("houseNumber") ?? "").trim()}`,
           city: String(fd.get("city") ?? "").trim(),
           country: "Israel",
@@ -124,14 +126,27 @@ function CheckoutPage() {
               </div>
               <div className="sm:col-span-2">
                 <span className={label}>{t("phone")}</span>
-                <input name="phone" type="tel" required className={field} />
+                <input name="phone" type="tel" required dir="ltr" maxLength={40} className={field} />
+                <p className="mt-1 text-[11px] text-ivory/40">{t("phoneNote")}</p>
               </div>
             </div>
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-            <h2 className="font-heb text-lg text-ivory">{t("shippingTitle")}</h2>
+            <h2 className="font-heb text-lg text-ivory">{t("recipientTitle")}</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div>
+                <span className={label}>{t("recipientName")}</span>
+                <input name="recipientName" required maxLength={120} className={field} />
+              </div>
+              <div>
+                <span className={label}>{t("recipientPhone")}</span>
+                <input name="recipientPhone" type="tel" required dir="ltr" maxLength={40} className={field} />
+              </div>
+              <p className="-mt-2 text-[11px] text-ivory/40 sm:col-span-2">{t("recipientPhoneNote")}</p>
+            </div>
+            <h3 className="mt-6 text-sm text-ivory/80">{t("shippingTitle")}</h3>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <span className={label}>{t("city")}</span>
                 <input name="city" required maxLength={120} className={field} />

@@ -94,11 +94,22 @@ export function OrderCard({
         <div className="text-ivory/60">
           <p className="text-xs text-ivory/40">{t("shipTo")}</p>
           <p>
+            {order.recipient_name && <>{order.recipient_name} · </>}
             {order.ship_street}, {order.ship_city}
           </p>
+          {admin && order.recipient_phone && (
+            <p className="text-xs">
+              {t("recipientPhone")}: <span dir="ltr">{order.recipient_phone}</span>
+            </p>
+          )}
           <p className="text-xs">
-            {order.sender_name}
-            {admin && <> · <span dir="ltr">{order.phone}</span></>}
+            {t("senderName")}: {order.sender_name}
+            {admin && (
+              <>
+                {" "}
+                · <span dir="ltr">{order.phone}</span>
+              </>
+            )}
           </p>
         </div>
         <p className="font-heb text-lg text-ivory">

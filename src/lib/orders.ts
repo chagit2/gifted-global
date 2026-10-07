@@ -22,6 +22,8 @@ export type OrderRow = {
   created_at: string;
   sender_name: string;
   phone: string;
+  recipient_name: string;
+  recipient_phone: string;
   ship_street: string;
   ship_city: string;
   ship_country: string;
@@ -31,4 +33,4 @@ export type OrderRow = {
 };
 
 export const ORDER_SELECT =
-  "id, created_at, sender_name, phone, ship_street, ship_city, ship_country, total, status, order_items(id, product_id, product_name, qty, unit_price, letter)";
+  "id, created_at, sender_name, phone, recipient_name, recipient_phone, ship_street, ship_city, ship_country, total, status, order_items(id, product_id, product_name, qty, unit_price, letter)";
