@@ -18,7 +18,7 @@ function useClickOutside(onOut: () => void) {
 }
 
 const panel =
-  "absolute top-full z-50 mt-2 rounded-2xl border border-white/10 bg-navy-2/95 p-2 backdrop-blur-xl shadow-2xl shadow-black/40";
+  "rounded-2xl border border-white/10 bg-navy-2/95 p-2 backdrop-blur-xl shadow-2xl shadow-black/40";
 const itemCls =
   "block w-full rounded-xl px-3 py-2 text-start text-sm text-ivory/70 hover:bg-white/5 hover:text-gold-2 transition-colors";
 
@@ -37,29 +37,47 @@ function Dropdown({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useClickOutside(() => setOpen(false));
+  // Mouse hover opens the menu; leaving closes it after a short grace period so the
+  // pointer can travel to the items. Touch users toggle it with a tap instead.
+  const hovering = useRef(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
   return (
     <div
       ref={ref}
       className={`relative ${className}`}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onPointerEnter={(e) => {
+        if (e.pointerType !== "mouse") return;
+        hovering.current = true;
+        clearTimeout(closeTimer.current);
+        setOpen(true);
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType !== "mouse") return;
+        hovering.current = false;
+        closeTimer.current = setTimeout(() => setOpen(false), 250);
+      }}
     >
       <button
-        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        onClick={() => setOpen((o) => (hovering.current ? true : !o))}
         className="flex items-center gap-1 whitespace-nowrap text-sm text-ivory/60 hover:text-ivory transition-colors"
       >
         {label} <ChevronDown className="size-3.5 text-gold-2/70" />
       </button>
       {open && (
-        <ul className={`${panel} start-0 mt-0 w-52`}>
-          {items.map((i) => (
-            <li key={i.slug}>
-              <Link to="/c/$slug" params={{ slug: i.slug }} onClick={() => setOpen(false)} className={itemCls}>
-                {i.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        // pt-2 (not a margin) keeps the gap under the label inside the hover area.
+        <div className="absolute top-full start-0 z-50 pt-2">
+          <ul className={`${panel} w-52`}>
+            {items.map((i) => (
+              <li key={i.slug}>
+                <Link to="/c/$slug" params={{ slug: i.slug }} onClick={() => setOpen(false)} className={itemCls}>
+                  {i.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
@@ -79,7 +97,7 @@ function LangMenu() {
         <Globe className="size-5" />
       </button>
       {open && (
-        <ul className={`${panel} end-0 w-40`}>
+        <ul className={`${panel} absolute top-full end-0 z-50 mt-2 w-40`}>
           {LANGS.map((l) => (
             <li key={l.code}>
               <button
