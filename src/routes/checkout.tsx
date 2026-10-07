@@ -4,6 +4,7 @@ import { useCart } from "@/lib/cart";
 import { getProduct } from "@/lib/catalog";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/checkout")({
   head: () => {
@@ -31,6 +32,7 @@ function CheckoutPage() {
   const { t, tl, lang } = useI18n();
   const { lines, total, setLetter, clear } = useCart();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +55,7 @@ function CheckoutPage() {
           items: lines.flatMap((l) =>
             l.letters.map((letter) => ({
               productId: l.productId,
+              productName: getProduct(l.productId)?.name.he ?? "",
               qty: 1,
               letter,
               unitPrice: getProduct(l.productId)?.price ?? 0,
@@ -98,6 +101,14 @@ function CheckoutPage() {
   return (
     <main className="mx-auto max-w-5xl px-6 pt-14 pb-24">
       <h1 className="font-heb text-4xl font-bold text-ivory">{t("checkout")}</h1>
+      {!user && (
+        <p className="mt-4 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-gold-2">
+          {t("loginForOrders")}{" "}
+          <Link to="/login" className="font-semibold underline">
+            {t("login")}
+          </Link>
+        </p>
+      )}
 
       <form onSubmit={onSubmit} className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-6">

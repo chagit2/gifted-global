@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Globe, ShoppingBag, Home, ChevronDown } from "lucide-react";
+import { Globe, ShoppingBag, Home, ChevronDown, User } from "lucide-react";
 import { categories } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
 import { LANGS, useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
 
 function useClickOutside(onOut: () => void) {
   const ref = useRef<HTMLDivElement>(null);
@@ -120,6 +121,7 @@ function LangMenu() {
 export function SiteHeader() {
   const { t, tl } = useI18n();
   const { count } = useCart();
+  const { user } = useAuth();
 
   const holidays = categories.filter((c) => c.group === "holidays").map((c) => ({ slug: c.slug, label: tl(c.label) }));
 
@@ -138,6 +140,10 @@ export function SiteHeader() {
         {/* End side (left in Hebrew): language menu, then cart */}
         <div className="ms-auto flex items-center gap-2">
           <LangMenu />
+          <Link to={user ? "/account" : "/login"} aria-label={t("account")} className={`relative ${iconBtn}`}>
+            <User className="size-5" />
+            {user && <span className="absolute -top-0.5 -end-0.5 size-2.5 rounded-full bg-gold" />}
+          </Link>
           <Link to="/cart" aria-label={t("cart")} className={`relative ${iconBtn}`}>
             <ShoppingBag className="size-5" />
             {count > 0 && (
