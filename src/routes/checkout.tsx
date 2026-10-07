@@ -4,7 +4,7 @@ import { useCart } from "@/lib/cart";
 import { getProduct } from "@/lib/catalog";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
-import { getCities, getStreets, type City, type Street } from "@/lib/address.functions";
+import { getCities, type City } from "@/lib/address.functions";
 import { Combobox } from "@/components/Combobox";
 
 export const Route = createFileRoute("/checkout")({
@@ -38,21 +38,14 @@ function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const address = useAddressLists();
   const [cityCode, setCityCode] = useState<string | null>(null);
-  const [streetName, setStreetName] = useState<string | null>(null);
   const [attempted, setAttempted] = useState(false);
 
-  useEffect(() => {
-    setStreetName(null);
-    if (cityCode) address.loadStreets(Number(cityCode));
-  }, [cityCode]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const city = address.cities?.find((c) => String(c.code) === cityCode) ?? null;
-  const streets = cityCode ? address.streets[Number(cityCode)] : undefined;
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setAttempted(true);
-    if (!city || !streetName) return;
+    if (!city) return;
     setBusy(true);
     setError(null);
     const fd = new FormData(e.currentTarget);
@@ -61,9 +54,8 @@ function CheckoutPage() {
         data: {
           senderName: String(fd.get("senderName") ?? ""),
           phone: String(fd.get("phone") ?? ""),
-          street: `${streetName} ${String(fd.get("houseNumber") ?? "").trim()}`,
+          street: `${String(fd.get("street") ?? "").trim()} ${String(fd.get("houseNumber") ?? "").trim()}`,
           city: city.he,
-          zip: String(fd.get("zip") ?? ""),
           country: "Israel",
           language: lang,
           total,
@@ -143,10 +135,7 @@ function CheckoutPage() {
                 {t("listLoadError")}{" "}
                 <button
                   type="button"
-                  onClick={() => {
-                    address.retry();
-                    if (cityCode) address.loadStreets(Number(cityCode));
-                  }}
+                  onClick={address.retry}
                   className="underline"
                 >
                   {t("retry")}
@@ -172,21 +161,9 @@ function CheckoutPage() {
                     className={field}
                   />
                 </div>
-                <div className="sm:col-span-2">
+                <div>
                   <span className={label}>{t("street")}</span>
-                  <Combobox
-                    key={cityCode ?? "none"}
-                    options={(streets ?? []).map((st) => ({ key: st.name, label: st.name }))}
-                    value={streetName}
-                    onChange={setStreetName}
-                    disabled={!streets}
-                    placeholder={cityCode ? t("streetPlaceholder") : t("chooseCityFirst")}
-                    invalid={attempted && !streetName}
-                    invalidText={t("chooseFromList")}
-                    emptyText={t("noResults")}
-                    className={field}
-                  />
-                  {lang !== "he" && <p className="mt-1 text-[11px] text-ivory/40">{t("streetsHebrewNote")}</p>}
+                  <input name="street" required maxLength={150} className={field} />
                 </div>
                 <div>
                   <span className={label}>{t("houseNumber")}</span>
@@ -198,10 +175,6 @@ function CheckoutPage() {
                     inputMode="numeric"
                     className={field}
                   />
-                </div>
-                <div>
-                  <span className={label}>{t("zip")}</span>
-                  <input name="zip" required inputMode="numeric" maxLength={7} className={field} />
                 </div>
                 <div className="sm:col-span-2">
                   <span className={label}>{t("country")}</span>
@@ -310,10 +283,9 @@ function CheckoutPage() {
   );
 }
 
-// City list loads once; each city's streets load when it is chosen.
+// The city list loads once from the official list of Israeli localities.
 function useAddressLists() {
   const [cities, setCities] = useState<City[] | null>(null);
-  const [streets, setStreets] = useState<Record<number, Street[]>>({});
   const [failed, setFailed] = useState(false);
 
   const loadCities = useCallback(() => {
@@ -324,11 +296,5 @@ function useAddressLists() {
   }, []);
   useEffect(loadCities, [loadCities]);
 
-  const loadStreets = useCallback((cityCode: number) => {
-    getStreets({ data: { cityCode } })
-      .then((list) => setStreets((prev) => ({ ...prev, [cityCode]: list })))
-      .catch(() => setFailed(true));
-  }, []);
-
-  return { cities, streets, failed, loadStreets, retry: loadCities };
+  return { cities, failed, retry: loadCities };
 }
