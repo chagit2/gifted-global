@@ -1,11 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useCart } from "@/lib/cart";
 import { getProduct } from "@/lib/catalog";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
-import { getCities, type City } from "@/lib/address.functions";
-import { Combobox } from "@/components/Combobox";
 
 export const Route = createFileRoute("/checkout")({
   head: () => {
@@ -36,16 +34,8 @@ function CheckoutPage() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const address = useAddressLists();
-  const [cityCode, setCityCode] = useState<string | null>(null);
-  const [attempted, setAttempted] = useState(false);
-
-  const city = address.cities?.find((c) => String(c.code) === cityCode) ?? null;
-
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setAttempted(true);
-    if (!city) return;
     setBusy(true);
     setError(null);
     const fd = new FormData(e.currentTarget);
@@ -55,7 +45,7 @@ function CheckoutPage() {
           senderName: String(fd.get("senderName") ?? ""),
           phone: String(fd.get("phone") ?? ""),
           street: `${String(fd.get("street") ?? "").trim()} ${String(fd.get("houseNumber") ?? "").trim()}`,
-          city: city.he,
+          city: String(fd.get("city") ?? "").trim(),
           country: "Israel",
           language: lang,
           total,
@@ -130,58 +120,31 @@ function CheckoutPage() {
 
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
             <h2 className="font-heb text-lg text-ivory">{t("shippingTitle")}</h2>
-            {address.failed ? (
-              <p className="mt-4 rounded-lg border border-red-300/30 bg-red-300/10 px-3 py-2 text-xs text-red-200">
-                {t("listLoadError")}{" "}
-                <button
-                  type="button"
-                  onClick={address.retry}
-                  className="underline"
-                >
-                  {t("retry")}
-                </button>
-              </p>
-            ) : (
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <div className="sm:col-span-2">
-                  <span className={label}>{t("city")}</span>
-                  <Combobox
-                    options={(address.cities ?? []).map((c) => ({
-                      key: String(c.code),
-                      label: lang === "he" || !c.en ? c.he : `${c.he} · ${c.en}`,
-                      search: c.en,
-                    }))}
-                    value={cityCode}
-                    onChange={setCityCode}
-                    disabled={!address.cities}
-                    placeholder={t("cityPlaceholder")}
-                    invalid={attempted && !city}
-                    invalidText={t("chooseFromList")}
-                    emptyText={t("noResults")}
-                    className={field}
-                  />
-                </div>
-                <div>
-                  <span className={label}>{t("street")}</span>
-                  <input name="street" required maxLength={150} className={field} />
-                </div>
-                <div>
-                  <span className={label}>{t("houseNumber")}</span>
-                  <input
-                    name="houseNumber"
-                    required
-                    maxLength={10}
-                    pattern="[0-9]+[A-Za-z\u05D0-\u05EA]?"
-                    inputMode="numeric"
-                    className={field}
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <span className={label}>{t("country")}</span>
-                  <p className={`${field} text-ivory/70`}>{t("israel")}</p>
-                </div>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <span className={label}>{t("city")}</span>
+                <input name="city" required maxLength={120} className={field} />
               </div>
-            )}
+              <div>
+                <span className={label}>{t("street")}</span>
+                <input name="street" required maxLength={150} className={field} />
+              </div>
+              <div>
+                <span className={label}>{t("houseNumber")}</span>
+                <input
+                  name="houseNumber"
+                  required
+                  maxLength={10}
+                  pattern="[0-9]+[A-Za-z\u05D0-\u05EA]?"
+                  inputMode="numeric"
+                  className={field}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <span className={label}>{t("country")}</span>
+                <p className={`${field} text-ivory/70`}>{t("israel")}</p>
+              </div>
+            </div>
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
@@ -200,7 +163,9 @@ function CheckoutPage() {
                     {l.letters.map((letter, i) => (
                       <div key={i} className="mt-2">
                         {l.qty > 1 && (
-                          <p className="text-xs text-gold-2">{t("letterN").replace("{n}", String(i + 1))}</p>
+                          <p className="text-xs text-gold-2">
+                            {t("letterN").replace("{n}", String(i + 1))}
+                          </p>
                         )}
                         <textarea
                           rows={2}
@@ -281,20 +246,4 @@ function CheckoutPage() {
       </form>
     </main>
   );
-}
-
-// The city list loads once from the official list of Israeli localities.
-function useAddressLists() {
-  const [cities, setCities] = useState<City[] | null>(null);
-  const [failed, setFailed] = useState(false);
-
-  const loadCities = useCallback(() => {
-    setFailed(false);
-    getCities()
-      .then(setCities)
-      .catch(() => setFailed(true));
-  }, []);
-  useEffect(loadCities, [loadCities]);
-
-  return { cities, failed, retry: loadCities };
 }
