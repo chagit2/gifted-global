@@ -77,16 +77,22 @@ function CartPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-4 rounded-xl border border-white/10 bg-navy-2/50 p-3">
-                    <p className="text-xs font-semibold text-gold-2">{t("letterTitle")}</p>
-                    <textarea
-                      rows={2}
-                      maxLength={500}
-                      value={line.letter}
-                      onChange={(e) => setLetter(line.productId, e.target.value.slice(0, 500))}
-                      placeholder={t("letterPlaceholder")}
-                      className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none"
-                    />
+                  <div className="mt-4 space-y-3">
+                    {line.letters.map((letter, i) => (
+                      <div key={i} className="rounded-xl border border-white/10 bg-navy-2/50 p-3">
+                        <p className="text-xs font-semibold text-gold-2">
+                          {line.qty > 1 ? t("letterN").replace("{n}", String(i + 1)) : t("letterTitle")}
+                        </p>
+                        <textarea
+                          rows={2}
+                          maxLength={500}
+                          value={letter}
+                          onChange={(e) => setLetter(line.productId, i, e.target.value.slice(0, 500))}
+                          placeholder={t("letterPlaceholder")}
+                          className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none"
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               );

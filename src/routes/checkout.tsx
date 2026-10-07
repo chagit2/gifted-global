@@ -51,12 +51,15 @@ function CheckoutPage() {
           country: String(fd.get("country") ?? ""),
           language: lang,
           total,
-          items: lines.map((l) => ({
-            productId: l.productId,
-            qty: l.qty,
-            letter: l.letter,
-            unitPrice: getProduct(l.productId)?.price ?? 0,
-          })),
+          // One order line per gift copy, each with its own letter.
+          items: lines.flatMap((l) =>
+            l.letters.map((letter) => ({
+              productId: l.productId,
+              qty: 1,
+              letter,
+              unitPrice: getProduct(l.productId)?.price ?? 0,
+            })),
+          ),
         },
       });
       clear();
@@ -148,15 +151,25 @@ function CheckoutPage() {
                 if (!p) return null;
                 return (
                   <div key={l.productId} className="rounded-xl border border-white/10 p-3">
-                    <p className="text-sm text-ivory">{tl(p.name)}</p>
-                    <textarea
-                      rows={2}
-                      maxLength={500}
-                      value={l.letter}
-                      onChange={(e) => setLetter(l.productId, e.target.value.slice(0, 500))}
-                      placeholder={t("letterPlaceholder")}
-                      className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none"
-                    />
+                    <p className="text-sm text-ivory">
+                      {tl(p.name)}
+                      {l.qty > 1 && <span className="text-ivory/50"> × {l.qty}</span>}
+                    </p>
+                    {l.letters.map((letter, i) => (
+                      <div key={i} className="mt-2">
+                        {l.qty > 1 && (
+                          <p className="text-xs text-gold-2">{t("letterN").replace("{n}", String(i + 1))}</p>
+                        )}
+                        <textarea
+                          rows={2}
+                          maxLength={500}
+                          value={letter}
+                          onChange={(e) => setLetter(l.productId, i, e.target.value.slice(0, 500))}
+                          placeholder={t("letterPlaceholder")}
+                          className="mt-1 w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none"
+                        />
+                      </div>
+                    ))}
                   </div>
                 );
               })}

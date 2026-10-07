@@ -38,6 +38,7 @@ const dict = {
   addToCart: { he: "הוספה לסל", fr: "Ajouter au panier", en: "Add to cart" },
   buyNow: { he: "קנה עכשיו", fr: "Acheter", en: "Buy now" },
   letterTitle: { he: "מכתב אישי למתנה זו", fr: "Lettre personnelle pour ce cadeau", en: "Personal letter for this gift" },
+  letterN: { he: "מכתב למתנה מס׳ {n}", fr: "Lettre pour le cadeau n° {n}", en: "Letter for gift #{n}" },
   letterNote: {
     he: "יודפס על נייר יוקרתי ויונח בתוך הקופסה",
     fr: "Imprimée sur papier de luxe et placée dans le coffret",
