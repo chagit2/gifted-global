@@ -6,7 +6,7 @@ const schema = z.object({
   phone: z.string().min(3).max(40),
   street: z.string().min(1).max(200),
   city: z.string().min(1).max(120),
-  zip: z.string().min(1).max(30),
+  zip: z.string().max(30).default(""),
   country: z.string().min(1).max(120),
   language: z.enum(["he", "fr", "en"]),
   total: z.number().nonnegative(),

@@ -67,8 +67,6 @@ const dict = {
   houseNumber: { he: "מספר בית", fr: "Numéro", en: "House number" },
   israel: { he: "ישראל", fr: "Israël", en: "Israel" },
   cityPlaceholder: { he: "התחילו להקליד שם עיר...", fr: "Tapez le nom de la ville...", en: "Start typing a city..." },
-  streetPlaceholder: { he: "התחילו להקליד שם רחוב...", fr: "Tapez le nom de la rue...", en: "Start typing a street..." },
-  chooseCityFirst: { he: "בחרו קודם עיר", fr: "Choisissez d'abord la ville", en: "Choose a city first" },
   chooseFromList: { he: "יש לבחור מתוך הרשימה", fr: "Veuillez choisir dans la liste", en: "Please choose from the list" },
   noResults: { he: "לא נמצאו תוצאות", fr: "Aucun résultat", en: "No results" },
   listLoadError: {
@@ -77,14 +75,8 @@ const dict = {
     en: "We couldn't load the address list.",
   },
   retry: { he: "נסו שוב", fr: "Réessayer", en: "Try again" },
-  streetsHebrewNote: {
-    he: "",
-    fr: "Les noms de rues sont en hébreu.",
-    en: "Street names are in Hebrew.",
-  },
   city: { he: "עיר", fr: "Ville", en: "City" },
   country: { he: "מדינה", fr: "Pays", en: "Country" },
-  zip: { he: "מיקוד", fr: "Code postal", en: "Zip code" },
   lettersTitle: { he: "מכתב לכל מתנה", fr: "Une lettre par cadeau", en: "A letter for each gift" },
   paymentTitle: { he: "פרטי אשראי", fr: "Carte bancaire", en: "Card details" },
   cardNumber: { he: "מספר כרטיס", fr: "Numéro de carte", en: "Card number" },
