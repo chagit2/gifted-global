@@ -4,7 +4,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ProductModal } from "@/components/ProductModal";
 import { categories, featured, type Product } from "@/lib/catalog";
 import { useI18n } from "@/lib/i18n";
-import heroGift from "@/assets/hero-gift.jpg";
+import { GiftBanner } from "@/components/GiftBanner";
 
 export const Route = createFileRoute("/")({
   head: () => {
@@ -36,40 +36,9 @@ function Index() {
     <main className="relative overflow-hidden">
       <div className="pointer-events-none absolute -top-48 -end-40 size-[560px] rounded-full bg-gold/20 blur-[150px] animate-glow" />
 
-      <section className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 pt-16 pb-24 lg:grid-cols-2">
-        <div>
-          <div className="flex flex-wrap gap-3">
-            <Link
+      <GiftBanner />
 
-              to="/c/$slug"
-              params={{ slug: "bat-mitzvah" }}
-              className="rounded-full bg-gold px-7 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2"
-            >
-              {t("ctaBrowse")}
-            </Link>
-            <a
-              href="#how"
-              className="rounded-full border border-white/15 px-7 py-3 text-sm text-ivory transition hover:border-gold/50"
-            >
-              {t("ctaHow")}
-            </a>
-          </div>
-        </div>
-
-        <div className="relative">
-
-          <div className="absolute inset-0 -z-10 rounded-[2rem] bg-gold/10 blur-3xl" />
-          <img
-            src={heroGift}
-            alt=""
-            width={1024}
-            height={1024}
-            className="w-full rounded-[2rem] border border-white/10 object-cover shadow-2xl animate-floaty"
-          />
-        </div>
-      </section>
-
-      <section className="relative mx-auto max-w-7xl px-6 pb-20">
+      <section className="relative mx-auto max-w-7xl px-6 pt-12 pb-20">
         <p className="text-xs tracking-widest text-ivory/50">{t("recommendedCats")}</p>
         <p className="mt-2 text-sm text-ivory/40">{t("catsNote")}</p>
         <div className="mt-6 flex flex-wrap gap-3">
@@ -91,26 +60,6 @@ function Index() {
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((p) => (
             <ProductCard key={p.id} product={p} onPreview={setPreview} />
-          ))}
-        </div>
-      </section>
-
-      <section id="how" className="relative mx-auto max-w-7xl px-6 pb-28">
-        <h2 className="font-heb text-3xl font-bold text-ivory">{t("howTitle")}</h2>
-        <div className="mt-8 grid gap-5 sm:grid-cols-3">
-          {[
-            [t("how1"), t("how1t")],
-            [t("how2"), t("how2t")],
-            [t("how3"), t("how3t")],
-          ].map(([title, sub], i) => (
-            <div
-              key={title}
-              className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
-            >
-              <span className="font-display text-4xl text-gold/60">{i + 1}</span>
-              <h3 className="mt-3 font-heb text-lg text-ivory">{title}</h3>
-              <p className="mt-1 text-sm text-ivory/60">{sub}</p>
-            </div>
           ))}
         </div>
       </section>
