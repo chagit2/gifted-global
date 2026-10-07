@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { getProduct, type Product } from "./catalog";
+import { useProducts, type Product } from "./products";
 
 // One personal letter per gift copy: letters.length always equals qty.
 export type CartLine = { productId: string; qty: number; letters: string[] };
@@ -29,6 +29,7 @@ const Ctx = createContext<CartCtx | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>([]);
+  const { getProduct } = useProducts();
 
   useEffect(() => {
     try {
@@ -73,7 +74,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         ),
       clear: () => setLines([]),
     };
-  }, [lines]);
+  }, [lines, getProduct]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

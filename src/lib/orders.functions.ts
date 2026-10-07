@@ -13,15 +13,12 @@ const schema = z.object({
   zip: z.string().max(30).default(""),
   country: z.string().min(1).max(120),
   language: z.enum(["he", "fr", "en"]),
-  total: z.number().nonnegative(),
   items: z
     .array(
       z.object({
         productId: z.string().min(1).max(120),
-        productName: z.string().max(200).default(""),
         qty: z.number().int().min(1).max(99),
         letter: z.string().max(500).default(""),
-        unitPrice: z.number().nonnegative(),
       }),
     )
     .min(1),
@@ -41,6 +38,17 @@ export const placeOrder = createServerFn({ method: "POST" })
       userId = u.user?.id ?? null;
     }
 
+    // Prices and names come from the catalog, never from the browser.
+    const ids = [...new Set(data.items.map((i) => i.productId))];
+    const { data: products, error: productsError } = await supabaseAdmin
+      .from("products")
+      .select("id, name_he, price, active")
+      .in("id", ids);
+    if (productsError) throw new Error(productsError.message);
+    const catalog = new Map((products ?? []).filter((p) => p.active).map((p) => [p.id, p]));
+    if (ids.some((id) => !catalog.has(id))) throw new Error("Product unavailable");
+    const total = data.items.reduce((sum, i) => sum + Number(catalog.get(i.productId)!.price) * i.qty, 0);
+
     const { data: order, error } = await supabaseAdmin
       .from("orders")
       .insert({
@@ -53,7 +61,7 @@ export const placeOrder = createServerFn({ method: "POST" })
         ship_zip: data.zip,
         ship_country: data.country,
         language: data.language,
-        total: data.total,
+        total,
         user_id: userId,
       })
       .select("id")
@@ -65,9 +73,9 @@ export const placeOrder = createServerFn({ method: "POST" })
       data.items.map((i) => ({
         order_id: order.id,
         product_id: i.productId,
-        product_name: i.productName,
+        product_name: catalog.get(i.productId)!.name_he,
         qty: i.qty,
-        unit_price: i.unitPrice,
+        unit_price: Number(catalog.get(i.productId)!.price),
         letter: i.letter,
       })),
     );

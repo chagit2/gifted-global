@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import type { Product } from "@/lib/catalog";
+import type { Product } from "@/lib/products";
 import { getCategory } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
 import { formatPrice, useI18n } from "@/lib/i18n";

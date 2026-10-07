@@ -1,0 +1,399 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { categories, getCategory } from "@/lib/catalog";
+import { formatPrice, LANGS, useI18n, type L, type Lang } from "@/lib/i18n";
+import { PRODUCTS_KEY, toRow, useProducts, type Product } from "@/lib/products";
+
+const BUCKET = "product-images";
+const field =
+  "mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none";
+const label = "text-xs text-ivory/60";
+
+// Path inside our bucket for a public URL we uploaded, or null for other images
+// (such as the original photos served from /products/).
+const storagePath = (url: string) => {
+  const marker = `/storage/v1/object/public/${BUCKET}/`;
+  const i = url.indexOf(marker);
+  return i < 0 ? null : decodeURIComponent(url.slice(i + marker.length));
+};
+
+const removeStored = async (urls: string[]) => {
+  const paths = urls.map(storagePath).filter((p): p is string => p !== null);
+  if (paths.length) await supabase.storage.from(BUCKET).remove(paths);
+};
+
+const emptyL = (): L => ({ he: "", fr: "", en: "" });
+
+// Hebrew first in the product form: it is the required, primary language.
+const FORM_LANGS = (["he", "fr", "en"] as const).map((code) => LANGS.find((l) => l.code === code)!);
+
+export function ProductsAdmin() {
+  const { t, tl, lang } = useI18n();
+  const { all, isLoading, isError } = useProducts();
+  const queryClient = useQueryClient();
+  const [filter, setFilter] = useState("");
+  const [editing, setEditing] = useState<Product | "new" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const shown = filter ? all.filter((p) => p.category === filter) : all;
+  const refresh = () => queryClient.invalidateQueries({ queryKey: PRODUCTS_KEY });
+
+  const onDelete = async (p: Product) => {
+    if (!window.confirm(t("confirmDelete"))) return;
+    setError(null);
+    const { error } = await supabase.from("products").delete().eq("id", p.id);
+    if (error) return setError(t("saveError"));
+    await removeStored(p.images);
+    refresh();
+  };
+
+  if (editing) {
+    return (
+      <ProductForm
+        product={editing === "new" ? null : editing}
+        defaultCategory={filter || categories[0]!.slug}
+        nextSort={Math.max(0, ...all.map((p) => p.sort)) + 1}
+        onDone={(changed) => {
+          setEditing(null);
+          if (changed) refresh();
+        }}
+      />
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className={`${field} mt-0 w-auto`}
+        >
+          <option value="" className="bg-navy-2">
+            {t("allCategories")} ({all.length})
+          </option>
+          {categories.map((c) => (
+            <option key={c.slug} value={c.slug} className="bg-navy-2">
+              {tl(c.label)} ({all.filter((p) => p.category === c.slug).length})
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={() => setEditing("new")}
+          className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-navy transition hover:bg-gold-2"
+        >
+          + {t("addProduct")}
+        </button>
+      </div>
+      {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
+
+      <ul className="mt-6 space-y-3">
+        {isError ? (
+          <li className="text-sm text-red-300">{t("loadError")}</li>
+        ) : isLoading ? (
+          <li className="text-sm text-ivory/50">{t("loading")}</li>
+        ) : (
+          shown.map((p) => (
+            <li
+              key={p.id}
+              className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl"
+            >
+              <img src={p.images[0]} alt="" className="size-16 shrink-0 rounded-xl object-cover" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm text-ivory">
+                  {tl(p.name) || p.name.he}
+                  {!p.active && (
+                    <span className="ms-2 rounded-full border border-white/15 px-2 py-0.5 text-[10px] text-ivory/50">
+                      {t("hiddenBadge")}
+                    </span>
+                  )}
+                </p>
+                <p className="text-xs text-ivory/50">
+                  {getCategory(p.category) ? tl(getCategory(p.category)!.label) : p.category} ·{" "}
+                  <span className="text-gold-2">{formatPrice(p.price, lang)}</span>
+                </p>
+              </div>
+              <button
+                onClick={() => setEditing(p)}
+                className="text-sm text-ivory/70 hover:text-gold-2"
+              >
+                {t("edit")}
+              </button>
+              <button
+                onClick={() => onDelete(p)}
+                className="text-sm text-red-300/80 hover:text-red-300"
+              >
+                {t("delete")}
+              </button>
+            </li>
+          ))
+        )}
+      </ul>
+    </div>
+  );
+}
+
+function ProductForm({
+  product,
+  defaultCategory,
+  nextSort,
+  onDone,
+}: {
+  product: Product | null;
+  defaultCategory: string;
+  nextSort: number;
+  onDone: (changed: boolean) => void;
+}) {
+  const { t, tl, dir } = useI18n();
+  const [category, setCategory] = useState(product?.category ?? defaultCategory);
+  const [name, setName] = useState<L>(product?.name ?? emptyL());
+  const [subtitle, setSubtitle] = useState<L>(product?.subtitle ?? emptyL());
+  const [description, setDescription] = useState<L>(product?.description ?? emptyL());
+  const [price, setPrice] = useState(product ? String(product.price) : "");
+  const [active, setActive] = useState(product?.active ?? true);
+  const [images, setImages] = useState<string[]>(product?.images ?? []);
+  // Photos uploaded in this form session, removed again if the form is cancelled.
+  const [uploaded, setUploaded] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const upload = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setUploading(true);
+    setError(null);
+    const urls: string[] = [];
+    for (const file of Array.from(files)) {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (error) {
+        setError(t("uploadError"));
+        continue;
+      }
+      urls.push(supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl);
+    }
+    setImages((prev) => [...prev, ...urls]);
+    setUploaded((prev) => [...prev, ...urls]);
+    setUploading(false);
+  };
+
+  const move = (i: number, delta: number) =>
+    setImages((prev) => {
+      const j = i + delta;
+      if (j < 0 || j >= prev.length) return prev;
+      const next = [...prev];
+      [next[i], next[j]] = [next[j]!, next[i]!];
+      return next;
+    });
+
+  const cancel = async () => {
+    await removeStored(uploaded);
+    onDone(false);
+  };
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!name.he.trim()) return setError(t("hebrewRequired"));
+    if (images.length === 0) return setError(t("imagesRequired"));
+    setBusy(true);
+    setError(null);
+    const row = toRow({
+      category,
+      name,
+      subtitle,
+      description,
+      price: Number(price),
+      images,
+      active,
+      sort: product?.sort ?? nextSort,
+    });
+    const { error } = product
+      ? await supabase.from("products").update(row).eq("id", product.id)
+      : await supabase.from("products").insert(row);
+    setBusy(false);
+    if (error) return setError(t("saveError"));
+    // Photos taken off the product are no longer needed in storage.
+    await removeStored((product?.images ?? []).filter((u) => !images.includes(u)));
+    onDone(true);
+  };
+
+  const langField = (
+    key: Lang,
+    value: L,
+    set: (v: L) => void,
+    opts: { multiline?: boolean; required?: boolean },
+  ) => {
+    const props = {
+      value: value[key],
+      required: opts.required,
+      dir: key === "he" ? "rtl" : "ltr",
+      onChange: (e: { target: { value: string } }) => set({ ...value, [key]: e.target.value }),
+      className: field,
+    } as const;
+    return opts.multiline ? (
+      <textarea rows={3} maxLength={2000} {...props} />
+    ) : (
+      <input maxLength={200} {...props} />
+    );
+  };
+
+  // Previous: towards the start in reading order.
+  const Prev = dir === "rtl" ? ChevronRight : ChevronLeft;
+  const Next = dir === "rtl" ? ChevronLeft : ChevronRight;
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="space-y-6 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
+    >
+      <h2 className="font-heb text-2xl text-ivory">
+        {product ? t("editProduct") : t("addProduct")}
+      </h2>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <label className="block">
+          <span className={label}>{t("category")}</span>
+          <select value={category} onChange={(e) => setCategory(e.target.value)} className={field}>
+            {categories.map((c) => (
+              <option key={c.slug} value={c.slug} className="bg-navy-2">
+                {tl(c.label)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block">
+          <span className={label}>{t("price")}</span>
+          <input
+            type="number"
+            min={0}
+            step="0.01"
+            required
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            dir="ltr"
+            className={field}
+          />
+        </label>
+        <label className="flex items-center gap-2 self-end pb-2 text-sm text-ivory">
+          <input
+            type="checkbox"
+            checked={active}
+            onChange={(e) => setActive(e.target.checked)}
+            className="size-4 accent-gold"
+          />
+          {t("visible")}
+        </label>
+      </div>
+
+      {/* One column per language; Hebrew name is the only required text. */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        {FORM_LANGS.map((l) => (
+          <fieldset key={l.code} className="space-y-3 rounded-xl border border-white/10 p-4">
+            <legend className="px-1 text-xs text-gold-2">
+              {l.label}
+              {l.code !== "he" && !name[l.code].trim() && (
+                <span className="ms-2 text-ivory/40">({t("missingTranslation")})</span>
+              )}
+            </legend>
+            <label className="block">
+              <span className={label}>{t("productName")}</span>
+              {langField(l.code, name, setName, { required: l.code === "he" })}
+            </label>
+            <label className="block">
+              <span className={label}>{t("productSubtitle")}</span>
+              {langField(l.code, subtitle, setSubtitle, {})}
+            </label>
+            <label className="block">
+              <span className={label}>{t("productDescription")}</span>
+              {langField(l.code, description, setDescription, { multiline: true })}
+            </label>
+          </fieldset>
+        ))}
+      </div>
+
+      <div>
+        <p className={label}>{t("images")}</p>
+        <div className="mt-2 flex flex-wrap gap-3">
+          {images.map((url, i) => (
+            <div
+              key={url}
+              className="relative size-28 overflow-hidden rounded-xl border border-white/10"
+            >
+              <img src={url} alt="" className="size-full object-cover" />
+              {i === 0 && (
+                <span className="absolute top-1 start-1 rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-navy">
+                  {t("mainImage")}
+                </span>
+              )}
+              <button
+                type="button"
+                aria-label={t("delete")}
+                onClick={() => setImages((prev) => prev.filter((u) => u !== url))}
+                className="absolute top-1 end-1 grid size-6 place-items-center rounded-full bg-navy/80 text-ivory hover:text-red-300"
+              >
+                <X className="size-3.5" />
+              </button>
+              <div className="absolute inset-x-1 bottom-1 flex justify-between">
+                <button
+                  type="button"
+                  aria-label="previous"
+                  disabled={i === 0}
+                  onClick={() => move(i, -1)}
+                  className="grid size-6 place-items-center rounded-full bg-navy/80 text-ivory disabled:opacity-30"
+                >
+                  <Prev className="size-3.5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="next"
+                  disabled={i === images.length - 1}
+                  onClick={() => move(i, 1)}
+                  className="grid size-6 place-items-center rounded-full bg-navy/80 text-ivory disabled:opacity-30"
+                >
+                  <Next className="size-3.5" />
+                </button>
+              </div>
+            </div>
+          ))}
+          <label className="grid size-28 cursor-pointer place-items-center rounded-xl border border-dashed border-white/20 text-center text-xs text-ivory/60 hover:border-gold/50 hover:text-gold-2">
+            {uploading ? t("uploading") : `+ ${t("addImages")}`}
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              disabled={uploading}
+              onChange={(e) => {
+                upload(e.target.files);
+                e.target.value = "";
+              }}
+              className="sr-only"
+            />
+          </label>
+        </div>
+      </div>
+
+      {error && <p className="text-sm text-red-300">{error}</p>}
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          disabled={busy || uploading}
+          className="rounded-full bg-gold px-6 py-2.5 text-sm font-semibold text-navy transition hover:bg-gold-2 disabled:opacity-60"
+        >
+          {t("save")}
+        </button>
+        <button
+          type="button"
+          onClick={cancel}
+          className="rounded-full border border-white/15 px-6 py-2.5 text-sm text-ivory transition hover:border-gold/50"
+        >
+          {t("cancel")}
+        </button>
+      </div>
+    </form>
+  );
+}
