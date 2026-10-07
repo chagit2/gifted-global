@@ -32,11 +32,7 @@ const dict = {
   haveAccount: { he: "כבר רשומים? להתחברות", fr: "Déjà inscrit ? Connectez-vous", en: "Already registered? Sign in" },
   signOut: { he: "התנתקות", fr: "Déconnexion", en: "Sign out" },
   authError: { he: "המייל או הסיסמה שגויים", fr: "E-mail ou mot de passe incorrect", en: "Wrong email or password" },
-  signupError: {
-    he: "ההרשמה לא הצליחה. ייתכן שהמייל כבר רשום.",
-    fr: "L'inscription a échoué. Cet e-mail est peut-être déjà utilisé.",
-    en: "Sign-up failed. This email may already be registered.",
-  },
+  signupError: { he: "ההרשמה לא הצליחה.", fr: "L'inscription a échoué.", en: "Sign-up failed." },
   signupCheckEmail: {
     he: "שלחנו לכם מייל לאישור ההרשמה. אחרי האישור אפשר להתחבר.",
     fr: "Nous vous avons envoyé un e-mail de confirmation. Après confirmation, vous pourrez vous connecter.",
@@ -64,6 +60,32 @@ const dict = {
   status_shipped: { he: "נשלחה", fr: "Expédiée", en: "Shipped" },
   status_delivered: { he: "נמסרה", fr: "Livrée", en: "Delivered" },
   status_cancelled: { he: "בוטלה", fr: "Annulée", en: "Cancelled" },
+  authWeakPassword: {
+    he: "הסיסמה חלשה מדי. נסו סיסמה ארוכה יותר, עם אותיות ומספרים.",
+    fr: "Mot de passe trop faible. Essayez plus long, avec lettres et chiffres.",
+    en: "Password is too weak. Try a longer one with letters and numbers.",
+  },
+  authRateLimit: {
+    he: "היו יותר מדי ניסיונות בזמן קצר. נסו שוב בעוד כשעה.",
+    fr: "Trop de tentatives. Réessayez dans environ une heure.",
+    en: "Too many attempts. Please try again in about an hour.",
+  },
+  authSignupDisabled: {
+    he: "ההרשמה כרגע סגורה באתר.",
+    fr: "Les inscriptions sont actuellement fermées.",
+    en: "Sign-ups are currently closed.",
+  },
+  authUserExists: {
+    he: "המייל הזה כבר רשום. נסו להתחבר.",
+    fr: "Cet e-mail est déjà inscrit. Connectez-vous.",
+    en: "This email is already registered. Try signing in.",
+  },
+  authInvalidEmail: { he: "כתובת המייל לא תקינה", fr: "Adresse e-mail invalide", en: "Invalid email address" },
+  authNotConfirmed: {
+    he: "צריך קודם לאשר את המייל. חפשו את הודעת האישור בתיבת הדואר.",
+    fr: "Veuillez d'abord confirmer votre e-mail.",
+    en: "Please confirm your email first. Check your inbox.",
+  },
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },
