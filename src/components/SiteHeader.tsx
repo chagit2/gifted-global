@@ -20,7 +20,7 @@ function useClickOutside(onOut: () => void) {
 const panel =
   "rounded-2xl border border-white/10 bg-navy-2/95 p-2 backdrop-blur-xl shadow-2xl shadow-black/40";
 const itemCls =
-  "block w-full rounded-xl px-3 py-2 text-start text-sm text-ivory/70 hover:bg-white/5 hover:text-gold-2 transition-colors";
+  "block w-full whitespace-nowrap rounded-xl px-3 py-2 text-start text-sm text-ivory/70 hover:bg-white/5 hover:text-gold-2 transition-colors";
 
 const navLink = "whitespace-nowrap text-sm text-ivory/60 hover:text-ivory transition-colors";
 const iconBtn =
@@ -68,7 +68,7 @@ function Dropdown({
       {open && (
         // pt-2 (not a margin) keeps the gap under the label inside the hover area.
         <div className="absolute top-full start-0 z-50 pt-2">
-          <ul className={`${panel} w-52`}>
+          <ul className={`${panel} w-max`}>
             {items.map((i) => (
               <li key={i.slug}>
                 <Link to="/c/$slug" params={{ slug: i.slug }} onClick={() => setOpen(false)} className={itemCls}>
@@ -97,7 +97,7 @@ function LangMenu() {
         <Globe className="size-5" />
       </button>
       {open && (
-        <ul className={`${panel} absolute top-full end-0 z-50 mt-2 w-40`}>
+        <ul className={`${panel} absolute top-full end-0 z-50 mt-2 w-max`}>
           {LANGS.map((l) => (
             <li key={l.code}>
               <button

@@ -15,11 +15,9 @@ export function ProductModal({
   const { add } = useCart();
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
-  const [letter, setLetter] = useState("");
 
   useEffect(() => {
     setActive(0);
-    setLetter("");
   }, [product?.id]);
 
   useEffect(() => {
@@ -68,12 +66,8 @@ export function ProductModal({
           </div>
         </div>
 
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[11px] text-gold-2">
-            <span className="size-1 rounded-full bg-gold-2" />
-            {t("inStock")}
-          </span>
-          <h2 className="mt-4 font-heb text-4xl font-bold text-ivory">{tl(product.name)}</h2>
+        <div className="lg:self-center">
+          <h2 className="font-heb text-4xl font-bold text-ivory">{tl(product.name)}</h2>
           <p className="mt-4 text-sm leading-relaxed text-ivory/70">{tl(product.description)}</p>
 
           <div className="mt-5 flex items-end gap-4">
@@ -81,23 +75,10 @@ export function ProductModal({
             <span className="text-xs text-ivory/50">{tl(product.subtitle)}</span>
           </div>
 
-          <div className="mt-6 rounded-xl border border-white/10 bg-navy-2/50 p-4">
-            <p className="text-xs font-semibold text-gold-2">{t("letterTitle")}</p>
-            <p className="mt-0.5 text-[11px] text-ivory/50">{t("letterNote")}</p>
-            <textarea
-              value={letter}
-              onChange={(e) => setLetter(e.target.value.slice(0, 500))}
-              rows={2}
-              maxLength={500}
-              placeholder={t("letterPlaceholder")}
-              className="mt-3 w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none"
-            />
-          </div>
-
           <div className="mt-6 flex items-center gap-3">
             <button
               onClick={() => {
-                add(product, letter);
+                add(product);
                 onClose();
               }}
               className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy hover:bg-gold-2 transition"
@@ -106,7 +87,7 @@ export function ProductModal({
             </button>
             <button
               onClick={() => {
-                add(product, letter);
+                add(product);
                 onClose();
                 navigate({ to: "/checkout" });
               }}
@@ -115,7 +96,6 @@ export function ProductModal({
               {t("buyNow")}
             </button>
           </div>
-          <p className="mt-4 text-[11px] text-ivory/50">{t("reviews")}</p>
         </div>
       </div>
     </div>

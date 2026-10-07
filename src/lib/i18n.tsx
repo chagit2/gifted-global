@@ -37,7 +37,6 @@ const dict = {
   },
   addToCart: { he: "הוספה לסל", fr: "Ajouter au panier", en: "Add to cart" },
   buyNow: { he: "קנה עכשיו", fr: "Acheter", en: "Buy now" },
-  inStock: { he: "קיים במלאי · משלוח 3 ימים", fr: "En stock · 3 jours", en: "In stock · 3 days" },
   letterTitle: { he: "מכתב אישי למתנה זו", fr: "Lettre personnelle pour ce cadeau", en: "Personal letter for this gift" },
   letterNote: {
     he: "יודפס על נייר יוקרתי ויונח בתוך הקופסה",
@@ -49,7 +48,6 @@ const dict = {
     fr: "À ma chère petite-fille, tous mes vœux...",
     en: "To my dear granddaughter, warmest wishes...",
   },
-  reviews: { he: "★ 4.9 · 218 ביקורות", fr: "★ 4.9 · 218 avis", en: "★ 4.9 · 218 reviews" },
   emptyCart: { he: "הסל ריק", fr: "Le panier est vide", en: "Your cart is empty" },
   total: { he: "סה\u05f4כ", fr: "Total", en: "Total" },
   checkout: { he: "מעבר לתשלום", fr: "Paiement", en: "Checkout" },
