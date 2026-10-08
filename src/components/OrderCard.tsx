@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useProducts } from "@/lib/products";
+import { LetterPreview } from "@/components/Letter";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { statusKey, statusTone, type OrderRow } from "@/lib/orders";
 
@@ -48,6 +49,8 @@ export function OrderCard({
     groups.set(it.product_id, g);
   }
 
+  const itemsTotal = order.order_items.reduce((sum, it) => sum + it.unit_price * it.qty, 0);
+
   return (
     <article className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
       <header className="flex flex-wrap items-center justify-between gap-3">
@@ -74,14 +77,16 @@ export function OrderCard({
               <ul className="mt-1 space-y-1">
                 {g.letters.map((letter, i) =>
                   letter ? (
-                    <li
-                      key={i}
-                      className="whitespace-pre-wrap rounded-lg border border-white/10 bg-navy-2/50 px-3 py-2 text-xs text-ivory/70"
-                    >
-                      {g.letters.length > 1 && (
-                        <span className="text-gold-2">{t("letterN").replace("{n}", String(i + 1))}: </span>
-                      )}
-                      {letter}
+                    <li key={i}>
+                      <LetterPreview
+                        text={letter}
+                        copyable={admin === true}
+                        label={
+                          g.letters.length > 1 && (
+                            <span className="text-gold-2">{t("letterN").replace("{n}", String(i + 1))}: </span>
+                          )
+                        }
+                      />
                     </li>
                   ) : null,
                 )}
@@ -113,9 +118,17 @@ export function OrderCard({
             )}
           </p>
         </div>
-        <p className="font-heb text-lg text-ivory">
-          {t("total")}: <span className="text-gold-2">{formatPrice(order.total, lang)}</span>
-        </p>
+        <div className="text-end">
+          {/* Older orders have no shipping charge, so it is whatever the items don't cover. */}
+          {order.total - itemsTotal > 0 && (
+            <p className="text-xs text-ivory/50">
+              {t("shipping")}: {formatPrice(order.total - itemsTotal, lang)}
+            </p>
+          )}
+          <p className="font-heb text-lg text-ivory">
+            {t("total")}: <span className="text-gold-2">{formatPrice(order.total, lang)}</span>
+          </p>
+        </div>
       </footer>
     </article>
   );

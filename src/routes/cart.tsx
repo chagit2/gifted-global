@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 import { useCart } from "@/lib/cart";
+import { LetterField } from "@/components/Letter";
 import { useProducts } from "@/lib/products";
 import { formatPrice, useI18n } from "@/lib/i18n";
+import { SHIPPING_FEE } from "@/lib/orders";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -85,12 +87,10 @@ function CartPage() {
                         <p className="text-xs font-semibold text-gold-2">
                           {line.qty > 1 ? t("letterN").replace("{n}", String(i + 1)) : t("letterTitle")}
                         </p>
-                        <textarea
-                          rows={2}
-                          maxLength={500}
+                        <LetterField
                           value={letter}
-                          onChange={(e) => setLetter(line.productId, i, e.target.value.slice(0, 500))}
-                          className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none"
+                          onChange={(v) => setLetter(line.productId, i, v)}
+                          className="mt-2"
                         />
                       </div>
                     ))}
@@ -105,9 +105,14 @@ function CartPage() {
             {t("shipsIsraelOnly")}
           </p>
           <div className="mt-3 flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-            <span className="font-heb text-xl text-ivory">
-              {t("total")}: <span className="text-gold-2">{formatPrice(total, lang)}</span>
-            </span>
+            <div>
+              <p className="text-xs text-ivory/50">
+                {t("subtotal")}: {formatPrice(total, lang)} · {t("shipping")}: {formatPrice(SHIPPING_FEE, lang)}
+              </p>
+              <p className="mt-1 font-heb text-xl text-ivory">
+                {t("total")}: <span className="text-gold-2">{formatPrice(total + SHIPPING_FEE, lang)}</span>
+              </p>
+            </div>
             <Link
               to="/checkout"
               className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2"

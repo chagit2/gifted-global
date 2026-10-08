@@ -3,6 +3,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useI18n, type Key } from "@/lib/i18n";
+import { isEmailRegistered } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "התחברות · מתנות" }, { name: "robots", content: "noindex" }] }),
@@ -58,7 +59,17 @@ function LoginPage() {
     };
     if (mode === "in") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) fail(error, "authError");
+      if (error?.code === "invalid_credentials") {
+        // Unknown email: switch to sign-up, keeping what was typed.
+        const registered = await isEmailRegistered({ data: { email } })
+          .then((r) => r.registered)
+          .catch(() => true);
+        if (registered) fail(error, "authError");
+        else {
+          setMode("up");
+          setNotice(t("emailNotRegistered"));
+        }
+      } else if (error) fail(error, "authError");
     } else {
       const { data, error } = await supabase.auth.signUp({
         email,

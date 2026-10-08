@@ -1,5 +1,8 @@
 import type { Key } from "./i18n";
 
+// Flat delivery charge per order (all gifts go to one address in Israel), in ₪.
+export const SHIPPING_FEE = 50;
+
 export const ORDER_STATUSES = ["new", "preparing", "shipped", "delivered", "cancelled"] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 

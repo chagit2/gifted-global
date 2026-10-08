@@ -1,11 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Lock, MapPin } from "lucide-react";
 import { useCart } from "@/lib/cart";
+import { LetterField } from "@/components/Letter";
 import { useProducts } from "@/lib/products";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
 import { useAuth } from "@/lib/auth";
+import { SHIPPING_FEE } from "@/lib/orders";
 
 export const Route = createFileRoute("/checkout")({
   head: () => {
@@ -44,6 +46,11 @@ function CheckoutPage() {
   const [busy, setBusy] = useState(false);
   // Number of gifts in the placed order; null until the order is sent.
   const [done, setDone] = useState<number | null>(null);
+
+  // The long form is replaced by a short thank-you; start it at the top.
+  useEffect(() => {
+    if (done !== null) window.scrollTo({ top: 0 });
+  }, [done]);
   const [error, setError] = useState<string | null>(null);
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -239,12 +246,10 @@ function CheckoutPage() {
                             {t("letterN").replace("{n}", String(i + 1))}
                           </p>
                         )}
-                        <textarea
-                          rows={2}
-                          maxLength={500}
+                        <LetterField
                           value={letter}
-                          onChange={(e) => setLetter(l.productId, i, e.target.value.slice(0, 500))}
-                          className="mt-1 w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none"
+                          onChange={(v) => setLetter(l.productId, i, v)}
+                          className="mt-1"
                         />
                       </div>
                     ))}
@@ -309,9 +314,19 @@ function CheckoutPage() {
               );
             })}
           </ul>
-          <div className="mt-5 flex justify-between border-t border-white/10 pt-4 font-heb text-lg text-ivory">
+          <div className="mt-5 space-y-1 border-t border-white/10 pt-4 text-sm text-ivory/70">
+            <div className="flex justify-between">
+              <span>{t("subtotal")}</span>
+              <span>{formatPrice(total, lang)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>{t("shipping")}</span>
+              <span>{formatPrice(SHIPPING_FEE, lang)}</span>
+            </div>
+          </div>
+          <div className="mt-3 flex justify-between border-t border-white/10 pt-3 font-heb text-lg text-ivory">
             <span>{t("total")}</span>
-            <span className="text-gold-2">{formatPrice(total, lang)}</span>
+            <span className="text-gold-2">{formatPrice(total + SHIPPING_FEE, lang)}</span>
           </div>
           {error && <p className="mt-3 text-xs text-red-300">{error}</p>}
           <button
