@@ -36,16 +36,6 @@ export const categories: Category[] = [
 
 export const getCategory = (slug: string) => categories.find((c) => c.slug === slug);
 
-export type Product = {
-  id: string;
-  category: string;
-  name: L;
-  subtitle: L;
-  description: L;
-  price: number;
-  images: string[];
-};
-
 type Base = {
   key: string;
   img: string;
@@ -155,25 +145,5 @@ const pool: Base[] = [
 ];
 
 // Home-page banner slides (placeholder ads built from the existing gift images).
+// Products themselves live in the database (see lib/products.ts).
 export const bannerSlides = pool.map((b) => ({ key: b.key, img: b.img, name: b.name, subtitle: b.subtitle }));
-
-const galleryFor = (img: string) => {
-  const others = [heroGift, candlesticks, sweets].filter((i) => i !== img).slice(0, 3);
-  return [img, ...others];
-};
-
-export const products: Product[] = categories.flatMap((cat, ci) =>
-  pool.map((base, pi) => ({
-    id: `${cat.slug}-${base.key}`,
-    category: cat.slug,
-    name: base.name,
-    subtitle: base.subtitle,
-    description: base.description,
-    price: base.price + ((ci * 7 + pi * 5) % 6) * 10,
-    images: galleryFor(base.img),
-  })),
-);
-
-export const productsByCategory = (slug: string) => products.filter((p) => p.category === slug);
-export const getProduct = (id: string) => products.find((p) => p.id === id);
-export const featured = products.filter((p) => p.category === "bat-mitzvah").slice(0, 3);

@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { useCart } from "@/lib/cart";
-import { getProduct } from "@/lib/catalog";
+import { useProducts } from "@/lib/products";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
 import { useAuth } from "@/lib/auth";
@@ -33,6 +33,7 @@ function CheckoutPage() {
   const { lines, total, setLetter, clear } = useCart();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { getProduct } = useProducts();
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,15 +53,12 @@ function CheckoutPage() {
           city: String(fd.get("city") ?? "").trim(),
           country: "Israel",
           language: lang,
-          total,
           // One order line per gift copy, each with its own letter.
           items: lines.flatMap((l) =>
             l.letters.map((letter) => ({
               productId: l.productId,
-              productName: getProduct(l.productId)?.name.he ?? "",
               qty: 1,
               letter,
-              unitPrice: getProduct(l.productId)?.price ?? 0,
             })),
           ),
         },

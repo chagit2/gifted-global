@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCart } from "@/lib/cart";
-import { getProduct } from "@/lib/catalog";
+import { useProducts } from "@/lib/products";
 import { formatPrice, useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/cart")({
@@ -20,6 +20,7 @@ export const Route = createFileRoute("/cart")({
 function CartPage() {
   const { t, tl, lang } = useI18n();
   const { lines, total, remove, setQty, setLetter } = useCart();
+  const { getProduct } = useProducts();
 
   return (
     <main className="relative mx-auto max-w-5xl px-6 pt-14 pb-24">

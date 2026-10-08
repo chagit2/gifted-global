@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductModal } from "@/components/ProductModal";
-import { categories, featured, type Product } from "@/lib/catalog";
+import { categories } from "@/lib/catalog";
+import { useProducts, type Product } from "@/lib/products";
 import { useI18n } from "@/lib/i18n";
 import { GiftBanner } from "@/components/GiftBanner";
 
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { t, tl } = useI18n();
   const [preview, setPreview] = useState<Product | null>(null);
+  const featured = useProducts().byCategory("bat-mitzvah").slice(0, 3);
   const topCats = categories.filter((c) =>
     ["bat-mitzvah", "bar-mitzvah", "hanukkah", "shabbat", "baby", "birthday-child"].includes(c.slug),
   );

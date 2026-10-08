@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { getProduct } from "@/lib/catalog";
+import { useProducts } from "@/lib/products";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { statusKey, statusTone, type OrderRow } from "@/lib/orders";
 
@@ -26,6 +26,7 @@ export function OrderCard({
   statusSlot?: ReactNode;
 }) {
   const { t, tl, lang } = useI18n();
+  const { getProduct } = useProducts();
   const locale = lang === "he" ? "he-IL" : lang === "fr" ? "fr-FR" : "en-GB";
   const date = new Date(order.created_at).toLocaleDateString(locale, {
     day: "numeric",

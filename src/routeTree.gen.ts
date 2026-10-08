@@ -17,6 +17,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
+import { Route as ProductImagesSplatRouteImport } from './routes/product-images.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const CSlugRoute = CSlugRouteImport.update({
   path: '/c/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductImagesSplatRoute = ProductImagesSplatRouteImport.update({
+  id: '/product-images/$',
+  path: '/product-images/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
   '/c/$slug': typeof CSlugRoute
+  '/product-images/$': typeof ProductImagesSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
   '/c/$slug': typeof CSlugRoute
+  '/product-images/$': typeof ProductImagesSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
   '/c/$slug': typeof CSlugRoute
+  '/product-images/$': typeof ProductImagesSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/login'
     | '/c/$slug'
+    | '/product-images/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/login'
     | '/c/$slug'
+    | '/product-images/$'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/login'
     | '/c/$slug'
+    | '/product-images/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   LoginRoute: typeof LoginRoute
   CSlugRoute: typeof CSlugRoute
+  ProductImagesSplatRoute: typeof ProductImagesSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/product-images/$': {
+      id: '/product-images/$'
+      path: '/product-images/$'
+      fullPath: '/product-images/$'
+      preLoaderRoute: typeof ProductImagesSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   LoginRoute: LoginRoute,
   CSlugRoute: CSlugRoute,
+  ProductImagesSplatRoute: ProductImagesSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

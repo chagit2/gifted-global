@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Product } from "@/lib/catalog";
+import type { Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
 import { formatPrice, useI18n } from "@/lib/i18n";
 
