@@ -8,7 +8,10 @@ export type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 
 export type Product = {
   id: string;
+  // Primary category (shown on the product card); the first of `categories`.
   category: string;
+  // Every category the gift appears in.
+  categories: string[];
   name: L;
   subtitle: L;
   description: L;
@@ -21,6 +24,8 @@ export type Product = {
 export const fromRow = (r: ProductRow): Product => ({
   id: r.id,
   category: r.category,
+  // Rows from before multi-category support only have `category`.
+  categories: r.categories?.length ? r.categories : [r.category],
   name: { he: r.name_he, fr: r.name_fr, en: r.name_en },
   subtitle: { he: r.subtitle_he, fr: r.subtitle_fr, en: r.subtitle_en },
   description: { he: r.description_he, fr: r.description_fr, en: r.description_en },
@@ -30,8 +35,9 @@ export const fromRow = (r: ProductRow): Product => ({
   sort: r.sort,
 });
 
-export const toRow = (p: Omit<Product, "id">) => ({
-  category: p.category,
+export const toRow = (p: Omit<Product, "id" | "category">) => ({
+  category: p.categories[0]!,
+  categories: p.categories,
   name_he: p.name.he,
   name_fr: p.name.fr,
   name_en: p.name.en,
@@ -71,7 +77,7 @@ export function useProducts() {
       all,
       live,
       getProduct: (id: string) => byId.get(id),
-      byCategory: (slug: string) => live.filter((p) => p.category === slug),
+      byCategory: (slug: string) => live.filter((p) => p.categories.includes(slug)),
     };
   }, [q.data]);
   return { ...helpers, isLoading: q.isLoading, isError: q.isError };

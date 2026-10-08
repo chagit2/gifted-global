@@ -109,6 +109,7 @@ export type Database = {
       products: {
         Row: {
           active: boolean
+          categories: string[]
           category: string
           created_at: string
           description_en: string
@@ -127,6 +128,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          categories?: string[]
           category: string
           created_at?: string
           description_en?: string
@@ -145,6 +147,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          categories?: string[]
           category?: string
           created_at?: string
           description_en?: string

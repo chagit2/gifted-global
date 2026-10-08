@@ -136,6 +136,12 @@ const dict = {
   },
   copyLetter: { he: "העתקת המכתב", fr: "Copier la lettre", en: "Copy letter" },
   copied: { he: "הועתק", fr: "Copié", en: "Copied" },
+  categoriesLabel: {
+    he: "קטגוריות (אפשר לבחור כמה)",
+    fr: "Catégories (plusieurs possibles)",
+    en: "Categories (choose any)",
+  },
+  categoriesRequired: { he: "צריך לבחור לפחות קטגוריה אחת", fr: "Choisissez au moins une catégorie", en: "Choose at least one category" },
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },

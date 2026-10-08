@@ -15,7 +15,8 @@ const label = "text-xs text-ivory/60";
 // is private). Returns the storage path for those, or null for other images
 // such as the original photos under /products/.
 const IMAGE_ROUTE = "/product-images/";
-const storagePath = (url: string) => (url.startsWith(IMAGE_ROUTE) ? url.slice(IMAGE_ROUTE.length) : null);
+const storagePath = (url: string) =>
+  url.startsWith(IMAGE_ROUTE) ? url.slice(IMAGE_ROUTE.length) : null;
 
 const removeStored = async (urls: string[]) => {
   const paths = urls.map(storagePath).filter((p): p is string => p !== null);
@@ -35,7 +36,7 @@ export function ProductsAdmin() {
   const [editing, setEditing] = useState<Product | "new" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const shown = filter ? all.filter((p) => p.category === filter) : all;
+  const shown = filter ? all.filter((p) => p.categories.includes(filter)) : all;
   const refresh = () => queryClient.invalidateQueries({ queryKey: PRODUCTS_KEY });
 
   const onDelete = async (p: Product) => {
@@ -74,7 +75,7 @@ export function ProductsAdmin() {
           </option>
           {categories.map((c) => (
             <option key={c.slug} value={c.slug} className="bg-navy-2">
-              {tl(c.label)} ({all.filter((p) => p.category === c.slug).length})
+              {tl(c.label)} ({all.filter((p) => p.categories.includes(c.slug)).length})
             </option>
           ))}
         </select>
@@ -109,8 +110,10 @@ export function ProductsAdmin() {
                   )}
                 </p>
                 <p className="text-xs text-ivory/50">
-                  {getCategory(p.category) ? tl(getCategory(p.category)!.label) : p.category} ·{" "}
-                  <span className="text-gold-2">{formatPrice(p.price, lang)}</span>
+                  {p.categories
+                    .map((slug) => (getCategory(slug) ? tl(getCategory(slug)!.label) : slug))
+                    .join(", ")}{" "}
+                  · <span className="text-gold-2">{formatPrice(p.price, lang)}</span>
                 </p>
               </div>
               <button
@@ -145,7 +148,9 @@ function ProductForm({
   onDone: (changed: boolean) => void;
 }) {
   const { t, tl, dir } = useI18n();
-  const [category, setCategory] = useState(product?.category ?? defaultCategory);
+  const [cats, setCats] = useState<string[]>(product?.categories ?? [defaultCategory]);
+  const toggleCat = (slug: string) =>
+    setCats((prev) => (prev.includes(slug) ? prev.filter((c) => c !== slug) : [...prev, slug]));
   const [name, setName] = useState<L>(product?.name ?? emptyL());
   const [subtitle, setSubtitle] = useState<L>(product?.subtitle ?? emptyL());
   const [description, setDescription] = useState<L>(product?.description ?? emptyL());
@@ -198,10 +203,12 @@ function ProductForm({
     e.preventDefault();
     if (!name.he.trim()) return setError(t("hebrewRequired"));
     if (images.length === 0) return setError(t("imagesRequired"));
+    if (cats.length === 0) return setError(t("categoriesRequired"));
     setBusy(true);
     setError(null);
     const row = toRow({
-      category,
+      // Keep the menu's category order so the primary one is predictable.
+      categories: categories.map((c) => c.slug).filter((slug) => cats.includes(slug)),
       name,
       subtitle,
       description,
@@ -253,17 +260,33 @@ function ProductForm({
         {product ? t("editProduct") : t("addProduct")}
       </h2>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <label className="block">
-          <span className={label}>{t("category")}</span>
-          <select value={category} onChange={(e) => setCategory(e.target.value)} className={field}>
-            {categories.map((c) => (
-              <option key={c.slug} value={c.slug} className="bg-navy-2">
+      <fieldset>
+        <legend className={label}>{t("categoriesLabel")}</legend>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {categories.map((c) => {
+            const on = cats.includes(c.slug);
+            return (
+              <button
+                key={c.slug}
+                type="button"
+                role="checkbox"
+                aria-checked={on}
+                onClick={() => toggleCat(c.slug)}
+                className={`rounded-full border px-3 py-1.5 text-xs transition ${
+                  on
+                    ? "border-gold bg-gold/20 text-gold-2"
+                    : "border-white/15 text-ivory/60 hover:border-gold/50 hover:text-ivory"
+                }`}
+              >
+                {on ? "✓ " : ""}
                 {tl(c.label)}
-              </option>
-            ))}
-          </select>
-        </label>
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      <div className="grid gap-4 sm:grid-cols-3">
         <label className="block">
           <span className={label}>{t("price")}</span>
           <input
