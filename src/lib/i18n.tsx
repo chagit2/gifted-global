@@ -127,6 +127,8 @@ const dict = {
     en: "We deliver to addresses in Israel only",
   },
   allGifts: { he: "כל המתנות", fr: "Tous les cadeaux", en: "All gifts" },
+  letterExpand: { he: "הצגת המכתב המלא", fr: "Afficher toute la lettre", en: "Show full letter" },
+  letterCollapse: { he: "צמצום", fr: "Réduire", en: "Collapse" },
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },

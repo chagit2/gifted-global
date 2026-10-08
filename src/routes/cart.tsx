@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 import { useCart } from "@/lib/cart";
+import { LetterField } from "@/components/Letter";
 import { useProducts } from "@/lib/products";
 import { formatPrice, useI18n } from "@/lib/i18n";
 
@@ -85,12 +86,10 @@ function CartPage() {
                         <p className="text-xs font-semibold text-gold-2">
                           {line.qty > 1 ? t("letterN").replace("{n}", String(i + 1)) : t("letterTitle")}
                         </p>
-                        <textarea
-                          rows={2}
-                          maxLength={500}
+                        <LetterField
                           value={letter}
-                          onChange={(e) => setLetter(line.productId, i, e.target.value.slice(0, 500))}
-                          className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none"
+                          onChange={(v) => setLetter(line.productId, i, v)}
+                          className="mt-2"
                         />
                       </div>
                     ))}

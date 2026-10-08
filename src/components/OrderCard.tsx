@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useProducts } from "@/lib/products";
+import { LetterPreview } from "@/components/Letter";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { statusKey, statusTone, type OrderRow } from "@/lib/orders";
 
@@ -74,14 +75,15 @@ export function OrderCard({
               <ul className="mt-1 space-y-1">
                 {g.letters.map((letter, i) =>
                   letter ? (
-                    <li
-                      key={i}
-                      className="whitespace-pre-wrap rounded-lg border border-white/10 bg-navy-2/50 px-3 py-2 text-xs text-ivory/70"
-                    >
-                      {g.letters.length > 1 && (
-                        <span className="text-gold-2">{t("letterN").replace("{n}", String(i + 1))}: </span>
-                      )}
-                      {letter}
+                    <li key={i}>
+                      <LetterPreview
+                        text={letter}
+                        label={
+                          g.letters.length > 1 && (
+                            <span className="text-gold-2">{t("letterN").replace("{n}", String(i + 1))}: </span>
+                          )
+                        }
+                      />
                     </li>
                   ) : null,
                 )}
