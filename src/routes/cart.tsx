@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { MapPin } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { useProducts } from "@/lib/products";
 import { formatPrice, useI18n } from "@/lib/i18n";
@@ -89,7 +90,6 @@ function CartPage() {
                           maxLength={500}
                           value={letter}
                           onChange={(e) => setLetter(line.productId, i, e.target.value.slice(0, 500))}
-                          placeholder={t("letterPlaceholder")}
                           className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none"
                         />
                       </div>
@@ -100,7 +100,11 @@ function CartPage() {
             })}
           </div>
 
-          <div className="mt-8 flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+          <p className="mt-8 inline-flex items-center gap-2 text-xs text-gold-2">
+            <MapPin className="size-3.5" />
+            {t("shipsIsraelOnly")}
+          </p>
+          <div className="mt-3 flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
             <span className="font-heb text-xl text-ivory">
               {t("total")}: <span className="text-gold-2">{formatPrice(total, lang)}</span>
             </span>
