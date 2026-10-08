@@ -75,7 +75,11 @@ export function ProductModal({
             />
             {count > 1 && (
               <>
-                <button aria-label="previous" onClick={() => step(-1)} className={`${arrowCls} start-3`}>
+                <button
+                  aria-label="previous"
+                  onClick={() => step(-1)}
+                  className={`${arrowCls} start-3`}
+                >
                   <PrevIcon className="size-5" />
                 </button>
                 <button aria-label="next" onClick={() => step(1)} className={`${arrowCls} end-3`}>
@@ -107,31 +111,39 @@ export function ProductModal({
           <p className="mt-4 text-sm leading-relaxed text-ivory/70">{tl(product.description)}</p>
 
           <div className="mt-5 flex items-end gap-4">
-            <span className="text-3xl font-bold text-gold-2">{formatPrice(product.price, lang)}</span>
+            <span className="text-3xl font-bold text-gold-2">
+              {formatPrice(product.price, lang)}
+            </span>
             <span className="text-xs text-ivory/50">{tl(product.subtitle)}</span>
           </div>
 
-          <div className="mt-6 flex items-center gap-3">
-            <button
-              onClick={() => {
-                add(product);
-                onClose();
-              }}
-              className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy hover:bg-gold-2 transition"
-            >
-              + {t("addToCart")}
-            </button>
-            <button
-              onClick={() => {
-                add(product);
-                onClose();
-                navigate({ to: "/checkout" });
-              }}
-              className="rounded-full border border-white/20 px-6 py-3 text-sm text-ivory transition hover:border-gold/60 hover:text-gold-2"
-            >
-              {t("buyNow")}
-            </button>
-          </div>
+          {!product.inStock ? (
+            <p className="mt-6 inline-block rounded-full border border-white/15 px-5 py-2 text-sm text-ivory/70">
+              {t("outOfStock")}
+            </p>
+          ) : (
+            <div className="mt-6 flex items-center gap-3">
+              <button
+                onClick={() => {
+                  add(product);
+                  onClose();
+                }}
+                className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy hover:bg-gold-2 transition"
+              >
+                + {t("addToCart")}
+              </button>
+              <button
+                onClick={() => {
+                  add(product);
+                  onClose();
+                  navigate({ to: "/checkout" });
+                }}
+                className="rounded-full border border-white/20 px-6 py-3 text-sm text-ivory transition hover:border-gold/60 hover:text-gold-2"
+              >
+                {t("buyNow")}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

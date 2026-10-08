@@ -18,6 +18,8 @@ export type Product = {
   price: number;
   images: string[];
   active: boolean;
+  // Out-of-stock gifts stay on the site but can't be ordered.
+  inStock: boolean;
   sort: number;
 };
 
@@ -32,6 +34,7 @@ export const fromRow = (r: ProductRow): Product => ({
   price: Number(r.price),
   images: r.images ?? [],
   active: r.active,
+  inStock: r.in_stock ?? true,
   sort: r.sort,
 });
 
@@ -50,6 +53,7 @@ export const toRow = (p: Omit<Product, "id" | "category">) => ({
   price: p.price,
   images: p.images,
   active: p.active,
+  in_stock: p.inStock,
   sort: p.sort,
 });
 

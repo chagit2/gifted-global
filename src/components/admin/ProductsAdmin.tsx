@@ -1,5 +1,13 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, ChevronLeft, ChevronRight, Languages, X } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Languages,
+  X,
+} from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { categories, getCategory } from "@/lib/catalog";
@@ -39,6 +47,25 @@ export function ProductsAdmin() {
 
   const shown = filter ? all.filter((p) => p.categories.includes(filter)) : all;
   const refresh = () => queryClient.invalidateQueries({ queryKey: PRODUCTS_KEY });
+  const [moving, setMoving] = useState(false);
+
+  // Swap a product with its neighbour in the list shown, renumbering the list's
+  // sort values so ties (e.g. from the original sample data) can't block a move.
+  const move = async (i: number, delta: number) => {
+    const j = i + delta;
+    if (j < 0 || j >= shown.length) return;
+    const order = [...shown];
+    [order[i], order[j]] = [order[j]!, order[i]!];
+    const changed = order.map((p, k) => ({ p, sort: k })).filter(({ p, sort }) => p.sort !== sort);
+    setMoving(true);
+    setError(null);
+    const results = await Promise.all(
+      changed.map(({ p, sort }) => supabase.from("products").update({ sort }).eq("id", p.id)),
+    );
+    setMoving(false);
+    if (results.some((r) => r.error)) setError(t("saveError"));
+    refresh();
+  };
 
   const onDelete = async (p: Product) => {
     if (!window.confirm(t("confirmDelete"))) return;
@@ -95,11 +122,31 @@ export function ProductsAdmin() {
         ) : isLoading ? (
           <li className="text-sm text-ivory/50">{t("loading")}</li>
         ) : (
-          shown.map((p) => (
+          shown.map((p, i) => (
             <li
               key={p.id}
               className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl"
             >
+              <div className="flex flex-col">
+                <button
+                  aria-label={t("moveUp")}
+                  title={t("moveUp")}
+                  disabled={i === 0 || moving}
+                  onClick={() => move(i, -1)}
+                  className="text-ivory/50 hover:text-gold-2 disabled:opacity-20"
+                >
+                  <ChevronUp className="size-4" />
+                </button>
+                <button
+                  aria-label={t("moveDown")}
+                  title={t("moveDown")}
+                  disabled={i === shown.length - 1 || moving}
+                  onClick={() => move(i, 1)}
+                  className="text-ivory/50 hover:text-gold-2 disabled:opacity-20"
+                >
+                  <ChevronDown className="size-4" />
+                </button>
+              </div>
               <img src={p.images[0]} alt="" className="size-16 shrink-0 rounded-xl object-cover" />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm text-ivory">
@@ -107,6 +154,11 @@ export function ProductsAdmin() {
                   {!p.active && (
                     <span className="ms-2 rounded-full border border-white/15 px-2 py-0.5 text-[10px] text-ivory/50">
                       {t("hiddenBadge")}
+                    </span>
+                  )}
+                  {!p.inStock && (
+                    <span className="ms-2 rounded-full border border-red-300/40 px-2 py-0.5 text-[10px] text-red-200">
+                      {t("outOfStock")}
                     </span>
                   )}
                 </p>
@@ -157,6 +209,7 @@ function ProductForm({
   const [description, setDescription] = useState<L>(product?.description ?? emptyL());
   const [price, setPrice] = useState(product ? String(product.price) : "");
   const [active, setActive] = useState(product?.active ?? true);
+  const [inStock, setInStock] = useState(product?.inStock ?? true);
   const [images, setImages] = useState<string[]>(product?.images ?? []);
   // Photos uploaded in this form session, removed again if the form is cancelled.
   const [uploaded, setUploaded] = useState<string[]>([]);
@@ -274,6 +327,7 @@ function ProductForm({
       price: Number(price),
       images,
       active,
+      inStock,
       sort: product?.sort ?? nextSort,
     });
     const { error } = product
@@ -345,7 +399,7 @@ function ProductForm({
         </div>
       </fieldset>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-4">
         <label className="block">
           <span className={label}>{t("price")}</span>
           <input
@@ -367,6 +421,15 @@ function ProductForm({
             className="size-4 accent-gold"
           />
           {t("visible")}
+        </label>
+        <label className="flex items-center gap-2 self-end pb-2 text-sm text-ivory">
+          <input
+            type="checkbox"
+            checked={inStock}
+            onChange={(e) => setInStock(e.target.checked)}
+            className="size-4 accent-gold"
+          />
+          {t("inStockLabel")}
         </label>
       </div>
 

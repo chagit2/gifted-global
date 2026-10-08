@@ -1,7 +1,37 @@
 import type { Key } from "./i18n";
 
-// Flat delivery charge per order (all gifts go to one address in Israel), in ₪.
+// Default delivery charge per order (all gifts go to one address in Israel), in ₪.
+// The live value is edited in the admin area (site_settings.shipping_fee).
 export const SHIPPING_FEE = 50;
+
+// We commit to shipping within this many business days of the order.
+export const SHIP_WITHIN_BUSINESS_DAYS = 7;
+
+// Israeli business days are Sunday–Thursday.
+export function addBusinessDays(from: Date, days: number) {
+  const d = new Date(from);
+  let left = days;
+  while (left > 0) {
+    d.setDate(d.getDate() + 1);
+    const wd = d.getDay();
+    if (wd !== 5 && wd !== 6) left--;
+  }
+  return d;
+}
+
+// yyyy-mm-dd in local time, for <input type="date"> and the delivery_date column.
+export const isoDate = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+// Earliest delivery date a customer may ask for.
+export const minDeliveryDate = (today = new Date()) =>
+  isoDate(addBusinessDays(today, SHIP_WITHIN_BUSINESS_DAYS));
+
+export type Coupon = { code: string; kind: string; amount: number };
+
+// Coupons discount the gifts, never the shipping.
+export const couponDiscount = (c: Coupon, subtotal: number) =>
+  Math.min(subtotal, c.kind === "percent" ? Math.round(subtotal * Math.min(c.amount, 100)) / 100 : c.amount);
 
 export const ORDER_STATUSES = ["new", "preparing", "shipped", "delivered", "cancelled"] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
@@ -25,6 +55,12 @@ export type OrderRow = {
   created_at: string;
   sender_name: string;
   phone: string;
+  delivery_date: string | null;
+  customer_note: string;
+  admin_note: string;
+  coupon_code: string;
+  discount: number;
+  shipping_fee: number;
   recipient_name: string;
   recipient_phone: string;
   ship_street: string;
@@ -36,4 +72,4 @@ export type OrderRow = {
 };
 
 export const ORDER_SELECT =
-  "id, created_at, sender_name, phone, recipient_name, recipient_phone, ship_street, ship_city, ship_country, total, status, order_items(id, product_id, product_name, qty, unit_price, letter)";
+  "id, created_at, sender_name, phone, delivery_date, customer_note, admin_note, coupon_code, discount, shipping_fee, recipient_name, recipient_phone, ship_street, ship_city, ship_country, total, status, order_items(id, product_id, product_name, qty, unit_price, letter)";

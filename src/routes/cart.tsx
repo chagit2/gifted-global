@@ -4,7 +4,7 @@ import { useCart } from "@/lib/cart";
 import { LetterField } from "@/components/Letter";
 import { useProducts } from "@/lib/products";
 import { formatPrice, useI18n } from "@/lib/i18n";
-import { SHIPPING_FEE } from "@/lib/orders";
+import { useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -24,6 +24,7 @@ function CartPage() {
   const { t, tl, lang } = useI18n();
   const { lines, total, remove, setQty, setLetter } = useCart();
   const { getProduct } = useProducts();
+  const { shippingFee } = useSettings();
 
   return (
     <main className="relative mx-auto max-w-5xl px-6 pt-14 pb-24">
@@ -56,6 +57,7 @@ function CartPage() {
                         <div>
                           <h2 className="font-heb text-lg text-ivory">{tl(p.name)}</h2>
                           <p className="mt-1 text-xs text-ivory/50">{tl(p.subtitle)}</p>
+                          {!p.inStock && <p className="mt-1 text-xs text-red-300">{t("outOfStock")}</p>}
                         </div>
                         <span className="font-semibold text-gold-2">
                           {formatPrice(p.price * line.qty, lang)}
@@ -107,10 +109,10 @@ function CartPage() {
           <div className="mt-3 flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
             <div>
               <p className="text-xs text-ivory/50">
-                {t("subtotal")}: {formatPrice(total, lang)} · {t("shipping")}: {formatPrice(SHIPPING_FEE, lang)}
+                {t("subtotal")}: {formatPrice(total, lang)} · {t("shipping")}: {formatPrice(shippingFee, lang)}
               </p>
               <p className="mt-1 font-heb text-xl text-ivory">
-                {t("total")}: <span className="text-gold-2">{formatPrice(total + SHIPPING_FEE, lang)}</span>
+                {t("total")}: <span className="text-gold-2">{formatPrice(total + shippingFee, lang)}</span>
               </p>
             </div>
             <Link

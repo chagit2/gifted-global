@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { OrderCard } from "@/components/OrderCard";
 import { ProductsAdmin } from "@/components/admin/ProductsAdmin";
+import { CouponsAdmin } from "@/components/admin/CouponsAdmin";
+import { SettingsAdmin } from "@/components/admin/SettingsAdmin";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -26,7 +28,7 @@ function AdminPage() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<OrderRow[] | null>(null);
   const [failed, setFailed] = useState(false);
-  const [section, setSection] = useState<"orders" | "products">("orders");
+  const [section, setSection] = useState<"orders" | "products" | "coupons" | "settings">("orders");
   const [tab, setTab] = useState<"open" | "done">("open");
   const [saving, setSaving] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -53,7 +55,18 @@ function AdminPage() {
   if (!isAdmin)
     return <main className="mx-auto max-w-5xl px-6 py-24 text-ivory/60">{t("notAllowed")}</main>;
 
-  const open = (orders ?? []).filter((o) => !DONE_STATUSES.includes(o.status));
+  // Open orders: those with a delivery date first (soonest first), then newest.
+  const open = (orders ?? [])
+    .filter((o) => !DONE_STATUSES.includes(o.status))
+    .sort((a, b) =>
+      a.delivery_date && b.delivery_date
+        ? a.delivery_date.localeCompare(b.delivery_date)
+        : a.delivery_date
+          ? -1
+          : b.delivery_date
+            ? 1
+            : b.created_at.localeCompare(a.created_at),
+    );
   const done = (orders ?? []).filter((o) => DONE_STATUSES.includes(o.status));
   const shown = tab === "open" ? open : done;
 
@@ -74,17 +87,19 @@ function AdminPage() {
     <main className="mx-auto max-w-5xl px-6 pt-14 pb-24">
       <h1 className="font-heb text-4xl font-bold text-ivory">{t("adminArea")}</h1>
 
-      <nav className="mt-6 flex gap-6 border-b border-white/10">
+      <nav className="mt-6 flex gap-6 overflow-x-auto border-b border-white/10">
         {(
           [
             ["orders", t("tabOrders")],
             ["products", t("tabProducts")],
+            ["coupons", t("tabCoupons")],
+            ["settings", t("tabSettings")],
           ] as const
         ).map(([key, label]) => (
           <button
             key={key}
             onClick={() => setSection(key)}
-            className={`-mb-px border-b-2 pb-3 font-heb text-lg transition ${
+            className={`-mb-px shrink-0 border-b-2 pb-3 font-heb text-lg transition ${
               section === key
                 ? "border-gold text-gold-2"
                 : "border-transparent text-ivory/60 hover:text-ivory"
@@ -98,6 +113,14 @@ function AdminPage() {
       {section === "products" ? (
         <div className="mt-8">
           <ProductsAdmin />
+        </div>
+      ) : section === "coupons" ? (
+        <div className="mt-8">
+          <CouponsAdmin />
+        </div>
+      ) : section === "settings" ? (
+        <div className="mt-8">
+          <SettingsAdmin />
         </div>
       ) : (
         <>

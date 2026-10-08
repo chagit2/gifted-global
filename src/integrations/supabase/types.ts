@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      coupons: {
+        Row: {
+          active: boolean
+          amount: number
+          code: string
+          created_at: string
+          expires_on: string | null
+          kind: string
+        }
+        Insert: {
+          active?: boolean
+          amount: number
+          code: string
+          created_at?: string
+          expires_on?: string | null
+          kind: string
+        }
+        Update: {
+          active?: boolean
+          amount?: number
+          code?: string
+          created_at?: string
+          expires_on?: string | null
+          kind?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           id: string
@@ -54,6 +81,12 @@ export type Database = {
       }
       orders: {
         Row: {
+          admin_note: string
+          coupon_code: string
+          customer_note: string
+          delivery_date: string | null
+          discount: number
+          shipping_fee: number
           created_at: string
           currency: string
           id: string
@@ -71,6 +104,12 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          admin_note?: string
+          coupon_code?: string
+          customer_note?: string
+          delivery_date?: string | null
+          discount?: number
+          shipping_fee?: number
           created_at?: string
           currency?: string
           id?: string
@@ -88,6 +127,12 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          admin_note?: string
+          coupon_code?: string
+          customer_note?: string
+          delivery_date?: string | null
+          discount?: number
+          shipping_fee?: number
           created_at?: string
           currency?: string
           id?: string
@@ -108,6 +153,7 @@ export type Database = {
       }
       products: {
         Row: {
+          in_stock: boolean
           active: boolean
           categories: string[]
           category: string
@@ -127,6 +173,7 @@ export type Database = {
           subtitle_he: string
         }
         Insert: {
+          in_stock?: boolean
           active?: boolean
           categories?: string[]
           category: string
@@ -146,6 +193,7 @@ export type Database = {
           subtitle_he?: string
         }
         Update: {
+          in_stock?: boolean
           active?: boolean
           categories?: string[]
           category?: string
@@ -163,6 +211,21 @@ export type Database = {
           subtitle_en?: string
           subtitle_fr?: string
           subtitle_he?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          id: number
+          shipping_fee: number
+        }
+        Insert: {
+          id?: number
+          shipping_fee?: number
+        }
+        Update: {
+          id?: number
+          shipping_fee?: number
         }
         Relationships: []
       }
