@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      coupons: {
+        Row: {
+          active: boolean
+          amount: number
+          code: string
+          created_at: string
+          expires_on: string | null
+          kind: string
+        }
+        Insert: {
+          active?: boolean
+          amount: number
+          code: string
+          created_at?: string
+          expires_on?: string | null
+          kind: string
+        }
+        Update: {
+          active?: boolean
+          amount?: number
+          code?: string
+          created_at?: string
+          expires_on?: string | null
+          kind?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           id: string
@@ -54,8 +81,13 @@ export type Database = {
       }
       orders: {
         Row: {
+          admin_note: string
+          coupon_code: string
           created_at: string
           currency: string
+          customer_note: string
+          delivery_date: string | null
+          discount: number
           id: string
           language: string
           phone: string
@@ -66,13 +98,19 @@ export type Database = {
           ship_country: string
           ship_street: string
           ship_zip: string
+          shipping_fee: number
           status: string
           total: number
           user_id: string | null
         }
         Insert: {
+          admin_note?: string
+          coupon_code?: string
           created_at?: string
           currency?: string
+          customer_note?: string
+          delivery_date?: string | null
+          discount?: number
           id?: string
           language?: string
           phone: string
@@ -83,13 +121,19 @@ export type Database = {
           ship_country: string
           ship_street: string
           ship_zip: string
+          shipping_fee?: number
           status?: string
           total?: number
           user_id?: string | null
         }
         Update: {
+          admin_note?: string
+          coupon_code?: string
           created_at?: string
           currency?: string
+          customer_note?: string
+          delivery_date?: string | null
+          discount?: number
           id?: string
           language?: string
           phone?: string
@@ -100,6 +144,7 @@ export type Database = {
           ship_country?: string
           ship_street?: string
           ship_zip?: string
+          shipping_fee?: number
           status?: string
           total?: number
           user_id?: string | null
@@ -117,6 +162,7 @@ export type Database = {
           description_he: string
           id: string
           images: string[]
+          in_stock: boolean
           name_en: string
           name_fr: string
           name_he: string
@@ -136,6 +182,7 @@ export type Database = {
           description_he?: string
           id?: string
           images?: string[]
+          in_stock?: boolean
           name_en?: string
           name_fr?: string
           name_he?: string
@@ -155,6 +202,7 @@ export type Database = {
           description_he?: string
           id?: string
           images?: string[]
+          in_stock?: boolean
           name_en?: string
           name_fr?: string
           name_he?: string
@@ -163,6 +211,21 @@ export type Database = {
           subtitle_en?: string
           subtitle_fr?: string
           subtitle_he?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          id: number
+          shipping_fee: number
+        }
+        Insert: {
+          id?: number
+          shipping_fee?: number
+        }
+        Update: {
+          id?: number
+          shipping_fee?: number
         }
         Relationships: []
       }
