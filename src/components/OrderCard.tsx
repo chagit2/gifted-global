@@ -49,6 +49,8 @@ export function OrderCard({
     groups.set(it.product_id, g);
   }
 
+  const itemsTotal = order.order_items.reduce((sum, it) => sum + it.unit_price * it.qty, 0);
+
   return (
     <article className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
       <header className="flex flex-wrap items-center justify-between gap-3">
@@ -116,9 +118,17 @@ export function OrderCard({
             )}
           </p>
         </div>
-        <p className="font-heb text-lg text-ivory">
-          {t("total")}: <span className="text-gold-2">{formatPrice(order.total, lang)}</span>
-        </p>
+        <div className="text-end">
+          {/* Older orders have no shipping charge, so it is whatever the items don't cover. */}
+          {order.total - itemsTotal > 0 && (
+            <p className="text-xs text-ivory/50">
+              {t("shipping")}: {formatPrice(order.total - itemsTotal, lang)}
+            </p>
+          )}
+          <p className="font-heb text-lg text-ivory">
+            {t("total")}: <span className="text-gold-2">{formatPrice(order.total, lang)}</span>
+          </p>
+        </div>
       </footer>
     </article>
   );

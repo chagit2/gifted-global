@@ -7,6 +7,7 @@ import { useProducts } from "@/lib/products";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
 import { useAuth } from "@/lib/auth";
+import { SHIPPING_FEE } from "@/lib/orders";
 
 export const Route = createFileRoute("/checkout")({
   head: () => {
@@ -313,9 +314,19 @@ function CheckoutPage() {
               );
             })}
           </ul>
-          <div className="mt-5 flex justify-between border-t border-white/10 pt-4 font-heb text-lg text-ivory">
+          <div className="mt-5 space-y-1 border-t border-white/10 pt-4 text-sm text-ivory/70">
+            <div className="flex justify-between">
+              <span>{t("subtotal")}</span>
+              <span>{formatPrice(total, lang)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>{t("shipping")}</span>
+              <span>{formatPrice(SHIPPING_FEE, lang)}</span>
+            </div>
+          </div>
+          <div className="mt-3 flex justify-between border-t border-white/10 pt-3 font-heb text-lg text-ivory">
             <span>{t("total")}</span>
-            <span className="text-gold-2">{formatPrice(total, lang)}</span>
+            <span className="text-gold-2">{formatPrice(total + SHIPPING_FEE, lang)}</span>
           </div>
           {error && <p className="mt-3 text-xs text-red-300">{error}</p>}
           <button

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { ORDER_STATUSES } from "./orders";
+import { ORDER_STATUSES, SHIPPING_FEE } from "./orders";
 
 const schema = z.object({
   senderName: z.string().min(1).max(120),
@@ -47,7 +47,8 @@ export const placeOrder = createServerFn({ method: "POST" })
     if (productsError) throw new Error(productsError.message);
     const catalog = new Map((products ?? []).filter((p) => p.active).map((p) => [p.id, p]));
     if (ids.some((id) => !catalog.has(id))) throw new Error("Product unavailable");
-    const total = data.items.reduce((sum, i) => sum + Number(catalog.get(i.productId)!.price) * i.qty, 0);
+    const subtotal = data.items.reduce((sum, i) => sum + Number(catalog.get(i.productId)!.price) * i.qty, 0);
+    const total = subtotal + SHIPPING_FEE;
 
     const { data: order, error } = await supabaseAdmin
       .from("orders")
