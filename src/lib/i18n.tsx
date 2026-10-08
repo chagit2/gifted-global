@@ -126,6 +126,7 @@ const dict = {
     fr: "Livraison uniquement à des adresses en Israël",
     en: "We deliver to addresses in Israel only",
   },
+  allGifts: { he: "כל המתנות", fr: "Tous les cadeaux", en: "All gifts" },
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },

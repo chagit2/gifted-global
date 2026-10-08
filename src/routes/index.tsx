@@ -1,8 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductModal } from "@/components/ProductModal";
-import { categories } from "@/lib/catalog";
 import { useProducts, type Product } from "@/lib/products";
 import { useI18n } from "@/lib/i18n";
 import { GiftBanner } from "@/components/GiftBanner";
@@ -27,12 +26,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { t, tl } = useI18n();
+  const { t } = useI18n();
   const [preview, setPreview] = useState<Product | null>(null);
-  const featured = useProducts().byCategory("bat-mitzvah").slice(0, 3);
-  const topCats = categories.filter((c) =>
-    ["bat-mitzvah", "bar-mitzvah", "hanukkah", "shabbat", "baby", "birthday-child"].includes(c.slug),
-  );
+  const { live: gifts, isLoading, isError } = useProducts();
 
   return (
     <main className="relative overflow-hidden">
@@ -41,29 +37,18 @@ function Index() {
       <GiftBanner />
 
       <section className="relative mx-auto max-w-7xl px-6 pt-12 pb-20">
-        <p className="text-xs tracking-widest text-ivory/50">{t("recommendedCats")}</p>
-        <p className="mt-2 text-sm text-ivory/40">{t("catsNote")}</p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          {topCats.map((c) => (
-            <Link
-              key={c.slug}
-              to="/c/$slug"
-              params={{ slug: c.slug }}
-              className="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm text-ivory backdrop-blur-xl transition hover:border-gold/50 hover:text-gold-2"
-            >
-              {tl(c.label)}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="relative mx-auto max-w-7xl px-6 pb-20">
-        <h2 className="font-heb text-3xl font-bold text-ivory">{t("suggested")}</h2>
-        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((p) => (
-            <ProductCard key={p.id} product={p} onPreview={setPreview} />
-          ))}
-        </div>
+        <h2 className="font-heb text-3xl font-bold text-ivory">{t("allGifts")}</h2>
+        {isError ? (
+          <p className="mt-8 text-sm text-red-300">{t("loadError")}</p>
+        ) : isLoading ? (
+          <p className="mt-8 text-sm text-ivory/50">{t("loading")}</p>
+        ) : (
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {gifts.map((p) => (
+              <ProductCard key={p.id} product={p} onPreview={setPreview} />
+            ))}
+          </div>
+        )}
       </section>
 
       <ProductModal product={preview} onClose={() => setPreview(null)} />
