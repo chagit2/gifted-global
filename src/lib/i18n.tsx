@@ -134,6 +134,8 @@ const dict = {
     fr: "Cet e-mail n'est pas encore inscrit. Finalisez votre inscription ici :",
     en: "This email isn't registered yet. Finish signing up here:",
   },
+  copyLetter: { he: "העתקת המכתב", fr: "Copier la lettre", en: "Copy letter" },
+  copied: { he: "הועתק", fr: "Copié", en: "Copied" },
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },

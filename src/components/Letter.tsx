@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Copy } from "lucide-react";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 
@@ -58,8 +58,55 @@ export function LetterField({
   );
 }
 
+function CopyButton({ text }: { text: string }) {
+  const { t } = useI18n();
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // Older browsers / non-secure contexts: copy through a hidden field.
+      const el = document.createElement("textarea");
+      el.value = text;
+      el.style.position = "fixed";
+      el.style.opacity = "0";
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      el.remove();
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      aria-label={t("copyLetter")}
+      title={t("copyLetter")}
+      className={`inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-1 text-[11px] transition ${
+        copied ? "text-emerald-300" : "text-ivory/50 hover:bg-white/5 hover:text-gold-2"
+      }`}
+    >
+      {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+      {copied && t("copied")}
+    </button>
+  );
+}
+
 // Read-only letter (order history): first three lines, with the same toggle.
-export function LetterPreview({ label, text }: { label?: ReactNode; text: string }) {
+// `copyable` adds a copy-to-clipboard button (admin view).
+export function LetterPreview({
+  label,
+  text,
+  copyable,
+}: {
+  label?: ReactNode;
+  text: string;
+  copyable?: boolean;
+}) {
   const ref = useRef<HTMLParagraphElement>(null);
   const [open, setOpen] = useState(false);
   const [long, setLong] = useState(false);
@@ -71,10 +118,13 @@ export function LetterPreview({ label, text }: { label?: ReactNode; text: string
 
   return (
     <div className="rounded-lg border border-white/10 bg-navy-2/50 px-3 py-2 text-xs text-ivory/70">
-      <p ref={ref} className={`whitespace-pre-wrap ${open ? "" : "line-clamp-3"}`}>
-        {label}
-        {text}
-      </p>
+      <div className="flex items-start gap-2">
+        <p ref={ref} className={`min-w-0 flex-1 whitespace-pre-wrap ${open ? "" : "line-clamp-3"}`}>
+          {label}
+          {text}
+        </p>
+        {copyable && <CopyButton text={text} />}
+      </div>
       {long && <ToggleButton open={open} onClick={() => setOpen((o) => !o)} />}
     </div>
   );

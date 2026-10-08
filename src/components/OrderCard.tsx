@@ -78,6 +78,7 @@ export function OrderCard({
                     <li key={i}>
                       <LetterPreview
                         text={letter}
+                        copyable={admin === true}
                         label={
                           g.letters.length > 1 && (
                             <span className="text-gold-2">{t("letterN").replace("{n}", String(i + 1))}: </span>
