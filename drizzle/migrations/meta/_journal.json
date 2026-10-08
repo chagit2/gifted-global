@@ -29,6 +29,13 @@
       "when": 1791487324209,
       "tag": "0003_update_2_multi_category_stock_coupons_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791492438018,
+      "tag": "0004_add_letter_backgrounds",
+      "breakpoints": true
     }
   ]
 }
