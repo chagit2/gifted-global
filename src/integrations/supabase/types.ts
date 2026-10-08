@@ -217,14 +217,17 @@ export type Database = {
       site_settings: {
         Row: {
           id: number
+          letter_backgrounds: string[]
           shipping_fee: number
         }
         Insert: {
           id?: number
+          letter_backgrounds?: string[]
           shipping_fee?: number
         }
         Update: {
           id?: number
+          letter_backgrounds?: string[]
           shipping_fee?: number
         }
         Relationships: []
