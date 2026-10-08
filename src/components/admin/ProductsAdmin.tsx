@@ -1,10 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Languages, X } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { categories, getCategory } from "@/lib/catalog";
 import { formatPrice, LANGS, useI18n, type L, type Lang } from "@/lib/i18n";
 import { PRODUCTS_KEY, toRow, useProducts, type Product } from "@/lib/products";
+import { translateProductTexts } from "@/lib/translate.functions";
 
 const BUCKET = "product-images";
 const field =
@@ -162,6 +163,41 @@ function ProductForm({
   const [uploading, setUploading] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Auto-translated languages must be ticked as reviewed before saving.
+  const [review, setReview] = useState<Record<"fr" | "en", "none" | "pending" | "approved">>({
+    fr: "none",
+    en: "none",
+  });
+  const [translating, setTranslating] = useState(false);
+
+  const translate = async () => {
+    const filled = [
+      name.fr,
+      name.en,
+      subtitle.fr,
+      subtitle.en,
+      description.fr,
+      description.en,
+    ].some((v) => v.trim());
+    if (filled && !window.confirm(t("translateOverwrite"))) return;
+    setTranslating(true);
+    setError(null);
+    try {
+      const r = await translateProductTexts({
+        data: { name: name.he, subtitle: subtitle.he, description: description.he },
+      });
+      setName({ ...name, fr: r.fr.name, en: r.en.name });
+      setSubtitle({ ...subtitle, fr: r.fr.subtitle, en: r.en.subtitle });
+      setDescription({ ...description, fr: r.fr.description, en: r.en.description });
+      setReview({ fr: "pending", en: "pending" });
+    } catch (e) {
+      setError(
+        t(e instanceof Error && e.message.includes("QUOTA") ? "translateQuota" : "translateError"),
+      );
+    } finally {
+      setTranslating(false);
+    }
+  };
 
   const upload = async (files: File[]) => {
     if (!files.length) return;
@@ -225,6 +261,8 @@ function ProductForm({
     if (!name.he.trim()) return setError(t("hebrewRequired"));
     if (images.length === 0) return setError(t("imagesRequired"));
     if (cats.length === 0) return setError(t("categoriesRequired"));
+    if (review.fr === "pending" || review.en === "pending")
+      return setError(t("translateApproveFirst"));
     setBusy(true);
     setError(null);
     const row = toRow({
@@ -342,6 +380,46 @@ function ProductForm({
                 <span className="ms-2 text-ivory/40">({t("missingTranslation")})</span>
               )}
             </legend>
+            {l.code === "he" && (
+              <button
+                type="button"
+                onClick={translate}
+                disabled={!name.he.trim() || translating}
+                className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 px-3 py-1.5 text-xs text-gold-2 transition hover:bg-gold/10 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <Languages className="size-3.5" />
+                {translating ? t("translating") : t("translateToOthers")}
+              </button>
+            )}
+            {l.code !== "he" && review[l.code] !== "none" && (
+              <label
+                className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-xs transition ${
+                  review[l.code] === "approved"
+                    ? "border-emerald-300/40 bg-emerald-300/10 text-emerald-200"
+                    : "border-gold/50 bg-gold/10 text-gold-2"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={review[l.code] === "approved"}
+                  onChange={(e) => {
+                    const code = l.code as "fr" | "en";
+                    setReview((r) => ({ ...r, [code]: e.target.checked ? "approved" : "pending" }));
+                  }}
+                  className="sr-only"
+                />
+                <span
+                  className={`grid size-4 place-items-center rounded border ${
+                    review[l.code] === "approved"
+                      ? "border-emerald-300 bg-emerald-300 text-navy"
+                      : "border-gold/60"
+                  }`}
+                >
+                  {review[l.code] === "approved" && <Check className="size-3" />}
+                </span>
+                {review[l.code] === "approved" ? t("translationApproved") : t("translationCheck")}
+              </label>
+            )}
             <label className="block">
               <span className={label}>{t("productName")}</span>
               {langField(l.code, name, setName, { required: l.code === "he" })}
