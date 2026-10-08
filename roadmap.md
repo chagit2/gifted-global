@@ -1,7 +1,7 @@
 # Roadmap
 
 - [x] Products table + RLS + storage policies (migration 0002)
-- [x] Re-run db/products-setup.sql (idempotent) — verify 136 rows + product-images bucket
+- [x] Re-run db/products-setup.sql (idempotent) — verified 136 rows + product-images bucket (private; public blocked by workspace policy)
 - [ ] Build admin area (add/edit gifts, mark out-of-stock, view orders)
 - [ ] Login/signup page so the owner can register (chagit222469@gmail.com) and get admin role
 - [ ] Switch site catalog from static src/lib/catalog.ts to database products
