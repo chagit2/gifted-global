@@ -11,13 +11,11 @@ const field =
   "mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none";
 const label = "text-xs text-ivory/60";
 
-// Path inside our bucket for a public URL we uploaded, or null for other images
-// (such as the original photos served from /products/).
-const storagePath = (url: string) => {
-  const marker = `/storage/v1/object/public/${BUCKET}/`;
-  const i = url.indexOf(marker);
-  return i < 0 ? null : decodeURIComponent(url.slice(i + marker.length));
-};
+// Uploaded photos are served by the site at /product-images/<file> (the bucket
+// is private). Returns the storage path for those, or null for other images
+// such as the original photos under /products/.
+const IMAGE_ROUTE = "/product-images/";
+const storagePath = (url: string) => (url.startsWith(IMAGE_ROUTE) ? url.slice(IMAGE_ROUTE.length) : null);
 
 const removeStored = async (urls: string[]) => {
   const paths = urls.map(storagePath).filter((p): p is string => p !== null);
@@ -175,7 +173,7 @@ function ProductForm({
         setError(t("uploadError"));
         continue;
       }
-      urls.push(supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl);
+      urls.push(IMAGE_ROUTE + path);
     }
     setImages((prev) => [...prev, ...urls]);
     setUploaded((prev) => [...prev, ...urls]);
