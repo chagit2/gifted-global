@@ -42,7 +42,8 @@ function CheckoutPage() {
   const { user } = useAuth();
   const { getProduct } = useProducts();
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(false);
+  // Number of gifts in the placed order; null until the order is sent.
+  const [done, setDone] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,8 +71,9 @@ function CheckoutPage() {
           ),
         },
       });
+      const gifts = lines.reduce((n, l) => n + l.qty, 0);
       clear();
-      setDone(true);
+      setDone(gifts);
     } catch {
       setError(t("required"));
     } finally {
@@ -79,17 +81,27 @@ function CheckoutPage() {
     }
   };
 
-  if (done) {
+  if (done !== null) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-28 text-center">
-        <h1 className="font-heb text-4xl font-bold text-gold-2">{t("orderDone")}</h1>
-        <p className="mt-4 text-ivory/70">{t("orderDoneText")}</p>
-        <button
-          onClick={() => navigate({ to: "/" })}
-          className="mt-8 rounded-full bg-gold px-7 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2"
-        >
-          {t("backHome")}
-        </button>
+        <h1 className="font-heb text-4xl font-bold leading-tight text-gold-2 sm:text-5xl">
+          {t(done > 1 ? "orderDoneMany" : "orderDoneOne")}
+        </h1>
+        <p className="mt-5 text-lg text-ivory/80">{t(user ? "orderTrack" : "orderTrackGuest")}</p>
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <Link
+            to={user ? "/account" : "/login"}
+            className="rounded-full bg-gold px-7 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2"
+          >
+            {user ? t("account") : t("login")}
+          </Link>
+          <button
+            onClick={() => navigate({ to: "/" })}
+            className="rounded-full border border-white/15 px-7 py-3 text-sm text-ivory transition hover:border-gold/50"
+          >
+            {t("backHome")}
+          </button>
+        </div>
       </main>
     );
   }

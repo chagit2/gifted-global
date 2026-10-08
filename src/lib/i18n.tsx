@@ -188,11 +188,25 @@ const dict = {
   cvv: { he: "CVV", fr: "CVV", en: "CVV" },
   cardHolder: { he: "שם בעל הכרטיס", fr: "Titulaire", en: "Cardholder" },
   placeOrder: { he: "שליחת המתנה", fr: "Envoyer le cadeau", en: "Send the gift" },
-  orderDone: { he: "ההזמנה התקבלה!", fr: "Commande reçue !", en: "Order received!" },
-  orderDoneText: {
-    he: "נשלח אליכם אישור בדואר אלקטרוני, והמתנה תצא לדרכה תוך יום עסקים.",
-    fr: "Une confirmation vous sera envoyée et le cadeau partira sous un jour ouvré.",
-    en: "A confirmation is on its way and the gift ships within one business day.",
+  orderDoneOne: {
+    he: "אנחנו רצים להכין את המתנה שלכם!",
+    fr: "Nous courons préparer votre cadeau !",
+    en: "We're rushing to prepare your gift!",
+  },
+  orderDoneMany: {
+    he: "אנחנו רצים להכין את המתנות שלכם!",
+    fr: "Nous courons préparer vos cadeaux !",
+    en: "We're rushing to prepare your gifts!",
+  },
+  orderTrack: {
+    he: "תוכלו לעקוב אחרי סטטוס ההזמנה באזור האישי שלכם",
+    fr: "Vous pouvez suivre le statut de votre commande dans votre espace personnel",
+    en: "You can track your order status in your account",
+  },
+  orderTrackGuest: {
+    he: "בפעם הבאה, התחברו לפני ההזמנה ותוכלו לעקוב אחרי הסטטוס שלה באזור האישי",
+    fr: "La prochaine fois, connectez-vous avant de commander pour suivre son statut dans votre espace",
+    en: "Next time, sign in before ordering to track its status in your account",
   },
   backHome: { he: "חזרה לבית", fr: "Retour à l'accueil", en: "Back home" },
   required: { he: "שדה חובה", fr: "Champ requis", en: "Required field" },
