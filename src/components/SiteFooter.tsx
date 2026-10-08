@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
@@ -14,6 +15,9 @@ export function SiteFooter() {
           © {new Date().getFullYear()} {t("brandName")} · {t("footerRights")}
         </span>
         <div className="flex gap-5">
+          <Link to="/privacy" className="hover:text-gold-2">
+            {t("privacyTitle")}
+          </Link>
           <span>{t("terms")}</span>
           <span>{t("shippingLink")}</span>
           <span>{t("contact")}</span>
