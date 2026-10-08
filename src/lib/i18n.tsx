@@ -129,6 +129,11 @@ const dict = {
   allGifts: { he: "כל המתנות", fr: "Tous les cadeaux", en: "All gifts" },
   letterExpand: { he: "הצגת המכתב המלא", fr: "Afficher toute la lettre", en: "Show full letter" },
   letterCollapse: { he: "צמצום", fr: "Réduire", en: "Collapse" },
+  emailNotRegistered: {
+    he: "המייל הזה עוד לא רשום אצלנו. השלימו את ההרשמה כאן:",
+    fr: "Cet e-mail n'est pas encore inscrit. Finalisez votre inscription ici :",
+    en: "This email isn't registered yet. Finish signing up here:",
+  },
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },
