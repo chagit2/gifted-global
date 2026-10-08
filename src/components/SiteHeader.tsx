@@ -126,7 +126,7 @@ export function SiteHeader() {
   const holidays = categories.filter((c) => c.group === "holidays").map((c) => ({ slug: c.slug, label: tl(c.label) }));
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-navy-2/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 print:hidden border-b border-white/5 bg-navy-2/85 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:flex-nowrap sm:gap-6 sm:px-6">
         {/* Start side (right in Hebrew): home icon, then the menu labels.
             On phones the labels drop to their own centered row under the icons. */}

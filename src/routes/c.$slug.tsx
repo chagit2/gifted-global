@@ -50,7 +50,7 @@ function CategoryPage() {
         ) : null}
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((p) => (
-            <ProductCard key={p.id} product={p} onPreview={setPreview} />
+            <ProductCard key={p.id} product={p} onPreview={setPreview} categorySlug={slug} />
           ))}
         </div>
       </section>

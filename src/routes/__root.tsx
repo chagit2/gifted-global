@@ -129,7 +129,7 @@ function RootComponent() {
       <I18nProvider>
         <AuthProvider>
         <CartProvider>
-          <div className="flex min-h-screen flex-col bg-navy">
+          <div className="flex min-h-screen flex-col bg-navy print:bg-white">
             <SiteHeader />
             <div className="flex-1">
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
