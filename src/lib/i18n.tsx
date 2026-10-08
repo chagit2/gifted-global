@@ -236,6 +236,13 @@ const dict = {
   addBackground: { he: "הוספת רקע", fr: "Ajouter un fond", en: "Add background" },
   background: { he: "רקע", fr: "Fond", en: "Background" },
   noBackground: { he: "ללא", fr: "Aucun", en: "None" },
+  cookieText: {
+    he: "אנחנו משתמשים בעוגיות (Google Analytics) כדי להבין איך משתמשים באתר ולשפר אותו. אפשר לאשר או לסרב.",
+    fr: "Nous utilisons des cookies (Google Analytics) pour comprendre l'utilisation du site et l'améliorer. Vous pouvez accepter ou refuser.",
+    en: "We use cookies (Google Analytics) to understand how the site is used and improve it. You can accept or decline.",
+  },
+  cookieAccept: { he: "אישור", fr: "Accepter", en: "Accept" },
+  cookieDecline: { he: "לא, תודה", fr: "Refuser", en: "Decline" },
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },
