@@ -127,15 +127,19 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-navy-2/85 backdrop-blur-xl">
-      <nav className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
-        {/* Start side (right in Hebrew): home icon, then the menu labels */}
-        <Link to="/about" aria-label={t("navAbout")} className={iconBtn}>
+      <nav className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:flex-nowrap sm:gap-6 sm:px-6">
+        {/* Start side (right in Hebrew): home icon, then the menu labels.
+            On phones the labels drop to their own centered row under the icons. */}
+        <Link to="/" aria-label={t("navHome")} className={iconBtn}>
           <Home className="size-5" />
         </Link>
-        <Dropdown label={t("navHolidays")} items={holidays} />
-        <Link to="/c/$slug" params={{ slug: "judaica" }} className={navLink}>{t("navJudaica")}</Link>
-        <Link to="/c/$slug" params={{ slug: "for-boy" }} className={navLink}>{t("navForBoy")}</Link>
-        <Link to="/c/$slug" params={{ slug: "for-girl" }} className={navLink}>{t("navForGirl")}</Link>
+        <div className="order-last flex w-full items-center justify-center gap-5 sm:order-none sm:w-auto sm:justify-start sm:gap-6">
+          <Dropdown label={t("navHolidays")} items={holidays} />
+          <Link to="/c/$slug" params={{ slug: "judaica" }} className={navLink}>{t("navJudaica")}</Link>
+          <Link to="/c/$slug" params={{ slug: "for-boy" }} className={navLink}>{t("navForBoy")}</Link>
+          <Link to="/c/$slug" params={{ slug: "for-girl" }} className={navLink}>{t("navForGirl")}</Link>
+          <Link to="/about" className={navLink}>{t("navAbout")}</Link>
+        </div>
 
         {/* End side (left in Hebrew): language menu, then cart */}
         <div className="ms-auto flex items-center gap-2">

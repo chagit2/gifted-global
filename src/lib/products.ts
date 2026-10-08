@@ -69,6 +69,7 @@ export function useProducts() {
     const byId = new Map(live.map((p) => [p.id, p]));
     return {
       all,
+      live,
       getProduct: (id: string) => byId.get(id),
       byCategory: (slug: string) => live.filter((p) => p.category === slug),
     };

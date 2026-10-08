@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
+import { Lock, MapPin } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { useProducts } from "@/lib/products";
 import { formatPrice, useI18n } from "@/lib/i18n";
@@ -28,6 +29,12 @@ const field =
   "mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none";
 const label = "text-xs text-ivory/60";
 
+const Req = () => (
+  <span aria-hidden className="text-gold-2">
+    *
+  </span>
+);
+
 function CheckoutPage() {
   const { t, tl, lang } = useI18n();
   const { lines, total, setLetter, clear } = useCart();
@@ -35,7 +42,8 @@ function CheckoutPage() {
   const { user } = useAuth();
   const { getProduct } = useProducts();
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(false);
+  // Number of gifts in the placed order; null until the order is sent.
+  const [done, setDone] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -63,8 +71,9 @@ function CheckoutPage() {
           ),
         },
       });
+      const gifts = lines.reduce((n, l) => n + l.qty, 0);
       clear();
-      setDone(true);
+      setDone(gifts);
     } catch {
       setError(t("required"));
     } finally {
@@ -72,17 +81,27 @@ function CheckoutPage() {
     }
   };
 
-  if (done) {
+  if (done !== null) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-28 text-center">
-        <h1 className="font-heb text-4xl font-bold text-gold-2">{t("orderDone")}</h1>
-        <p className="mt-4 text-ivory/70">{t("orderDoneText")}</p>
-        <button
-          onClick={() => navigate({ to: "/" })}
-          className="mt-8 rounded-full bg-gold px-7 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2"
-        >
-          {t("backHome")}
-        </button>
+        <h1 className="font-heb text-4xl font-bold leading-tight text-gold-2 sm:text-5xl">
+          {t(done > 1 ? "orderDoneMany" : "orderDoneOne")}
+        </h1>
+        <p className="mt-5 text-lg text-ivory/80">{t(user ? "orderTrack" : "orderTrackGuest")}</p>
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <Link
+            to={user ? "/account" : "/login"}
+            className="rounded-full bg-gold px-7 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2"
+          >
+            {user ? t("account") : t("login")}
+          </Link>
+          <button
+            onClick={() => navigate({ to: "/" })}
+            className="rounded-full border border-white/15 px-7 py-3 text-sm text-ivory transition hover:border-gold/50"
+          >
+            {t("backHome")}
+          </button>
+        </div>
       </main>
     );
   }
@@ -110,20 +129,26 @@ function CheckoutPage() {
         </p>
       )}
 
+      <p className="mt-4 text-xs text-ivory/50">{t("requiredNote")}</p>
+
       <form onSubmit={onSubmit} className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-6">
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
             <h2 className="font-heb text-lg text-ivory">{t("senderDetails")}</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <span className={label}>{t("senderName")}</span>
+                <span className={label}>
+                  {t("senderName")} <Req />
+                </span>
                 <input name="senderName" required className={field} />
                 <p className="mt-2 rounded-lg border border-gold/30 bg-gold/10 px-3 py-2 text-xs text-gold-2">
                   {t("senderNameNote")}
                 </p>
               </div>
               <div className="sm:col-span-2">
-                <span className={label}>{t("phone")}</span>
+                <span className={label}>
+                  {t("phone")} <Req />
+                </span>
                 <input name="phone" type="tel" required dir="ltr" maxLength={40} className={field} />
                 <p className="mt-1 text-[11px] text-ivory/40">{t("phoneNote")}</p>
               </div>
@@ -132,13 +157,21 @@ function CheckoutPage() {
 
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
             <h2 className="font-heb text-lg text-ivory">{t("recipientTitle")}</h2>
+            <p className="mt-2 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs text-gold-2">
+              <MapPin className="size-3.5" />
+              {t("shipsIsraelOnly")}
+            </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div>
-                <span className={label}>{t("recipientName")}</span>
+                <span className={label}>
+                  {t("recipientName")} <Req />
+                </span>
                 <input name="recipientName" required maxLength={120} className={field} />
               </div>
               <div>
-                <span className={label}>{t("recipientPhone")}</span>
+                <span className={label}>
+                  {t("recipientPhone")} <Req />
+                </span>
                 <input name="recipientPhone" type="tel" required dir="ltr" maxLength={40} className={field} />
               </div>
               <p className="-mt-2 text-[11px] text-ivory/40 sm:col-span-2">{t("recipientPhoneNote")}</p>
@@ -146,15 +179,21 @@ function CheckoutPage() {
             <h3 className="mt-6 text-sm text-ivory/80">{t("shippingTitle")}</h3>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <span className={label}>{t("city")}</span>
+                <span className={label}>
+                  {t("city")} <Req />
+                </span>
                 <input name="city" required maxLength={120} className={field} />
               </div>
               <div>
-                <span className={label}>{t("street")}</span>
+                <span className={label}>
+                  {t("street")} <Req />
+                </span>
                 <input name="street" required maxLength={150} className={field} />
               </div>
               <div>
-                <span className={label}>{t("houseNumber")}</span>
+                <span className={label}>
+                  {t("houseNumber")} <Req />
+                </span>
                 <input
                   name="houseNumber"
                   required
@@ -166,7 +205,16 @@ function CheckoutPage() {
               </div>
               <div className="sm:col-span-2">
                 <span className={label}>{t("country")}</span>
-                <p className={`${field} text-ivory/70`}>{t("israel")}</p>
+                <div className="relative">
+                  <input
+                    value={t("israel")}
+                    readOnly
+                    disabled
+                    aria-readonly
+                    className={`${field} cursor-not-allowed bg-white/5 pe-9 text-ivory/60`}
+                  />
+                  <Lock className="pointer-events-none absolute end-3 top-1/2 mt-0.5 size-4 -translate-y-1/2 text-ivory/40" />
+                </div>
               </div>
             </div>
           </section>
@@ -196,7 +244,6 @@ function CheckoutPage() {
                           maxLength={500}
                           value={letter}
                           onChange={(e) => setLetter(l.productId, i, e.target.value.slice(0, 500))}
-                          placeholder={t("letterPlaceholder")}
                           className="mt-1 w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none"
                         />
                       </div>
@@ -211,11 +258,15 @@ function CheckoutPage() {
             <h2 className="font-heb text-lg text-ivory">{t("paymentTitle")}</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <span className={label}>{t("cardHolder")}</span>
+                <span className={label}>
+                  {t("cardHolder")} <Req />
+                </span>
                 <input name="cardHolder" required className={field} />
               </div>
               <div className="sm:col-span-2">
-                <span className={label}>{t("cardNumber")}</span>
+                <span className={label}>
+                  {t("cardNumber")} <Req />
+                </span>
                 <input
                   name="cardNumber"
                   inputMode="numeric"
@@ -225,11 +276,15 @@ function CheckoutPage() {
                 />
               </div>
               <div>
-                <span className={label}>{t("expiry")}</span>
+                <span className={label}>
+                  {t("expiry")} <Req />
+                </span>
                 <input name="expiry" required placeholder="MM/YY" className={field} />
               </div>
               <div>
-                <span className={label}>{t("cvv")}</span>
+                <span className={label}>
+                  {t("cvv")} <Req />
+                </span>
                 <input name="cvv" required inputMode="numeric" className={field} />
               </div>
             </div>
