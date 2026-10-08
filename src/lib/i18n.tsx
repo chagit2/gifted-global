@@ -142,6 +142,11 @@ const dict = {
     en: "Categories (choose any)",
   },
   categoriesRequired: { he: "צריך לבחור לפחות קטגוריה אחת", fr: "Choisissez au moins une catégorie", en: "Choose at least one category" },
+  pasteImageHint: {
+    he: "אפשר גם להעתיק תמונה ולהדביק אותה כאן עם Ctrl+V",
+    fr: "Vous pouvez aussi copier une image et la coller ici avec Ctrl+V",
+    en: "You can also copy an image and paste it here with Ctrl+V",
+  },
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },

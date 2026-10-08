@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { categories, getCategory } from "@/lib/catalog";
 import { formatPrice, LANGS, useI18n, type L, type Lang } from "@/lib/i18n";
@@ -163,13 +163,17 @@ function ProductForm({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const upload = async (files: FileList | null) => {
-    if (!files?.length) return;
+  const upload = async (files: File[]) => {
+    if (!files.length) return;
     setUploading(true);
     setError(null);
     const urls: string[] = [];
-    for (const file of Array.from(files)) {
-      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    for (const file of files) {
+      // Pasted screenshots are often all named "image.png"; prefer the MIME type.
+      const ext =
+        file.type.split("/")[1]?.replace("jpeg", "jpg") ||
+        file.name.split(".").pop()?.toLowerCase() ||
+        "jpg";
       const path = `${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage
         .from(BUCKET)
@@ -184,6 +188,23 @@ function ProductForm({
     setUploaded((prev) => [...prev, ...urls]);
     setUploading(false);
   };
+
+  // Ctrl+V / Cmd+V anywhere while the form is open adds pasted images.
+  // Text pastes (into the name or description fields) are left alone.
+  const uploadRef = useRef(upload);
+  uploadRef.current = upload;
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      const files = Array.from(e.clipboardData?.files ?? []).filter((f) =>
+        f.type.startsWith("image/"),
+      );
+      if (!files.length) return;
+      e.preventDefault();
+      uploadRef.current(files);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, []);
 
   const move = (i: number, delta: number) =>
     setImages((prev) => {
@@ -389,13 +410,14 @@ function ProductForm({
               multiple
               disabled={uploading}
               onChange={(e) => {
-                upload(e.target.files);
+                upload(Array.from(e.target.files ?? []));
                 e.target.value = "";
               }}
               className="sr-only"
             />
           </label>
         </div>
+        <p className="mt-2 text-[11px] text-ivory/40">{t("pasteImageHint")}</p>
       </div>
 
       {error && <p className="text-sm text-red-300">{error}</p>}
