@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Lock, MapPin } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { useProducts } from "@/lib/products";
@@ -44,6 +44,11 @@ function CheckoutPage() {
   const [busy, setBusy] = useState(false);
   // Number of gifts in the placed order; null until the order is sent.
   const [done, setDone] = useState<number | null>(null);
+
+  // The long form is replaced by a short thank-you; start it at the top.
+  useEffect(() => {
+    if (done !== null) window.scrollTo({ top: 0 });
+  }, [done]);
   const [error, setError] = useState<string | null>(null);
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
