@@ -145,9 +145,9 @@ const dict = {
   letterTitle: { he: "מכתב אישי למתנה זו", fr: "Lettre personnelle pour ce cadeau", en: "Personal letter for this gift" },
   letterN: { he: "מכתב למתנה מס׳ {n}", fr: "Lettre pour le cadeau n° {n}", en: "Letter for gift #{n}" },
   letterNote: {
-    he: "יודפס על נייר יוקרתי ויונח בתוך הקופסה",
-    fr: "Imprimée sur papier de luxe et placée dans le coffret",
-    en: "Printed on fine paper and placed inside the box",
+    he: "יודפס על נייר יוקרתי",
+    fr: "Imprimée sur papier de luxe",
+    en: "Printed on fine paper",
   },
   emptyCart: { he: "הסל ריק", fr: "Le panier est vide", en: "Your cart is empty" },
   total: { he: "סה\u05f4כ", fr: "Total", en: "Total" },
