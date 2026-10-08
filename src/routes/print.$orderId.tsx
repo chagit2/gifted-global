@@ -5,15 +5,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { ORDER_SELECT, type OrderRow } from "@/lib/orders";
+import { useSettings } from "@/lib/settings";
 
 // Printable letters (one per page) or a shipping label for an order. Admin only.
 export const Route = createFileRoute("/print/$orderId")({
-  validateSearch: (s: Record<string, unknown>) => ({ what: s["what"] === "label" ? "label" : "letters" }) as const,
+  validateSearch: (s: Record<string, unknown>) =>
+    ({ what: s["what"] === "label" ? "label" : "letters" }) as const,
   head: () => ({ meta: [{ title: "הדפסה · מתנות" }, { name: "robots", content: "noindex" }] }),
   component: PrintPage,
 });
 
-const page = "mx-auto my-6 w-full max-w-[210mm] bg-white text-neutral-900 shadow-2xl print:my-0 print:shadow-none";
+const page =
+  "mx-auto my-6 w-full max-w-[210mm] bg-white text-neutral-900 shadow-2xl print:my-0 print:shadow-none";
 
 function PrintPage() {
   const { orderId } = Route.useParams();
@@ -22,6 +25,25 @@ function PrintPage() {
   const { user, ready, isAdmin } = useAuth();
   const [order, setOrder] = useState<OrderRow | null>(null);
   const [failed, setFailed] = useState(false);
+  const { letterBackgrounds } = useSettings();
+  // Background chosen for this print; remembered for the next order.
+  const [bg, setBg] = useState<string>("");
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("letterBackground") ?? "";
+      if (saved && letterBackgrounds.includes(saved)) setBg(saved);
+    } catch {
+      /* storage unavailable */
+    }
+  }, [letterBackgrounds]);
+  const chooseBg = (url: string) => {
+    setBg(url);
+    try {
+      localStorage.setItem("letterBackground", url);
+    } catch {
+      /* storage unavailable */
+    }
+  };
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -36,10 +58,11 @@ function PrintPage() {
       });
   }, [isAdmin, orderId]);
 
-  // Open the print dialog once the content is on the page.
+  // Labels print straight away; letters wait so a background can be chosen.
   useEffect(() => {
-    if (order) setTimeout(() => window.print(), 300);
-  }, [order]);
+    if (order && (what === "label" || letterBackgrounds.length === 0))
+      setTimeout(() => window.print(), 300);
+  }, [order, what, letterBackgrounds.length]);
 
   if (!ready || (user && isAdmin && !order && !failed))
     return <main className="p-10 text-ivory/60">{t("loading")}</main>;
@@ -51,6 +74,31 @@ function PrintPage() {
 
   return (
     <main dir="rtl" className="px-4 pb-10 print:p-0">
+      <style>{"@page { size: A4; margin: 0 }"}</style>
+      {what === "letters" && letterBackgrounds.length > 0 && (
+        <div className="mx-auto flex max-w-[210mm] flex-wrap items-center gap-3 pt-6 print:hidden">
+          <span className="text-sm text-ivory/70">{t("background")}:</span>
+          <button
+            onClick={() => chooseBg("")}
+            className={`grid h-20 w-14 place-items-center rounded border-2 bg-white text-[10px] text-neutral-500 ${
+              bg === "" ? "border-gold" : "border-transparent opacity-70 hover:opacity-100"
+            }`}
+          >
+            {t("noBackground")}
+          </button>
+          {letterBackgrounds.map((url) => (
+            <button
+              key={url}
+              onClick={() => chooseBg(url)}
+              className={`h-20 w-14 overflow-hidden rounded border-2 ${
+                bg === url ? "border-gold" : "border-transparent opacity-70 hover:opacity-100"
+              }`}
+            >
+              <img src={url} alt="" className="size-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
       <div className="mx-auto flex max-w-[210mm] justify-end pt-6 print:hidden">
         <button
           onClick={() => window.print()}
@@ -89,9 +137,20 @@ function PrintPage() {
           <section
             key={it.id}
             className={`${page} flex min-h-[297mm] flex-col items-center justify-center p-[25mm] print:min-h-0 print:h-[297mm]`}
-            style={{ breakAfter: i < letters.length - 1 ? "page" : "auto" }}
+            style={{
+              breakAfter: i < letters.length - 1 ? "page" : "auto",
+              ...(bg && {
+                backgroundImage: `url("${bg}")`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                printColorAdjust: "exact",
+                WebkitPrintColorAdjust: "exact",
+              }),
+            }}
           >
-            <div className="w-full max-w-[140mm] border-y border-[#b8964a] py-16 text-center">
+            <div
+              className={`w-full max-w-[140mm] py-16 text-center ${bg ? "" : "border-y border-[#b8964a]"}`}
+            >
               <p className="whitespace-pre-wrap font-heb text-2xl leading-loose">{it.letter}</p>
             </div>
           </section>

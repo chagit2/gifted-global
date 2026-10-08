@@ -9,11 +9,19 @@ export function useSettings() {
   const q = useQuery({
     queryKey: SETTINGS_KEY,
     queryFn: async () => {
-      const { data, error } = await supabase.from("site_settings").select("shipping_fee").eq("id", 1).maybeSingle();
+      // "*" so a column that isn't in the database yet can't break the query.
+      const { data, error } = await supabase.from("site_settings").select("*").eq("id", 1).maybeSingle();
       if (error) throw error;
-      return { shippingFee: data ? Number(data.shipping_fee) : SHIPPING_FEE };
+      return {
+        shippingFee: data ? Number(data.shipping_fee) : SHIPPING_FEE,
+        letterBackgrounds: data?.letter_backgrounds ?? [],
+      };
     },
     staleTime: 5 * 60 * 1000,
   });
-  return { shippingFee: q.data?.shippingFee ?? SHIPPING_FEE, isLoading: q.isLoading };
+  return {
+    shippingFee: q.data?.shippingFee ?? SHIPPING_FEE,
+    letterBackgrounds: q.data?.letterBackgrounds ?? [],
+    isLoading: q.isLoading,
+  };
 }
