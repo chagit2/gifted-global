@@ -83,12 +83,11 @@ export type Database = {
         Row: {
           admin_note: string
           coupon_code: string
+          created_at: string
+          currency: string
           customer_note: string
           delivery_date: string | null
           discount: number
-          shipping_fee: number
-          created_at: string
-          currency: string
           id: string
           language: string
           phone: string
@@ -99,6 +98,7 @@ export type Database = {
           ship_country: string
           ship_street: string
           ship_zip: string
+          shipping_fee: number
           status: string
           total: number
           user_id: string | null
@@ -106,12 +106,11 @@ export type Database = {
         Insert: {
           admin_note?: string
           coupon_code?: string
+          created_at?: string
+          currency?: string
           customer_note?: string
           delivery_date?: string | null
           discount?: number
-          shipping_fee?: number
-          created_at?: string
-          currency?: string
           id?: string
           language?: string
           phone: string
@@ -122,6 +121,7 @@ export type Database = {
           ship_country: string
           ship_street: string
           ship_zip: string
+          shipping_fee?: number
           status?: string
           total?: number
           user_id?: string | null
@@ -129,12 +129,11 @@ export type Database = {
         Update: {
           admin_note?: string
           coupon_code?: string
+          created_at?: string
+          currency?: string
           customer_note?: string
           delivery_date?: string | null
           discount?: number
-          shipping_fee?: number
-          created_at?: string
-          currency?: string
           id?: string
           language?: string
           phone?: string
@@ -145,6 +144,7 @@ export type Database = {
           ship_country?: string
           ship_street?: string
           ship_zip?: string
+          shipping_fee?: number
           status?: string
           total?: number
           user_id?: string | null
@@ -153,7 +153,6 @@ export type Database = {
       }
       products: {
         Row: {
-          in_stock: boolean
           active: boolean
           categories: string[]
           category: string
@@ -163,6 +162,7 @@ export type Database = {
           description_he: string
           id: string
           images: string[]
+          in_stock: boolean
           name_en: string
           name_fr: string
           name_he: string
@@ -173,7 +173,6 @@ export type Database = {
           subtitle_he: string
         }
         Insert: {
-          in_stock?: boolean
           active?: boolean
           categories?: string[]
           category: string
@@ -183,6 +182,7 @@ export type Database = {
           description_he?: string
           id?: string
           images?: string[]
+          in_stock?: boolean
           name_en?: string
           name_fr?: string
           name_he?: string
@@ -193,7 +193,6 @@ export type Database = {
           subtitle_he?: string
         }
         Update: {
-          in_stock?: boolean
           active?: boolean
           categories?: string[]
           category?: string
@@ -203,6 +202,7 @@ export type Database = {
           description_he?: string
           id?: string
           images?: string[]
+          in_stock?: boolean
           name_en?: string
           name_fr?: string
           name_he?: string
