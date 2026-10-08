@@ -7,18 +7,25 @@ export type Consent = "granted" | "denied";
 
 type GtagWindow = Window & { dataLayer?: unknown[]; gtag?: (...args: unknown[]) => void };
 
+// "Accept" is remembered for good; "decline" only for the current visit (this
+// browser tab session), so the question comes back on the next visit.
 export function readConsent(): Consent | null {
   try {
-    const v = localStorage.getItem(CONSENT_KEY);
-    return v === "granted" || v === "denied" ? v : null;
+    if (localStorage.getItem(CONSENT_KEY) === "granted") return "granted";
+    if (sessionStorage.getItem(CONSENT_KEY) === "denied") return "denied";
   } catch {
-    return null;
+    /* storage unavailable */
   }
+  return null;
 }
 
 export function saveConsent(v: Consent) {
   try {
-    localStorage.setItem(CONSENT_KEY, v);
+    if (v === "granted") localStorage.setItem(CONSENT_KEY, v);
+    else {
+      sessionStorage.setItem(CONSENT_KEY, v);
+      localStorage.removeItem(CONSENT_KEY); // also clears a "denied" saved by an older version
+    }
   } catch {
     /* storage unavailable: ask again next visit */
   }
