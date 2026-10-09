@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -126,6 +127,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -135,7 +137,8 @@ function RootComponent() {
           <div className="flex min-h-screen flex-col bg-navy print:bg-white">
             <SiteHeader />
             <HolidayBanner />
-            <div className="flex-1">
+            {/* Keyed by path so each page fades in when it opens. */}
+            <div key={pathname} className="flex-1 animate-page-in">
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
               <Outlet />
             </div>

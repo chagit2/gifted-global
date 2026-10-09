@@ -1,31 +1,59 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Product } from "@/lib/products";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
+import { FadeImage } from "@/components/FadeImage";
+import { useProducts, type Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
 import { formatPrice, useI18n } from "@/lib/i18n";
 
 export function ProductModal({
   product,
   onClose,
+  onSelect,
 }: {
   product: Product | null;
   onClose: () => void;
+  // Opens another gift in the same popup (the "you may also like" row).
+  onSelect?: (p: Product) => void;
 }) {
   const { t, tl, lang, dir } = useI18n();
   const { add, setDrawerOpen } = useCart();
   const navigate = useNavigate();
+  const { live } = useProducts();
   const [active, setActive] = useState(0);
+  const [zoom, setZoom] = useState(false);
+  const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setActive(0);
+    setZoom(false);
+    scroller.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [product?.id]);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (zoom) setZoom(false);
+      else onClose();
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [onClose, zoom]);
+
+  // Gifts sharing the most categories, then the closest in price; in-stock first.
+  const similar = useMemo(() => {
+    if (!product) return [];
+    const shared = (p: Product) => p.categories.filter((c) => product.categories.includes(c)).length;
+    return live
+      .filter((p) => p.id !== product.id)
+      .map((p) => ({ p, score: shared(p), gap: Math.abs(p.price - product.price) }))
+      .sort(
+        (a, b) =>
+          Number(b.p.inStock) - Number(a.p.inStock) || b.score - a.score || a.gap - b.gap,
+      )
+      .slice(0, 4)
+      .map((x) => x.p);
+  }, [live, product]);
 
   // Freeze the page behind the popup while it is open.
   const isOpen = product !== null;
@@ -53,8 +81,8 @@ export function ProductModal({
     "absolute top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-white/15 bg-navy-2/70 text-ivory backdrop-blur transition hover:border-gold/50 hover:text-gold-2";
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto p-4" dir={dir}>
-      <div className="absolute inset-0 bg-navy/80 backdrop-blur-sm" onClick={onClose} />
+    <div ref={scroller} className="fixed inset-0 z-50 grid place-items-center overflow-y-auto overscroll-contain p-4" dir={dir}>
+      <div className="fixed inset-0 bg-navy/80 backdrop-blur-sm" onClick={onClose} />
       <div className="relative my-8 grid w-full max-w-5xl grid-cols-1 gap-10 rounded-3xl border border-white/15 bg-white/10 p-8 shadow-2xl shadow-black/40 backdrop-blur-2xl lg:grid-cols-2">
         <button
           onClick={onClose}
@@ -66,13 +94,23 @@ export function ProductModal({
 
         <div>
           <div className="relative">
-            <img
-              src={product.images[active]}
-              alt={tl(product.name)}
-              width={1024}
-              height={1024}
-              className="aspect-square w-full rounded-2xl object-cover outline-1 -outline-offset-1 outline-white/10"
-            />
+            <button
+              type="button"
+              onClick={() => setZoom(true)}
+              aria-label={t("zoomImage")}
+              className="group relative block w-full cursor-zoom-in"
+            >
+              <FadeImage
+                src={product.images[active]}
+                alt={tl(product.name)}
+                width={1024}
+                height={1024}
+                className="aspect-square w-full rounded-2xl object-cover outline-1 -outline-offset-1 outline-white/10"
+              />
+              <span className="absolute bottom-3 end-3 grid size-9 place-items-center rounded-full bg-navy-2/70 text-ivory opacity-0 backdrop-blur transition group-hover:opacity-100">
+                <ZoomIn className="size-4" />
+              </span>
+            </button>
             {count > 1 && (
               <>
                 <button
@@ -146,7 +184,84 @@ export function ProductModal({
             </div>
           )}
         </div>
+
+        {similar.length > 0 && (
+          <section className="border-t border-white/10 pt-6 lg:col-span-2">
+            <h3 className="font-heb text-xl text-ivory">{t("youMayLike")}</h3>
+            <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {similar.map((p) => (
+                <li key={p.id}>
+                  <button
+                    type="button"
+                    onClick={() => onSelect?.(p)}
+                    disabled={!onSelect}
+                    className="group block w-full text-start"
+                  >
+                    <FadeImage
+                      src={p.images[0]}
+                      alt=""
+                      loading="lazy"
+                      width={512}
+                      height={512}
+                      className="aspect-square w-full rounded-xl object-cover outline-1 -outline-offset-1 outline-white/10 transition group-hover:outline-gold/60"
+                    />
+                    <span className="mt-2 block truncate text-sm text-ivory group-hover:text-gold-2">
+                      {tl(p.name)}
+                    </span>
+                    <span className="block text-xs text-gold-2">{formatPrice(p.price, lang)}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
+
+      {zoom && (
+        <div
+          role="dialog"
+          aria-label={tl(product.name)}
+          onClick={() => setZoom(false)}
+          className="fixed inset-0 z-[55] grid cursor-zoom-out place-items-center bg-black/90 p-4 animate-page-in"
+        >
+          <img
+            src={product.images[active]}
+            alt={tl(product.name)}
+            className="max-h-full max-w-full rounded-xl object-contain"
+          />
+          <button
+            type="button"
+            aria-label={t("close")}
+            className="absolute top-4 end-4 grid size-10 place-items-center rounded-full border border-white/20 bg-navy-2/70 text-ivory"
+          >
+            ✕
+          </button>
+          {count > 1 && (
+            <>
+              <button
+                aria-label="previous"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  step(-1);
+                }}
+                className={`${arrowCls} start-4`}
+              >
+                <PrevIcon className="size-5" />
+              </button>
+              <button
+                aria-label="next"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  step(1);
+                }}
+                className={`${arrowCls} end-4`}
+              >
+                <NextIcon className="size-5" />
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

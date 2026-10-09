@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { Lock, MapPin, Truck } from "lucide-react";
+import { Gift, Lock, MapPin, Truck } from "lucide-react";
+import { Confetti } from "@/components/Confetti";
 import { useCart } from "@/lib/cart";
 import { LetterField } from "@/components/Letter";
 import { useProducts } from "@/lib/products";
@@ -132,6 +133,10 @@ function CheckoutPage() {
   if (done !== null) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-28 text-center">
+        <Confetti />
+        <div className="mx-auto mb-6 grid size-20 place-items-center rounded-full border border-gold/40 bg-gold/10 text-gold-2 shadow-[0_0_60px_-10px] shadow-gold/60 animate-floaty">
+          <Gift className="size-9" />
+        </div>
         <h1 className="font-heb text-4xl font-bold leading-tight text-gold-2 sm:text-5xl">
           {t(done > 1 ? "orderDoneMany" : "orderDoneOne")}
         </h1>

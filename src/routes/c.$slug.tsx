@@ -54,7 +54,7 @@ function CategoryPage() {
           ))}
         </div>
       </section>
-      <ProductModal product={preview} onClose={() => setPreview(null)} />
+      <ProductModal product={preview} onClose={() => setPreview(null)} onSelect={setPreview} />
     </main>
   );
 }

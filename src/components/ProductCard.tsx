@@ -1,4 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
+import { FadeImage } from "@/components/FadeImage";
 import type { Product } from "@/lib/products";
 import { getCategory } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
@@ -25,7 +26,7 @@ export function ProductCard({
   return (
     <article className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl transition hover:border-gold/40">
       <button className="relative block w-full" onClick={() => onPreview(product)}>
-        <img
+        <FadeImage
           src={product.images[0]}
           alt={tl(product.name)}
           loading="lazy"
