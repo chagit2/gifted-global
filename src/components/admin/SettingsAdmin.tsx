@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { extFor, shrinkImage } from "@/lib/shrinkImage";
 import { useI18n } from "@/lib/i18n";
 import { SETTINGS_KEY, useSettings } from "@/lib/settings";
 
@@ -44,8 +45,10 @@ function LetterBackgrounds() {
     setError(null);
     try {
       const urls: string[] = [];
-      for (const file of files) {
-        const ext = file.type.split("/")[1]?.replace("jpeg", "jpg") || "jpg";
+      for (const original of files) {
+        // Printed full-page on A4, so keep print resolution (~300 dpi).
+        const file = await shrinkImage(original, { maxSide: 3508, quality: 0.9, minBytes: 1_500_000 });
+        const ext = extFor(file.type);
         const path = `${crypto.randomUUID()}.${ext}`;
         const { error } = await supabase.storage
           .from(BUCKET)

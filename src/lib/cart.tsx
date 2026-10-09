@@ -17,6 +17,8 @@ const normalize = (l: CartLine & { letter?: string }): CartLine => ({
 type CartCtx = {
   lines: CartLine[];
   add: (p: Product, letter?: string) => void;
+  // Adds several gifts at once, one letter per copy ("order again").
+  addMany: (items: { productId: string; letters: string[] }[]) => void;
   remove: (productId: string) => void;
   setQty: (productId: string, qty: number) => void;
   setLetter: (productId: string, index: number, letter: string) => void;
@@ -73,6 +75,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
               l.productId === p.id ? { ...l, qty: l.qty + 1, letters: [...l.letters, letter] } : l,
             );
           return [...prev, { productId: p.id, qty: 1, letters: [letter] }];
+        }),
+      addMany: (items) =>
+        setLines((prev) => {
+          const next = [...prev];
+          for (const it of items) {
+            const i = next.findIndex((l) => l.productId === it.productId);
+            if (i === -1) next.push({ productId: it.productId, qty: it.letters.length, letters: it.letters });
+            else {
+              const l = next[i]!;
+              next[i] = { ...l, qty: l.qty + it.letters.length, letters: [...l.letters, ...it.letters] };
+            }
+          }
+          return next;
         }),
       remove: (id) => setLines((prev) => prev.filter((l) => l.productId !== id)),
       setQty: (id, qty) =>

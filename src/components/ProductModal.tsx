@@ -4,7 +4,8 @@ import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import { FadeImage } from "@/components/FadeImage";
 import { useProducts, type Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
-import { formatPrice, useI18n } from "@/lib/i18n";
+import { useCurrency } from "@/lib/currency";
+import { useI18n } from "@/lib/i18n";
 
 export function ProductModal({
   product,
@@ -17,6 +18,7 @@ export function ProductModal({
   onSelect?: (p: Product) => void;
 }) {
   const { t, tl, lang, dir } = useI18n();
+  const { money } = useCurrency();
   const { add, setDrawerOpen } = useCart();
   const navigate = useNavigate();
   const { live } = useProducts();
@@ -150,7 +152,7 @@ export function ProductModal({
 
           <div className="mt-5 flex items-end gap-4">
             <span className="text-3xl font-bold text-gold-2">
-              {formatPrice(product.price, lang)}
+              {money(product.price)}
             </span>
             <span className="text-xs text-ivory/50">{tl(product.subtitle)}</span>
           </div>
@@ -208,7 +210,7 @@ export function ProductModal({
                     <span className="mt-2 block truncate text-sm text-ivory group-hover:text-gold-2">
                       {tl(p.name)}
                     </span>
-                    <span className="block text-xs text-gold-2">{formatPrice(p.price, lang)}</span>
+                    <span className="block text-xs text-gold-2">{money(p.price)}</span>
                   </button>
                 </li>
               ))}

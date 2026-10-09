@@ -3,7 +3,8 @@ import { FadeImage } from "@/components/FadeImage";
 import type { Product } from "@/lib/products";
 import { getCategory } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
-import { formatPrice, useI18n } from "@/lib/i18n";
+import { useCurrency } from "@/lib/currency";
+import { useI18n } from "@/lib/i18n";
 
 export function ProductCard({
   product,
@@ -17,6 +18,7 @@ export function ProductCard({
   categorySlug?: string;
 }) {
   const { tl, t, lang } = useI18n();
+  const { money } = useCurrency();
   const { add, setDrawerOpen } = useCart();
   const navigate = useNavigate();
   const cat = getCategory(
@@ -48,7 +50,7 @@ export function ProductCard({
       <h3 className="mt-4 font-heb text-lg text-ivory">{tl(product.name)}</h3>
       <p className="mt-1 text-xs text-ivory/50">{tl(product.subtitle)}</p>
       <div className="mt-4 flex items-center justify-between gap-2">
-        <span className="font-semibold text-gold-2">{formatPrice(product.price, lang)}</span>
+        <span className="font-semibold text-gold-2">{money(product.price)}</span>
         {product.inStock ? (
           <div className="flex gap-2">
             <button

@@ -1,15 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Gift, Lock, MapPin, Truck } from "lucide-react";
 import { Confetti } from "@/components/Confetti";
 import { useCart } from "@/lib/cart";
 import { LetterField } from "@/components/Letter";
 import { useProducts } from "@/lib/products";
+import { useCurrency } from "@/lib/currency";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
 import { useAuth } from "@/lib/auth";
 import { couponDiscount, minDeliveryDate, type Coupon } from "@/lib/orders";
 import { useSettings } from "@/lib/settings";
+import { supabase } from "@/integrations/supabase/client";
+import { clearPrefill, fillEmpty, readPrefill } from "@/lib/prefill";
 import { checkCoupon } from "@/lib/orders.functions";
 
 export const Route = createFileRoute("/checkout")({
@@ -42,6 +45,7 @@ const Req = () => (
 
 function CheckoutPage() {
   const { t, tl, lang } = useI18n();
+  const { money, currency, rate, rateDate, rateSource } = useCurrency();
   const { lines, total, setLetter, clear } = useCart();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -62,6 +66,36 @@ function CheckoutPage() {
   const [checkingCoupon, setCheckingCoupon] = useState(false);
   const discount = coupon ? couponDiscount(coupon, total) : 0;
   const grandTotal = total - discount + shippingFee;
+  const formRef = useRef<HTMLFormElement>(null);
+  const [prefilled, setPrefilled] = useState(false);
+  // The form only appears once the saved cart has loaded.
+  const hasForm = lines.length > 0 && done === null;
+
+  // "Order again" leaves the recipient for us; signed-in customers get their
+  // sender details from their latest order. Only empty fields are filled.
+  useEffect(() => {
+    const recipient = hasForm ? readPrefill() : null;
+    if (!recipient) return;
+    fillEmpty(formRef.current, recipient);
+    clearPrefill();
+    setPrefilled(true);
+  }, [hasForm]);
+  useEffect(() => {
+    if (!hasForm || !user) return;
+    supabase
+      .from("orders")
+      .select("sender_name, phone")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!data) return;
+        fillEmpty(formRef.current, { senderName: data.sender_name, phone: data.phone });
+        setPrefilled(true);
+      });
+  }, [hasForm, user]);
+
   // Computed in the browser so the date matches the customer's calendar.
   const [minDate, setMinDate] = useState("");
   useEffect(() => setMinDate(minDeliveryDate()), []);
@@ -99,6 +133,8 @@ function CheckoutPage() {
           deliveryDate: String(fd.get("deliveryDate") ?? "") || null,
           customerNote: String(fd.get("customerNote") ?? ""),
           couponCode: coupon?.code ?? "",
+          // Until the rate has loaded, prices are shown (and charged) in shekels.
+          currency: rate === null ? "ILS" : currency,
           // One order line per gift copy, each with its own letter.
           items: lines.flatMap((l) =>
             l.letters.map((letter) => ({
@@ -122,7 +158,9 @@ function CheckoutPage() {
               ? "deliveryTooSoon"
               : msg.includes("INVALID_COUPON")
                 ? "couponInvalid"
-                : "orderFailed",
+                : msg.includes("RATES_UNAVAILABLE")
+                  ? "ratesUnavailable"
+                  : "orderFailed",
         ),
       );
     } finally {
@@ -183,8 +221,9 @@ function CheckoutPage() {
       )}
 
       <p className="mt-4 text-xs text-ivory/50">{t("requiredNote")}</p>
+      {prefilled && <p className="mt-2 text-xs text-gold-2/80">{t("prefilledNote")}</p>}
 
-      <form onSubmit={onSubmit} className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <form ref={formRef} onSubmit={onSubmit} className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-6">
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
             <h2 className="font-heb text-lg text-ivory">{t("senderDetails")}</h2>
@@ -411,7 +450,7 @@ function CheckoutPage() {
                     {tl(p.name)} × {l.qty}
                   </span>
                   <span className="whitespace-nowrap text-gold-2">
-                    {formatPrice(p.price * l.qty, lang)}
+                    {money(p.price * l.qty)}
                   </span>
                 </li>
               );
@@ -466,23 +505,35 @@ function CheckoutPage() {
           <div className="mt-4 space-y-1 border-t border-white/10 pt-4 text-sm text-ivory/70">
             <div className="flex justify-between">
               <span>{t("subtotal")}</span>
-              <span>{formatPrice(total, lang)}</span>
+              <span>{money(total)}</span>
             </div>
             {discount > 0 && (
               <div className="flex justify-between text-emerald-200">
                 <span>{t("discount")}</span>
-                <span>−{formatPrice(discount, lang)}</span>
+                <span>−{money(discount)}</span>
               </div>
             )}
             <div className="flex justify-between">
               <span>{t("shipping")}</span>
-              <span>{formatPrice(shippingFee, lang)}</span>
+              <span>{money(shippingFee)}</span>
             </div>
           </div>
           <div className="mt-3 flex justify-between border-t border-white/10 pt-3 font-heb text-lg text-ivory">
             <span>{t("total")}</span>
-            <span className="text-gold-2">{formatPrice(grandTotal, lang)}</span>
+            <span className="text-gold-2">{money(grandTotal)}</span>
           </div>
+          {currency !== "ILS" && rate !== null && rateSource && (
+            <p className="mt-2 text-[11px] leading-relaxed text-ivory/50">
+              {t("chargeIn")
+                .replace("{currency}", t(`currency_${currency}`))
+                .replace("{source}", t(rateSource === "boi" ? "rateBoi" : "rateEcb"))
+                .replace(
+                  "{date}",
+                  rateDate ? ` (${new Date(`${rateDate}T12:00`).toLocaleDateString(lang === "he" ? "he-IL" : lang === "fr" ? "fr-FR" : "en-GB")})` : "",
+                )
+                .replace("{ils}", formatPrice(grandTotal, lang))}
+            </p>
+          )}
           {error && <p className="mt-3 text-xs text-red-300">{error}</p>}
           <button
             type="submit"

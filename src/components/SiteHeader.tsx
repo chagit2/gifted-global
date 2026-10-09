@@ -4,6 +4,7 @@ import { Globe, ShoppingBag, Home, ChevronDown, User } from "lucide-react";
 import { categories } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
 import { LANGS, useI18n } from "@/lib/i18n";
+import { CURRENCIES, useCurrency } from "@/lib/currency";
 import { useAuth } from "@/lib/auth";
 
 function useClickOutside(onOut: () => void) {
@@ -118,6 +119,43 @@ function LangMenu() {
   );
 }
 
+function CurrencyMenu() {
+  const { t } = useI18n();
+  const { currency, setCurrency } = useCurrency();
+  const [open, setOpen] = useState(false);
+  const ref = useClickOutside(() => setOpen(false));
+  const symbol = CURRENCIES.find((c) => c.code === currency)!.symbol;
+  return (
+    <div ref={ref} className="relative">
+      <button
+        aria-label={t("currency")}
+        title={t("currency")}
+        onClick={() => setOpen((o) => !o)}
+        className={`${iconBtn} text-base font-semibold`}
+      >
+        {symbol}
+      </button>
+      {open && (
+        <ul className={`${panel} absolute top-full end-0 z-50 mt-2 w-max`}>
+          {CURRENCIES.map((c) => (
+            <li key={c.code}>
+              <button
+                onClick={() => {
+                  setCurrency(c.code);
+                  setOpen(false);
+                }}
+                className={`${itemCls} ${c.code === currency ? "text-gold-2 font-semibold" : ""}`}
+              >
+                <span className="inline-block w-5">{c.symbol}</span> {t(`currency_${c.code}`)}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function SiteHeader() {
   const { t, tl } = useI18n();
   const { count } = useCart();
@@ -144,6 +182,7 @@ export function SiteHeader() {
         {/* End side (left in Hebrew): language menu, then cart */}
         <div className="ms-auto flex items-center gap-2">
           <LangMenu />
+          <CurrencyMenu />
           <Link to={user ? "/account" : "/login"} aria-label={t("account")} className={`relative ${iconBtn}`}>
             <User className="size-5" />
             {user && <span className="absolute -top-0.5 -end-0.5 size-2.5 rounded-full bg-gold" />}

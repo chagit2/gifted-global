@@ -20,6 +20,8 @@ const schema = z.object({
     .default(null),
   customerNote: z.string().max(1000).default(""),
   couponCode: z.string().max(40).default(""),
+  // Currency the customer chose to pay in; the rate is looked up here.
+  currency: z.enum(["ILS", "EUR", "USD"]).default("ILS"),
   items: z
     .array(
       z.object({
@@ -75,16 +77,25 @@ export const placeOrder = createServerFn({ method: "POST" })
       .select("id, name_he, price, active, in_stock")
       .in("id", ids);
     if (productsError) throw new Error(productsError.message);
-    const catalog = new Map((products ?? []).filter((p) => p.active && p.in_stock).map((p) => [p.id, p]));
+    const catalog = new Map(
+      (products ?? []).filter((p) => p.active && p.in_stock).map((p) => [p.id, p]),
+    );
     if (ids.some((id) => !catalog.has(id))) throw new Error("PRODUCT_UNAVAILABLE");
-    const subtotal = data.items.reduce((sum, i) => sum + Number(catalog.get(i.productId)!.price) * i.qty, 0);
+    const subtotal = data.items.reduce(
+      (sum, i) => sum + Number(catalog.get(i.productId)!.price) * i.qty,
+      0,
+    );
 
     // A day of slack for time zones (the customer may be in France).
     if (data.deliveryDate && data.deliveryDate < minDeliveryDate(new Date(Date.now() - 86400000))) {
       throw new Error("DELIVERY_TOO_SOON");
     }
 
-    const { data: settings } = await supabaseAdmin.from("site_settings").select("shipping_fee").eq("id", 1).maybeSingle();
+    const { data: settings } = await supabaseAdmin
+      .from("site_settings")
+      .select("shipping_fee")
+      .eq("id", 1)
+      .maybeSingle();
     const shippingFee = settings ? Number(settings.shipping_fee) : SHIPPING_FEE;
 
     const couponCode = data.couponCode.trim().toUpperCase();
@@ -96,28 +107,51 @@ export const placeOrder = createServerFn({ method: "POST" })
     }
     const total = subtotal - discount + shippingFee;
 
-    const { data: order, error } = await supabaseAdmin
+    let fxRate = 1;
+    if (data.currency !== "ILS") {
+      const { fetchRates } = await import("./rates.server");
+      const rates = await fetchRates();
+      if (!rates) throw new Error("RATES_UNAVAILABLE");
+      fxRate = rates[data.currency];
+    }
+    const totalInCurrency = Math.round((total / fxRate) * 100) / 100;
+
+    const row = {
+      sender_name: data.senderName,
+      phone: data.phone,
+      recipient_name: data.recipientName,
+      recipient_phone: data.recipientPhone,
+      ship_street: data.street,
+      ship_city: data.city,
+      ship_zip: data.zip,
+      ship_country: data.country,
+      language: data.language,
+      total,
+      user_id: userId,
+      delivery_date: data.deliveryDate,
+      customer_note: data.customerNote.trim(),
+      coupon_code: couponCode,
+      discount,
+      shipping_fee: shippingFee,
+      currency: data.currency,
+    };
+    // fx_rate and total_in_currency come from db/currency.sql; the cast covers
+    // the generated types until they are regenerated.
+    const withRate = { ...row, fx_rate: fxRate, total_in_currency: totalInCurrency } as typeof row;
+    let { data: order, error } = await supabaseAdmin
       .from("orders")
-      .insert({
-        sender_name: data.senderName,
-        phone: data.phone,
-        recipient_name: data.recipientName,
-        recipient_phone: data.recipientPhone,
-        ship_street: data.street,
-        ship_city: data.city,
-        ship_zip: data.zip,
-        ship_country: data.country,
-        language: data.language,
-        total,
-        user_id: userId,
-        delivery_date: data.deliveryDate,
-        customer_note: data.customerNote.trim(),
-        coupon_code: couponCode,
-        discount,
-        shipping_fee: shippingFee,
-      })
+      .insert(withRate)
       .select("id")
       .single();
+    // Before that SQL has run the columns don't exist; save the order without
+    // them rather than lose it.
+    if (error && /fx_rate|total_in_currency/.test(error.message)) {
+      ({ data: order, error } = await supabaseAdmin
+        .from("orders")
+        .insert(row)
+        .select("id")
+        .single());
+    }
 
     if (error || !order) throw new Error(error?.message ?? "Order failed");
 
@@ -191,7 +225,10 @@ export const setAdminNote = createServerFn({ method: "POST" })
     if (isAdmin !== true) throw new Error("Forbidden");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("orders").update({ admin_note: data.note }).eq("id", data.orderId);
+    const { error } = await supabaseAdmin
+      .from("orders")
+      .update({ admin_note: data.note })
+      .eq("id", data.orderId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

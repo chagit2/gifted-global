@@ -3,7 +3,8 @@ import { MapPin } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { LetterField } from "@/components/Letter";
 import { useProducts } from "@/lib/products";
-import { formatPrice, useI18n } from "@/lib/i18n";
+import { useCurrency } from "@/lib/currency";
+import { useI18n } from "@/lib/i18n";
 import { useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/cart")({
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/cart")({
 
 function CartPage() {
   const { t, tl, lang } = useI18n();
+  const { money } = useCurrency();
   const { lines, total, remove, setQty, setLetter } = useCart();
   const { getProduct } = useProducts();
   const { shippingFee } = useSettings();
@@ -60,7 +62,7 @@ function CartPage() {
                           {!p.inStock && <p className="mt-1 text-xs text-red-300">{t("outOfStock")}</p>}
                         </div>
                         <span className="font-semibold text-gold-2">
-                          {formatPrice(p.price * line.qty, lang)}
+                          {money(p.price * line.qty)}
                         </span>
                       </div>
                       <div className="mt-3 flex items-center gap-3 text-xs text-ivory/70">
@@ -110,10 +112,10 @@ function CartPage() {
           <div className="mt-3 flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
             <div>
               <p className="text-xs text-ivory/50">
-                {t("subtotal")}: {formatPrice(total, lang)} · {t("shipping")}: {formatPrice(shippingFee, lang)}
+                {t("subtotal")}: {money(total)} · {t("shipping")}: {money(shippingFee)}
               </p>
               <p className="mt-1 font-heb text-xl text-ivory">
-                {t("total")}: <span className="text-gold-2">{formatPrice(total + shippingFee, lang)}</span>
+                {t("total")}: <span className="text-gold-2">{money(total + shippingFee)}</span>
               </p>
             </div>
             <Link

@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "@/lib/i18n";
 import { CartProvider } from "@/lib/cart";
+import { CurrencyProvider } from "@/lib/currency";
 import { AuthProvider } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -132,6 +133,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
+        <CurrencyProvider>
         <AuthProvider>
         <CartProvider>
           <div className="flex min-h-screen flex-col bg-navy print:bg-white">
@@ -148,6 +150,7 @@ function RootComponent() {
           </div>
         </CartProvider>
         </AuthProvider>
+        </CurrencyProvider>
       </I18nProvider>
     </QueryClientProvider>
   );

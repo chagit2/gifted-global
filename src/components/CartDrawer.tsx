@@ -2,13 +2,15 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Minus, PenLine, Plus, ShoppingBag, X } from "lucide-react";
 import { useEffect } from "react";
 import { useCart } from "@/lib/cart";
-import { formatPrice, useI18n } from "@/lib/i18n";
+import { useCurrency } from "@/lib/currency";
+import { useI18n } from "@/lib/i18n";
 import { useProducts } from "@/lib/products";
 
 // Slide-in cart opened by "add to cart": the shopper sees what is in the bag
 // and can keep browsing without leaving the page.
 export function CartDrawer() {
   const { t, tl, lang } = useI18n();
+  const { money } = useCurrency();
   const { lines, total, setQty, remove, drawerOpen: open, setDrawerOpen } = useCart();
   const { getProduct } = useProducts();
   const path = useRouterState({ select: (s) => s.location.pathname });
@@ -83,7 +85,7 @@ export function CartDrawer() {
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm text-ivory">{tl(p.name)}</p>
-                      <p className="text-xs text-gold-2">{formatPrice(p.price * line.qty, lang)}</p>
+                      <p className="text-xs text-gold-2">{money(p.price * line.qty)}</p>
                       <div className="mt-2 flex items-center gap-3">
                         <div className="inline-flex items-center rounded-full border border-white/15">
                           <button
@@ -125,7 +127,7 @@ export function CartDrawer() {
               </p>
               <div className="flex items-center justify-between font-heb text-lg text-ivory">
                 <span>{t("total")}</span>
-                <span className="text-gold-2">{formatPrice(total, lang)}</span>
+                <span className="text-gold-2">{money(total)}</span>
               </div>
               <Link
                 to="/cart"
