@@ -16,7 +16,7 @@ export function ProductCard({
   categorySlug?: string;
 }) {
   const { tl, t, lang } = useI18n();
-  const { add } = useCart();
+  const { add, setDrawerOpen } = useCart();
   const navigate = useNavigate();
   const cat = getCategory(
     categorySlug ?? (product.categories.length === 1 ? product.category : ""),
@@ -51,7 +51,10 @@ export function ProductCard({
         {product.inStock ? (
           <div className="flex gap-2">
             <button
-              onClick={() => add(product)}
+              onClick={() => {
+                add(product);
+                setDrawerOpen(true);
+              }}
               className="rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-ivory hover:bg-white/20 transition"
             >
               {t("addToCart")}

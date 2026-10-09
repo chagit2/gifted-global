@@ -346,6 +346,7 @@ function CheckoutPage() {
                         <LetterField
                           value={letter}
                           onChange={(v) => setLetter(l.productId, i, v)}
+                          categories={p.categories}
                           className="mt-1"
                         />
                       </div>

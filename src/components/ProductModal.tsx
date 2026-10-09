@@ -13,7 +13,7 @@ export function ProductModal({
   onClose: () => void;
 }) {
   const { t, tl, lang, dir } = useI18n();
-  const { add } = useCart();
+  const { add, setDrawerOpen } = useCart();
   const navigate = useNavigate();
   const [active, setActive] = useState(0);
 
@@ -127,6 +127,7 @@ export function ProductModal({
                 onClick={() => {
                   add(product);
                   onClose();
+                  setDrawerOpen(true);
                 }}
                 className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy hover:bg-gold-2 transition"
               >

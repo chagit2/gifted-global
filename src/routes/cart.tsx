@@ -92,6 +92,7 @@ function CartPage() {
                         <LetterField
                           value={letter}
                           onChange={(v) => setLetter(line.productId, i, v)}
+                          categories={p.categories}
                           className="mt-2"
                         />
                       </div>

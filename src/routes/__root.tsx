@@ -17,6 +17,8 @@ import { AuthProvider } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CookieConsent } from "@/components/CookieConsent";
+import { HolidayBanner } from "@/components/HolidayBanner";
+import { CartDrawer } from "@/components/CartDrawer";
 
 function NotFoundComponent() {
   return (
@@ -132,11 +134,13 @@ function RootComponent() {
         <CartProvider>
           <div className="flex min-h-screen flex-col bg-navy print:bg-white">
             <SiteHeader />
+            <HolidayBanner />
             <div className="flex-1">
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
               <Outlet />
             </div>
             <SiteFooter />
+            <CartDrawer />
             <CookieConsent />
           </div>
         </CartProvider>
