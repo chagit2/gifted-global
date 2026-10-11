@@ -36,6 +36,13 @@
       "when": 1791492438018,
       "tag": "0004_add_letter_backgrounds",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791704783132,
+      "tag": "0005_add_order_currency_columns",
+      "breakpoints": true
     }
   ]
 }
