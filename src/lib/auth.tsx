@@ -12,7 +12,7 @@ type AuthCtx = {
 
 // Signed-in visitors are signed out after this long without any activity.
 // Activity in any open tab counts (shared through localStorage).
-export const IDLE_LOGOUT_MS = 30 * 60 * 1000;
+export const IDLE_LOGOUT_MS = 10 * 60 * 1000;
 const ACTIVITY_KEY = "lastActivity";
 // Set when the idle timer signed someone out, so the login page can say why.
 export const IDLE_FLAG = "loggedOutIdle";
