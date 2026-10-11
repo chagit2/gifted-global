@@ -68,8 +68,12 @@ export type OrderRow = {
   ship_country: string;
   total: number;
   status: string;
+  // Payment currency; total_in_currency exists once db/currency.sql has run.
+  currency?: string;
+  total_in_currency?: number | null;
   order_items: { id: string; product_id: string; product_name: string; qty: number; unit_price: number; letter: string }[];
 };
 
+// "*" so columns added later (e.g. total_in_currency) come along when present.
 export const ORDER_SELECT =
-  "id, created_at, sender_name, phone, delivery_date, customer_note, admin_note, coupon_code, discount, shipping_fee, recipient_name, recipient_phone, ship_street, ship_city, ship_country, total, status, order_items(id, product_id, product_name, qty, unit_price, letter)";
+  "*, order_items(id, product_id, product_name, qty, unit_price, letter)";

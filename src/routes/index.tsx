@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Sparkles } from "lucide-react";
 import { useState } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductModal } from "@/components/ProductModal";
@@ -37,6 +38,19 @@ function Index() {
       <GiftBanner />
 
       <section className="relative mx-auto max-w-7xl px-6 pt-12 pb-20">
+        <Link
+          to="/find"
+          className="group mb-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gold/30 bg-gradient-to-l from-gold/15 to-white/5 p-6 backdrop-blur-xl transition hover:border-gold/60"
+        >
+          <div>
+            <p className="font-heb text-2xl text-ivory">{t("finderCtaTitle")}</p>
+            <p className="mt-1 text-sm text-ivory/70">{t("finderCtaText")}</p>
+          </div>
+          <span className="inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy transition group-hover:bg-gold-2">
+            <Sparkles className="size-4" />
+            {t("finderTitle")}
+          </span>
+        </Link>
         <h2 className="font-heb text-3xl font-bold text-ivory">{t("allGifts")}</h2>
         {isError ? (
           <p className="mt-8 text-sm text-red-300">{t("loadError")}</p>
@@ -51,7 +65,7 @@ function Index() {
         )}
       </section>
 
-      <ProductModal product={preview} onClose={() => setPreview(null)} />
+      <ProductModal product={preview} onClose={() => setPreview(null)} onSelect={setPreview} />
     </main>
   );
 }

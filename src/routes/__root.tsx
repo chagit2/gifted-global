@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -13,9 +14,13 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "@/lib/i18n";
 import { CartProvider } from "@/lib/cart";
+import { CurrencyProvider } from "@/lib/currency";
 import { AuthProvider } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { CookieConsent } from "@/components/CookieConsent";
+import { HolidayBanner } from "@/components/HolidayBanner";
+import { CartDrawer } from "@/components/CartDrawer";
 
 function NotFoundComponent() {
   return (
@@ -123,22 +128,29 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
+        <CurrencyProvider>
         <AuthProvider>
         <CartProvider>
           <div className="flex min-h-screen flex-col bg-navy print:bg-white">
             <SiteHeader />
-            <div className="flex-1">
+            <HolidayBanner />
+            {/* Keyed by path so each page fades in when it opens. */}
+            <div key={pathname} className="flex-1 animate-page-in">
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
               <Outlet />
             </div>
             <SiteFooter />
+            <CartDrawer />
+            <CookieConsent />
           </div>
         </CartProvider>
         </AuthProvider>
+        </CurrencyProvider>
       </I18nProvider>
     </QueryClientProvider>
   );

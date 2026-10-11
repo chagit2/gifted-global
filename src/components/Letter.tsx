@@ -1,5 +1,6 @@
-import { Check, ChevronDown, Copy } from "lucide-react";
+import { Check, ChevronDown, Copy, Sparkles } from "lucide-react";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { greetingsFor } from "@/lib/greetings";
 import { useI18n } from "@/lib/i18n";
 
 const MAX = 500;
@@ -21,18 +22,29 @@ function ToggleButton({ open, onClick }: { open: boolean; onClick: () => void })
 
 // Letter input that shows three lines by default; when the text runs longer,
 // a toggle opens the box to its full height and closes it again.
+// "Greeting ideas" offers ready-made texts, those for the gift's categories first.
 export function LetterField({
   value,
   onChange,
+  categories,
   className = "",
 }: {
   value: string;
   onChange: (v: string) => void;
+  categories?: string[];
   className?: string;
 }) {
+  const { t, tl } = useI18n();
   const ref = useRef<HTMLTextAreaElement>(null);
   const [open, setOpen] = useState(false);
   const [long, setLong] = useState(false);
+  const [ideas, setIdeas] = useState(false);
+
+  // An empty letter takes the greeting; otherwise it goes on a new line.
+  const pick = (text: string) => {
+    onChange((value.trim() ? `${value.trimEnd()}\n${text}` : text).slice(0, MAX));
+    setIdeas(false);
+  };
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -53,7 +65,34 @@ export function LetterField({
         onChange={(e) => onChange(e.target.value.slice(0, MAX))}
         className={`w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none ${className}`}
       />
-      {long && <ToggleButton open={open} onClick={() => setOpen((o) => !o)} />}
+      <div className="flex flex-wrap items-center justify-between gap-x-4">
+        <button
+          type="button"
+          onClick={() => setIdeas((v) => !v)}
+          aria-expanded={ideas}
+          className="mt-1 inline-flex items-center gap-1 text-xs text-gold-2/80 hover:text-gold-2"
+        >
+          <Sparkles className="size-3.5" />
+          {t("greetingIdeas")}
+        </button>
+        {long && <ToggleButton open={open} onClick={() => setOpen((o) => !o)} />}
+      </div>
+      {ideas && (
+        <ul className="mt-2 max-h-60 space-y-1.5 overflow-y-auto rounded-lg border border-white/10 bg-navy-2/80 p-2">
+          {greetingsFor(categories).map((g) => (
+            <li key={g.title.en}>
+              <button
+                type="button"
+                onClick={() => pick(tl(g.text))}
+                className="w-full rounded-md px-3 py-2 text-start transition hover:bg-gold/10"
+              >
+                <span className="block text-[11px] font-semibold text-gold-2">{tl(g.title)}</span>
+                <span className="block text-xs text-ivory/80">{tl(g.text)}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

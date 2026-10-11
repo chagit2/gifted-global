@@ -1,10 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { OrderCard } from "@/components/OrderCard";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
+import { useCart } from "@/lib/cart";
 import { ORDER_SELECT, type OrderRow } from "@/lib/orders";
+import { savePrefill, splitStreet } from "@/lib/prefill";
+import { useProducts } from "@/lib/products";
 
 export const Route = createFileRoute("/account")({
   head: () => ({ meta: [{ title: "אזור אישי · מתנות" }, { name: "robots", content: "noindex" }] }),
@@ -74,9 +78,58 @@ function AccountPage() {
         ) : orders.length === 0 ? (
           <p className="text-sm text-ivory/50">{t("noOrders")}</p>
         ) : (
-          orders.map((o) => <OrderCard key={o.id} order={o} />)
+          orders.map((o) => <OrderCard key={o.id} order={o} actions={<OrderAgain order={o} />} />)
         )}
       </div>
     </main>
+  );
+}
+
+// Puts the order's gifts (with their letters) back in the cart and remembers
+// the recipient for the checkout form.
+function OrderAgain({ order }: { order: OrderRow }) {
+  const { t } = useI18n();
+  const { addMany } = useCart();
+  const { getProduct } = useProducts();
+  const navigate = useNavigate();
+  const [note, setNote] = useState<string | null>(null);
+
+  const again = () => {
+    const byProduct = new Map<string, string[]>();
+    let skipped = 0;
+    for (const it of order.order_items) {
+      const p = getProduct(it.product_id);
+      if (!p || !p.inStock) {
+        skipped += it.qty;
+        continue;
+      }
+      const letters = byProduct.get(it.product_id) ?? [];
+      for (let i = 0; i < it.qty; i++) letters.push(it.letter);
+      byProduct.set(it.product_id, letters);
+    }
+    if (byProduct.size === 0) return setNote(t("orderAgainNone"));
+    addMany([...byProduct].map(([productId, letters]) => ({ productId, letters })));
+    savePrefill({
+      recipientName: order.recipient_name,
+      recipientPhone: order.recipient_phone,
+      city: order.ship_city,
+      ...splitStreet(order.ship_street),
+    });
+    if (skipped) window.alert(t("orderAgainPartial"));
+    navigate({ to: "/cart" });
+  };
+
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-3">
+      <button
+        type="button"
+        onClick={again}
+        className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 px-4 py-2 text-xs font-semibold text-gold-2 transition hover:bg-gold/10"
+      >
+        <RotateCcw className="size-3.5" />
+        {t("orderAgain")}
+      </button>
+      {note && <span className="text-xs text-ivory/60">{note}</span>}
+    </div>
   );
 }

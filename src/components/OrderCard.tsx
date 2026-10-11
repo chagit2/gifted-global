@@ -2,6 +2,7 @@ import { CalendarClock, Printer } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useProducts } from "@/lib/products";
 import { LetterPreview } from "@/components/Letter";
+import { formatMoney } from "@/lib/currency";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { DONE_STATUSES, statusKey, statusTone, type OrderRow } from "@/lib/orders";
 import { setAdminNote } from "@/lib/orders.functions";
@@ -23,10 +24,13 @@ export function OrderCard({
   order,
   admin,
   statusSlot,
+  actions,
 }: {
   order: OrderRow;
   admin?: boolean;
   statusSlot?: ReactNode;
+  // Extra buttons under the order (the customer's "order again").
+  actions?: ReactNode;
 }) {
   const { t, tl, lang } = useI18n();
   const { getProduct } = useProducts();
@@ -168,9 +172,16 @@ export function OrderCard({
           <p className="font-heb text-lg text-ivory">
             {t("total")}: <span className="text-gold-2">{formatPrice(order.total, lang)}</span>
           </p>
+          {(order.currency === "EUR" || order.currency === "USD") && order.total_in_currency && (
+            <p className="text-xs text-gold-2/80">
+              {t("paidIn").replace("{currency}", t(`currency_${order.currency}`))}:{" "}
+              {formatMoney(Number(order.total_in_currency), order.currency, lang)}
+            </p>
+          )}
         </div>
       </footer>
 
+      {actions}
       {admin && <AdminTools order={order} />}
     </article>
   );

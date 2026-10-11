@@ -1,8 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
+import { FadeImage } from "@/components/FadeImage";
 import type { Product } from "@/lib/products";
 import { getCategory } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
-import { formatPrice, useI18n } from "@/lib/i18n";
+import { useCurrency } from "@/lib/currency";
+import { useI18n } from "@/lib/i18n";
 
 export function ProductCard({
   product,
@@ -16,7 +18,8 @@ export function ProductCard({
   categorySlug?: string;
 }) {
   const { tl, t, lang } = useI18n();
-  const { add } = useCart();
+  const { money } = useCurrency();
+  const { add, setDrawerOpen } = useCart();
   const navigate = useNavigate();
   const cat = getCategory(
     categorySlug ?? (product.categories.length === 1 ? product.category : ""),
@@ -25,7 +28,7 @@ export function ProductCard({
   return (
     <article className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl transition hover:border-gold/40">
       <button className="relative block w-full" onClick={() => onPreview(product)}>
-        <img
+        <FadeImage
           src={product.images[0]}
           alt={tl(product.name)}
           loading="lazy"
@@ -47,11 +50,14 @@ export function ProductCard({
       <h3 className="mt-4 font-heb text-lg text-ivory">{tl(product.name)}</h3>
       <p className="mt-1 text-xs text-ivory/50">{tl(product.subtitle)}</p>
       <div className="mt-4 flex items-center justify-between gap-2">
-        <span className="font-semibold text-gold-2">{formatPrice(product.price, lang)}</span>
+        <span className="font-semibold text-gold-2">{money(product.price)}</span>
         {product.inStock ? (
           <div className="flex gap-2">
             <button
-              onClick={() => add(product)}
+              onClick={() => {
+                add(product);
+                setDrawerOpen(true);
+              }}
               className="rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-ivory hover:bg-white/20 transition"
             >
               {t("addToCart")}

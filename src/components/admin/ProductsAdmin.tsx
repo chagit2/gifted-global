@@ -14,6 +14,7 @@ import { categories, getCategory } from "@/lib/catalog";
 import { formatPrice, LANGS, useI18n, type L, type Lang } from "@/lib/i18n";
 import { PRODUCTS_KEY, toRow, useProducts, type Product } from "@/lib/products";
 import { translateProductTexts } from "@/lib/translate.functions";
+import { extFor, shrinkImage } from "@/lib/shrinkImage";
 
 const BUCKET = "product-images";
 const field =
@@ -76,6 +77,61 @@ export function ProductsAdmin() {
     refresh();
   };
 
+  // One-off tool: shrink photos uploaded before upload-time shrinking existed.
+  // Uploads a smaller copy under a new name (old URLs are cached for a year),
+  // points the product at it, then deletes the original.
+  const [optimizing, setOptimizing] = useState<{ done: number; total: number } | null>(null);
+  const [optimized, setOptimized] = useState<string | null>(null);
+  const optimizeExisting = async () => {
+    if (!window.confirm(t("optimizeConfirm"))) return;
+    setError(null);
+    setOptimized(null);
+    let count = 0;
+    let saved = 0;
+    setOptimizing({ done: 0, total: all.length });
+    for (const [n, p] of all.entries()) {
+      const images: string[] = [];
+      const added: string[] = [];
+      const replaced: string[] = [];
+      for (const url of p.images) {
+        try {
+          if (!storagePath(url)) throw new Error("not uploaded");
+          const blob = await (await fetch(url)).blob();
+          if (blob.size < 400_000) throw new Error("small already");
+          const small = await shrinkImage(blob);
+          if (small.size > blob.size * 0.8) throw new Error("no real gain");
+          const path = `${crypto.randomUUID()}.${extFor(small.type)}`;
+          const { error } = await supabase.storage
+            .from(BUCKET)
+            .upload(path, small, { contentType: small.type, upsert: false });
+          if (error) throw error;
+          images.push(IMAGE_ROUTE + path);
+          added.push(IMAGE_ROUTE + path);
+          replaced.push(url);
+          saved += blob.size - small.size;
+        } catch {
+          images.push(url);
+        }
+      }
+      if (added.length) {
+        const { error } = await supabase.from("products").update({ images }).eq("id", p.id);
+        if (error) await removeStored(added);
+        else {
+          await removeStored(replaced);
+          count += added.length;
+        }
+      }
+      setOptimizing({ done: n + 1, total: all.length });
+    }
+    setOptimizing(null);
+    setOptimized(
+      t("optimizeDone")
+        .replace("{n}", String(count))
+        .replace("{mb}", (saved / 1_000_000).toFixed(1)),
+    );
+    refresh();
+  };
+
   if (editing) {
     return (
       <ProductForm
@@ -107,14 +163,29 @@ export function ProductsAdmin() {
             </option>
           ))}
         </select>
-        <button
-          onClick={() => setEditing("new")}
-          className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-navy transition hover:bg-gold-2"
-        >
-          + {t("addProduct")}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={optimizeExisting}
+            disabled={optimizing !== null}
+            className="rounded-full border border-white/15 px-4 py-2 text-xs text-ivory transition hover:border-gold/50 hover:text-gold-2 disabled:opacity-60"
+          >
+            {optimizing
+              ? t("optimizing")
+                  .replace("{done}", String(optimizing.done))
+                  .replace("{total}", String(optimizing.total))
+              : t("optimizeImages")}
+          </button>
+          <button
+            onClick={() => setEditing("new")}
+            className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-navy transition hover:bg-gold-2"
+          >
+            + {t("addProduct")}
+          </button>
+        </div>
       </div>
       {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
+      {optimized && <p className="mt-3 text-sm text-emerald-300">{optimized}</p>}
 
       <ul className="mt-6 space-y-3">
         {isError ? (
@@ -257,12 +328,12 @@ function ProductForm({
     setUploading(true);
     setError(null);
     const urls: string[] = [];
-    for (const file of files) {
+    for (const original of files) {
+      const file = await shrinkImage(original);
       // Pasted screenshots are often all named "image.png"; prefer the MIME type.
-      const ext =
-        file.type.split("/")[1]?.replace("jpeg", "jpg") ||
-        file.name.split(".").pop()?.toLowerCase() ||
-        "jpg";
+      const ext = file.type
+        ? extFor(file.type)
+        : original.name.split(".").pop()?.toLowerCase() || "jpg";
       const path = `${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage
         .from(BUCKET)

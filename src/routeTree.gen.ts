@@ -15,7 +15,9 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as FindRouteImport } from './routes/find'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
 import { Route as PrintOrderIdRouteImport } from './routes/print.$orderId'
 import { Route as ProductImagesSplatRouteImport } from './routes/product-images.$'
@@ -50,9 +52,19 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FindRoute = FindRouteImport.update({
+  id: '/find',
+  path: '/find',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CSlugRoute = CSlugRouteImport.update({
@@ -78,7 +90,9 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/find': typeof FindRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/c/$slug': typeof CSlugRoute
   '/print/$orderId': typeof PrintOrderIdRoute
   '/product-images/$': typeof ProductImagesSplatRoute
@@ -90,7 +104,9 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/find': typeof FindRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/c/$slug': typeof CSlugRoute
   '/print/$orderId': typeof PrintOrderIdRoute
   '/product-images/$': typeof ProductImagesSplatRoute
@@ -103,7 +119,9 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/find': typeof FindRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/c/$slug': typeof CSlugRoute
   '/print/$orderId': typeof PrintOrderIdRoute
   '/product-images/$': typeof ProductImagesSplatRoute
@@ -117,7 +135,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/cart'
     | '/checkout'
+    | '/find'
     | '/login'
+    | '/privacy'
     | '/c/$slug'
     | '/print/$orderId'
     | '/product-images/$'
@@ -129,7 +149,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/cart'
     | '/checkout'
+    | '/find'
     | '/login'
+    | '/privacy'
     | '/c/$slug'
     | '/print/$orderId'
     | '/product-images/$'
@@ -141,7 +163,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/cart'
     | '/checkout'
+    | '/find'
     | '/login'
+    | '/privacy'
     | '/c/$slug'
     | '/print/$orderId'
     | '/product-images/$'
@@ -154,7 +178,9 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  FindRoute: typeof FindRoute
   LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
   CSlugRoute: typeof CSlugRoute
   PrintOrderIdRoute: typeof PrintOrderIdRoute
   ProductImagesSplatRoute: typeof ProductImagesSplatRoute
@@ -204,11 +230,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/find': {
+      id: '/find'
+      path: '/find'
+      fullPath: '/find'
+      preLoaderRoute: typeof FindRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/c/$slug': {
@@ -242,7 +282,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  FindRoute: FindRoute,
   LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
   CSlugRoute: CSlugRoute,
   PrintOrderIdRoute: PrintOrderIdRoute,
   ProductImagesSplatRoute: ProductImagesSplatRoute,

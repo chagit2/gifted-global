@@ -225,3 +225,47 @@
   animation: glowpulse 7s ease-in-out infinite;
 }
 
+
+/* Each page fades in gently when it opens. Opacity only: a transform here
+   would make popups inside the page (position: fixed) scroll with it. */
+@keyframes pagein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@utility animate-page-in {
+  animation: pagein 0.35s ease-out backwards;
+}
+
+/* Gold confetti on the order confirmation. */
+@keyframes confettifall {
+  0% {
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift, 0px), 105vh, 0) rotate(var(--spin, 540deg));
+    opacity: 0;
+  }
+}
+
+@utility animate-confetti {
+  animation: confettifall var(--fall, 3s) cubic-bezier(0.25, 0.6, 0.5, 1) var(--delay, 0s) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-page-in,
+  .animate-confetti {
+    animation: none !important;
+  }
+  .animate-confetti {
+    display: none;
+  }
+}

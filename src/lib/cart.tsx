@@ -17,10 +17,15 @@ const normalize = (l: CartLine & { letter?: string }): CartLine => ({
 type CartCtx = {
   lines: CartLine[];
   add: (p: Product, letter?: string) => void;
+  // Adds several gifts at once, one letter per copy ("order again").
+  addMany: (items: { productId: string; letters: string[] }[]) => void;
   remove: (productId: string) => void;
   setQty: (productId: string, qty: number) => void;
   setLetter: (productId: string, index: number, letter: string) => void;
   clear: () => void;
+  // Side panel that slides in after "add to cart".
+  drawerOpen: boolean;
+  setDrawerOpen: (open: boolean) => void;
   count: number;
   total: number;
 };
@@ -29,6 +34,10 @@ const Ctx = createContext<CartCtx | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  // Don't write the cart back until the saved one has been read, or the empty
+  // first render would overwrite it.
+  const [loaded, setLoaded] = useState(false);
   const { getProduct } = useProducts();
 
   useEffect(() => {
@@ -38,17 +47,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } catch {
       /* ignore */
     }
+    setLoaded(true);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(lines));
-  }, [lines]);
+    if (!loaded) return;
+    try {
+      localStorage.setItem("cart", JSON.stringify(lines));
+    } catch {
+      /* storage blocked: the cart lives for this page only */
+    }
+  }, [lines, loaded]);
 
   const value = useMemo<CartCtx>(() => {
     const total = lines.reduce((sum, l) => sum + (getProduct(l.productId)?.price ?? 0) * l.qty, 0);
     return {
       lines,
       total,
+      drawerOpen,
+      setDrawerOpen,
       count: lines.reduce((s, l) => s + l.qty, 0),
       add: (p, letter = "") =>
         setLines((prev) => {
@@ -58,6 +75,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
               l.productId === p.id ? { ...l, qty: l.qty + 1, letters: [...l.letters, letter] } : l,
             );
           return [...prev, { productId: p.id, qty: 1, letters: [letter] }];
+        }),
+      addMany: (items) =>
+        setLines((prev) => {
+          const next = [...prev];
+          for (const it of items) {
+            const i = next.findIndex((l) => l.productId === it.productId);
+            if (i === -1) next.push({ productId: it.productId, qty: it.letters.length, letters: it.letters });
+            else {
+              const l = next[i]!;
+              next[i] = { ...l, qty: l.qty + it.letters.length, letters: [...l.letters, ...it.letters] };
+            }
+          }
+          return next;
         }),
       remove: (id) => setLines((prev) => prev.filter((l) => l.productId !== id)),
       setQty: (id, qty) =>
@@ -74,7 +104,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         ),
       clear: () => setLines([]),
     };
-  }, [lines, getProduct]);
+  }, [lines, getProduct, drawerOpen]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
