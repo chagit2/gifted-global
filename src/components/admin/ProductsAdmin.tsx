@@ -43,6 +43,7 @@ export function ProductsAdmin() {
   const { all, isLoading, isError } = useProducts();
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState("");
+  const topRef = useRef<HTMLDivElement>(null);
   const [editing, setEditing] = useState<Product | "new" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -147,11 +148,17 @@ export function ProductsAdmin() {
   }
 
   return (
-    <div>
+    <div ref={topRef} className="scroll-mt-24">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <select
           value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          onChange={(e) => {
+            setFilter(e.target.value);
+            // A shorter list would leave the page scrolled past its end;
+            // bring the top of the list back into view instead.
+            if (topRef.current && topRef.current.getBoundingClientRect().top < 0)
+              topRef.current.scrollIntoView({ block: "start" });
+          }}
           className={`${field} mt-0 w-auto`}
         >
           <option value="" className="bg-navy-2">

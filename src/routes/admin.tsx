@@ -32,6 +32,10 @@ function AdminPage() {
   const [tab, setTab] = useState<"open" | "done">("open");
   const [saving, setSaving] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  // Orders whose status was just changed stay where they are until the tab
+  // is switched, so the list doesn't shrink and jump under the cursor.
+  const [pinned, setPinned] = useState<Set<string>>(new Set());
+  useEffect(() => setPinned(new Set()), [tab, section]);
 
   useEffect(() => {
     if (ready && !user) navigate({ to: "/login" });
@@ -56,8 +60,10 @@ function AdminPage() {
     return <main className="mx-auto max-w-5xl px-6 py-24 text-ivory/60">{t("notAllowed")}</main>;
 
   // Open orders: those with a delivery date first (soonest first), then newest.
+  const isDone = (o: OrderRow) =>
+    pinned.has(o.id) ? tab === "done" : DONE_STATUSES.includes(o.status);
   const open = (orders ?? [])
-    .filter((o) => !DONE_STATUSES.includes(o.status))
+    .filter((o) => !isDone(o))
     .sort((a, b) =>
       a.delivery_date && b.delivery_date
         ? a.delivery_date.localeCompare(b.delivery_date)
@@ -67,7 +73,7 @@ function AdminPage() {
             ? 1
             : b.created_at.localeCompare(a.created_at),
     );
-  const done = (orders ?? []).filter((o) => DONE_STATUSES.includes(o.status));
+  const done = (orders ?? []).filter(isDone);
   const shown = tab === "open" ? open : done;
 
   const changeStatus = async (order: OrderRow, status: (typeof ORDER_STATUSES)[number]) => {
@@ -75,6 +81,7 @@ function AdminPage() {
     setSaveError(null);
     try {
       await setOrderStatus({ data: { orderId: order.id, status } });
+      setPinned((prev) => new Set(prev).add(order.id));
       setOrders((prev) => prev?.map((o) => (o.id === order.id ? { ...o, status } : o)) ?? null);
     } catch {
       setSaveError(order.id);
