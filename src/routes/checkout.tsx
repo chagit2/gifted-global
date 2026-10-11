@@ -59,7 +59,9 @@ function CheckoutPage() {
     if (done !== null) window.scrollTo({ top: 0 });
   }, [done]);
   const [error, setError] = useState<string | null>(null);
-  const { shippingFee } = useSettings();
+  const { shippingFee: fee } = useSettings();
+  // Shipping is charged only when there is at least one gift.
+  const shippingFee = lines.length > 0 ? fee : 0;
   const [couponInput, setCouponInput] = useState("");
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [couponError, setCouponError] = useState(false);

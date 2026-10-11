@@ -26,7 +26,9 @@ function CartPage() {
   const { money } = useCurrency();
   const { lines, total, remove, setQty, setLetter } = useCart();
   const { getProduct } = useProducts();
-  const { shippingFee } = useSettings();
+  const { shippingFee: fee } = useSettings();
+  // Shipping is charged only when there is at least one gift.
+  const shippingFee = lines.length > 0 ? fee : 0;
 
   return (
     <main className="relative mx-auto max-w-5xl px-6 pt-14 pb-24">

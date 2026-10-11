@@ -38,7 +38,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Don't write the cart back until the saved one has been read, or the empty
   // first render would overwrite it.
   const [loaded, setLoaded] = useState(false);
-  const { getProduct } = useProducts();
+  const { getProduct, live, isLoading: productsLoading, isError: productsError } = useProducts();
 
   useEffect(() => {
     try {
@@ -58,6 +58,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       /* storage blocked: the cart lives for this page only */
     }
   }, [lines, loaded]);
+
+  // Drop gifts that are no longer on the site (deleted, hidden or renamed ids),
+  // so an "empty" cart can't still carry hidden lines and a shipping charge.
+  useEffect(() => {
+    if (!loaded || productsLoading || productsError || live.length === 0) return;
+    setLines((prev) => {
+      const kept = prev.filter((l) => getProduct(l.productId));
+      return kept.length === prev.length ? prev : kept;
+    });
+  }, [loaded, productsLoading, productsError, live, getProduct]);
 
   const value = useMemo<CartCtx>(() => {
     const total = lines.reduce((sum, l) => sum + (getProduct(l.productId)?.price ?? 0) * l.qty, 0);

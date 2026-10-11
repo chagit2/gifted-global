@@ -10,6 +10,13 @@ type AuthCtx = {
   signOut: () => Promise<void>;
 };
 
+// Signed-in visitors are signed out after this long without any activity.
+// Activity in any open tab counts (shared through localStorage).
+export const IDLE_LOGOUT_MS = 30 * 60 * 1000;
+const ACTIVITY_KEY = "lastActivity";
+// Set when the idle timer signed someone out, so the login page can say why.
+export const IDLE_FLAG = "loggedOutIdle";
+
 const Ctx = createContext<AuthCtx>({ user: null, isAdmin: false, ready: false, signOut: async () => {} });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -40,6 +47,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     return () => {
       live = false;
+    };
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    const read = () => {
+      try {
+        return Number(localStorage.getItem(ACTIVITY_KEY)) || Date.now();
+      } catch {
+        return Date.now();
+      }
+    };
+    let last = Date.now();
+    const write = (now: number) => {
+      last = now;
+      try {
+        localStorage.setItem(ACTIVITY_KEY, String(now));
+      } catch {
+        /* ignore */
+      }
+    };
+    write(Date.now());
+    // Mouse moves fire constantly; record at most every 5 seconds.
+    const onActivity = () => {
+      const now = Date.now();
+      if (now - last > 5000) write(now);
+    };
+    const events = ["pointerdown", "pointermove", "keydown", "scroll", "touchstart"] as const;
+    for (const e of events) window.addEventListener(e, onActivity, { passive: true });
+    const timer = window.setInterval(() => {
+      if (Date.now() - Math.max(last, read()) < IDLE_LOGOUT_MS) return;
+      // The account and admin pages send signed-out visitors to /login,
+      // which then explains what happened.
+      if (/^\/(account|admin)/.test(window.location.pathname)) {
+        try {
+          sessionStorage.setItem(IDLE_FLAG, "1");
+        } catch {
+          /* ignore */
+        }
+      }
+      void supabase.auth.signOut();
+    }, 15000);
+    return () => {
+      for (const e of events) window.removeEventListener(e, onActivity);
+      window.clearInterval(timer);
     };
   }, [user]);
 

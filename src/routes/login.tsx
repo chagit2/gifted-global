@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth";
+import { IDLE_FLAG, useAuth } from "@/lib/auth";
 import { useI18n, type Key } from "@/lib/i18n";
 import { isEmailRegistered } from "@/lib/auth.functions";
 
@@ -38,6 +38,18 @@ function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  // Arrived here because the idle timer signed the visitor out.
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(IDLE_FLAG)) {
+        sessionStorage.removeItem(IDLE_FLAG);
+        setNotice(t("idleLoggedOut"));
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [t]);
 
   useEffect(() => {
     if (user) navigate({ to: "/account" });

@@ -335,6 +335,11 @@ const dict = {
     fr: "{n} photos allégées, {mb} Mo économisés",
     en: "{n} photos shrunk, {mb} MB saved",
   },
+  idleLoggedOut: {
+    he: "התנתקתם אוטומטית אחרי זמן ללא פעילות, לשמירה על הפרטים שלכם. אפשר להתחבר שוב.",
+    fr: "Vous avez été déconnecté après une période d'inactivité, pour protéger vos données. Reconnectez-vous.",
+    en: "You were signed out after a period of inactivity, to protect your details. Please sign in again.",
+  },
   navAbout: { he: "אודות", fr: "À propos", en: "About" },
   cart: { he: "סל קניות", fr: "Panier", en: "Cart" },
   items: { he: "פריטים", fr: "articles", en: "items" },
