@@ -88,6 +88,7 @@ export type Database = {
           customer_note: string
           delivery_date: string | null
           discount: number
+          fx_rate: number
           id: string
           language: string
           phone: string
@@ -101,6 +102,7 @@ export type Database = {
           shipping_fee: number
           status: string
           total: number
+          total_in_currency: number | null
           user_id: string | null
         }
         Insert: {
@@ -111,6 +113,7 @@ export type Database = {
           customer_note?: string
           delivery_date?: string | null
           discount?: number
+          fx_rate?: number
           id?: string
           language?: string
           phone: string
@@ -124,6 +127,7 @@ export type Database = {
           shipping_fee?: number
           status?: string
           total?: number
+          total_in_currency?: number | null
           user_id?: string | null
         }
         Update: {
@@ -134,6 +138,7 @@ export type Database = {
           customer_note?: string
           delivery_date?: string | null
           discount?: number
+          fx_rate?: number
           id?: string
           language?: string
           phone?: string
@@ -147,6 +152,7 @@ export type Database = {
           shipping_fee?: number
           status?: string
           total?: number
+          total_in_currency?: number | null
           user_id?: string | null
         }
         Relationships: []
