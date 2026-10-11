@@ -134,24 +134,14 @@ export const placeOrder = createServerFn({ method: "POST" })
       discount,
       shipping_fee: shippingFee,
       currency: data.currency,
+      fx_rate: fxRate,
+      total_in_currency: totalInCurrency,
     };
-    // fx_rate and total_in_currency come from db/currency.sql; the cast covers
-    // the generated types until they are regenerated.
-    const withRate = { ...row, fx_rate: fxRate, total_in_currency: totalInCurrency } as typeof row;
-    let { data: order, error } = await supabaseAdmin
+    const { data: order, error } = await supabaseAdmin
       .from("orders")
-      .insert(withRate)
+      .insert(row)
       .select("id")
       .single();
-    // Before that SQL has run the columns don't exist; save the order without
-    // them rather than lose it.
-    if (error && /fx_rate|total_in_currency/.test(error.message)) {
-      ({ data: order, error } = await supabaseAdmin
-        .from("orders")
-        .insert(row)
-        .select("id")
-        .single());
-    }
 
     if (error || !order) throw new Error(error?.message ?? "Order failed");
 
