@@ -179,7 +179,7 @@ export function ProductModal({
                   onClose();
                   navigate({ to: "/checkout" });
                 }}
-                className="rounded-full border border-navy/20 px-6 py-3 text-sm text-navy transition hover:border-gold/60 hover:text-gold-deep"
+                className="rounded-full bg-navy px-6 py-3 text-sm text-pearl transition hover:bg-navy-3"
               >
                 {t("buyNow")}
               </button>

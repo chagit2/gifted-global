@@ -58,7 +58,7 @@ export function ProductCard({
                 add(product);
                 setDrawerOpen(true);
               }}
-              className="rounded-full border border-navy/10 bg-white px-3 py-1.5 text-xs text-navy hover:bg-navy/10 transition"
+              className="rounded-full bg-navy px-3 py-1.5 text-xs text-pearl hover:bg-navy-3 transition"
             >
               {t("addToCart")}
             </button>

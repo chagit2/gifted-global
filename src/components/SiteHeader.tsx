@@ -24,9 +24,9 @@ const panel =
 const itemCls =
   "block w-full whitespace-nowrap rounded-xl px-3 py-2 text-start text-sm text-navy/75 hover:bg-navy/5 hover:text-gold-deep transition-colors";
 
-const navLink = "whitespace-nowrap text-sm text-navy/65 hover:text-navy transition-colors";
+const navLink = "whitespace-nowrap text-sm text-pearl/85 hover:text-gold-2 transition-colors";
 const iconBtn =
-  "grid size-9 shrink-0 place-items-center rounded-full border border-navy/10 bg-white/70 text-navy hover:text-gold-deep transition sm:size-10";
+  "grid size-9 shrink-0 place-items-center rounded-full border border-gold/30 bg-white/5 text-pearl hover:border-gold/70 hover:text-gold-2 transition sm:size-10";
 
 function Dropdown({
   label,
@@ -63,9 +63,9 @@ function Dropdown({
       <button
         aria-expanded={open}
         onClick={() => setOpen((o) => (hovering.current ? true : !o))}
-        className="flex items-center gap-1 whitespace-nowrap text-sm text-navy/65 hover:text-navy transition-colors"
+        className="flex items-center gap-1 whitespace-nowrap text-sm text-pearl/85 hover:text-gold-2 transition-colors"
       >
-        {label} <ChevronDown className="size-3.5 text-gold-deep/70" />
+        {label} <ChevronDown className="size-3.5 text-gold-2/80" />
       </button>
       {open && (
         // pt-2 (not a margin) keeps the gap under the label inside the hover area.
@@ -164,7 +164,7 @@ export function SiteHeader() {
   const holidays = categories.filter((c) => c.group === "holidays").map((c) => ({ slug: c.slug, label: tl(c.label) }));
 
   return (
-    <header className="sticky top-0 z-50 print:hidden border-b border-gold/40 bg-pearl/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 print:hidden border-b-2 border-gold/60 bg-navy shadow-lg shadow-navy/20">
       <nav className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:flex-nowrap sm:gap-6 sm:px-6">
         {/* Start side (right in Hebrew): home icon, then the menu labels.
             On phones the labels drop to their own centered row under the icons. */}

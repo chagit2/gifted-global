@@ -25,18 +25,18 @@ export function CookieConsent() {
     <div
       role="dialog"
       aria-live="polite"
-      className="fixed inset-x-3 bottom-3 z-[60] mx-auto flex max-w-3xl flex-wrap items-center gap-3 rounded-2xl border border-navy/15 bg-white/95 p-4 text-sm text-navy/85 shadow-2xl shadow-navy/10 backdrop-blur-xl print:hidden sm:flex-nowrap"
+      className="fixed inset-x-3 bottom-3 z-[60] mx-auto flex max-w-3xl flex-wrap items-center gap-3 rounded-2xl border border-gold/40 bg-navy p-4 text-sm text-pearl/90 shadow-2xl shadow-navy/30 backdrop-blur-xl print:hidden sm:flex-nowrap"
     >
       <p className="flex-1">
         {t("cookieText")}{" "}
-        <Link to="/privacy" className="text-gold-deep underline">
+        <Link to="/privacy" className="text-gold-2 underline">
           {t("privacyMore")}
         </Link>
       </p>
       <div className="flex shrink-0 gap-2">
         <button
           onClick={() => choose("denied")}
-          className="rounded-full border border-navy/15 px-4 py-2 text-xs text-navy transition hover:border-gold/50"
+          className="rounded-full border border-pearl/30 px-4 py-2 text-xs text-pearl transition hover:border-gold/60"
         >
           {t("cookieDecline")}
         </button>
