@@ -72,7 +72,7 @@ export function OrderCard({
           <p className="font-heb text-lg text-navy">
             {t("order")} #{order.id.slice(0, 8).toUpperCase()}
           </p>
-          <p className="text-xs text-navy/60">{date}</p>
+          <p className="text-xs text-navy/70">{date}</p>
           {order.delivery_date && (
             <p
               className={`mt-1 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] ${
@@ -97,7 +97,7 @@ export function OrderCard({
               <span className="text-navy">
                 {g.name}
                 {g.letters.length > 1 && (
-                  <span className="text-navy/60"> × {g.letters.length}</span>
+                  <span className="text-navy/70"> × {g.letters.length}</span>
                 )}
               </span>
               <span className="whitespace-nowrap text-gold-deep">{formatPrice(g.price, lang)}</span>
@@ -136,7 +136,7 @@ export function OrderCard({
 
       <footer className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t border-navy/10 pt-4 text-sm">
         <div className="text-navy/65">
-          <p className="text-xs text-navy/55">{t("shipTo")}</p>
+          <p className="text-xs text-navy/70">{t("shipTo")}</p>
           <p>
             {order.recipient_name && <>{order.recipient_name} · </>}
             {order.ship_street}, {order.ship_city}
@@ -165,7 +165,7 @@ export function OrderCard({
             </p>
           )}
           {shipping > 0 && (
-            <p className="text-xs text-navy/60">
+            <p className="text-xs text-navy/70">
               {t("shipping")}: {formatPrice(shipping, lang)}
             </p>
           )}
@@ -211,7 +211,7 @@ function AdminTools({ order }: { order: OrderRow }) {
   return (
     <div className="mt-4 space-y-3 border-t border-dashed border-navy/10 pt-4">
       <label className="block">
-        <span className="text-xs text-navy/60">{t("adminNote")}</span>
+        <span className="text-xs text-navy/70">{t("adminNote")}</span>
         <div className="mt-1 flex gap-2">
           <textarea
             value={note}

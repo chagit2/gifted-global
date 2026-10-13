@@ -60,7 +60,7 @@ function CartPage() {
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <h2 className="font-heb text-lg text-navy">{tl(p.name)}</h2>
-                          <p className="mt-1 text-xs text-navy/60">{tl(p.subtitle)}</p>
+                          <p className="mt-1 text-xs text-navy/70">{tl(p.subtitle)}</p>
                           {!p.inStock && <p className="mt-1 text-xs text-red-600">{t("outOfStock")}</p>}
                         </div>
                         <span className="font-semibold text-gold-deep">
@@ -80,7 +80,7 @@ function CartPage() {
                         </div>
                         <button
                           onClick={() => remove(line.productId)}
-                          className="text-navy/60 hover:text-gold-deep"
+                          className="text-navy/70 hover:text-gold-deep"
                         >
                           {t("remove")}
                         </button>
@@ -113,7 +113,7 @@ function CartPage() {
           </p>
           <div className="mt-3 flex items-center justify-between rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
             <div>
-              <p className="text-xs text-navy/60">
+              <p className="text-xs text-navy/70">
                 {t("subtotal")}: {money(total)} · {t("shipping")}: {money(shippingFee)}
               </p>
               <p className="mt-1 font-heb text-xl text-navy">

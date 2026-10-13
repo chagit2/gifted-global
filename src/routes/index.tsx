@@ -56,7 +56,7 @@ function Index() {
         {isError ? (
           <p className="mt-8 text-sm text-red-600">{t("loadError")}</p>
         ) : isLoading ? (
-          <p className="mt-8 text-sm text-navy/60">{t("loading")}</p>
+          <p className="mt-8 text-sm text-navy/70">{t("loading")}</p>
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {gifts.map((p) => (

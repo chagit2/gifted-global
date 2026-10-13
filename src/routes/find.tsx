@@ -81,7 +81,7 @@ function FinderPage() {
               />
             ))}
           </div>
-          <p className="mt-6 text-xs text-navy/60">
+          <p className="mt-6 text-xs text-navy/70">
             {t("finderStep").replace("{n}", String(step + 1))}
           </p>
           <h1 className="mt-1 font-heb text-3xl font-bold text-navy sm:text-4xl">
@@ -128,7 +128,7 @@ function FinderPage() {
           </button>
 
           {isLoading ? (
-            <p className="mt-8 text-sm text-navy/60">{t("loading")}</p>
+            <p className="mt-8 text-sm text-navy/70">{t("loading")}</p>
           ) : result && result.gifts.length ? (
             <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {result.gifts.map((p) => (

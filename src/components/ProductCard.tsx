@@ -48,7 +48,7 @@ export function ProductCard({
         )}
       </button>
       <h3 className="mt-4 font-heb text-lg text-navy">{tl(product.name)}</h3>
-      <p className="mt-1 text-xs text-navy/60">{tl(product.subtitle)}</p>
+      <p className="mt-1 text-xs text-navy/70">{tl(product.subtitle)}</p>
       <div className="mt-4 flex items-center justify-between gap-2">
         <span className="font-semibold text-gold-deep">{money(product.price)}</span>
         {product.inStock ? (
@@ -73,7 +73,7 @@ export function ProductCard({
             </button>
           </div>
         ) : (
-          <span className="text-xs text-navy/60">{t("outOfStock")}</span>
+          <span className="text-xs text-navy/70">{t("outOfStock")}</span>
         )}
       </div>
     </article>

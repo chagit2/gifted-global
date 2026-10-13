@@ -38,7 +38,7 @@ function AboutPage() {
 
       <section className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 pt-16 pb-16 lg:grid-cols-2">
         <div>
-          <p className="text-xs tracking-widest text-navy/60">{t("aboutTitle")}</p>
+          <p className="text-xs tracking-widest text-navy/70">{t("aboutTitle")}</p>
           <h1 className="mt-3 font-heb text-4xl font-bold leading-tight text-gold-deep sm:text-5xl">{t("aboutLead")}</h1>
           <p className="mt-8 text-base leading-relaxed text-navy/80">{t("aboutP1")}</p>
           <p className="mt-4 text-base leading-relaxed text-navy/80">{t("aboutP2")}</p>

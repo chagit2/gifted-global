@@ -12,7 +12,7 @@ import { lazy, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { I18nProvider } from "@/lib/i18n";
+import { I18nProvider, useI18n } from "@/lib/i18n";
 import { CartProvider } from "@/lib/cart";
 import { CurrencyProvider } from "@/lib/currency";
 import { AuthProvider } from "@/lib/auth";
@@ -137,10 +137,17 @@ function RootComponent() {
         <AuthProvider>
         <CartProvider>
           <div className="flex min-h-screen flex-col bg-pearl print:bg-white">
+            <a
+              href="#content"
+              className="sr-only z-[90] rounded-full bg-gold px-5 py-2 text-sm font-semibold text-navy focus:not-sr-only focus:fixed focus:top-3 focus:start-3"
+            >
+              {/* Keyboard users jump past the menu. */}
+              <SkipLabel />
+            </a>
             <SiteHeader />
             <HolidayBanner />
             {/* Keyed by path so each page fades in when it opens. */}
-            <div key={pathname} className="flex-1 animate-page-in">
+            <div key={pathname} id="content" tabIndex={-1} className="flex-1 animate-page-in focus:outline-none">
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
               <Outlet />
             </div>
@@ -154,4 +161,9 @@ function RootComponent() {
       </I18nProvider>
     </QueryClientProvider>
   );
+}
+
+function SkipLabel() {
+  const { t } = useI18n();
+  return <>{t("skipToContent")}</>;
 }

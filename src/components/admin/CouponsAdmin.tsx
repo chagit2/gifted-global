@@ -144,9 +144,9 @@ export function CouponsAdmin() {
         {failed ? (
           <li className="text-sm text-red-600">{t("loadError")}</li>
         ) : coupons === null ? (
-          <li className="text-sm text-navy/60">{t("loading")}</li>
+          <li className="text-sm text-navy/70">{t("loading")}</li>
         ) : coupons.length === 0 ? (
-          <li className="text-sm text-navy/60">{t("noCoupons")}</li>
+          <li className="text-sm text-navy/70">{t("noCoupons")}</li>
         ) : (
           coupons.map((c) => {
             const expired = !!c.expires_on && c.expires_on < today;
@@ -164,7 +164,7 @@ export function CouponsAdmin() {
                     : formatPrice(Number(c.amount), lang)}
                 </span>
                 {c.expires_on && (
-                  <span className={`text-xs ${expired ? "text-red-600" : "text-navy/60"}`}>
+                  <span className={`text-xs ${expired ? "text-red-600" : "text-navy/70"}`}>
                     {expired
                       ? t("couponExpired")
                       : `${t("couponExpires").split(" (")[0]}: ${c.expires_on}`}

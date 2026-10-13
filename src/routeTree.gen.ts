@@ -11,13 +11,17 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AccessibilityRouteImport } from './routes/accessibility'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FindRouteImport } from './routes/find'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ShippingRouteImport } from './routes/shipping'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
 import { Route as PrintOrderIdRouteImport } from './routes/print.$orderId'
 import { Route as ProductImagesSplatRouteImport } from './routes/product-images.$'
@@ -30,6 +34,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessibilityRoute = AccessibilityRouteImport.update({
+  id: '/accessibility',
+  path: '/accessibility',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountRoute = AccountRouteImport.update({
@@ -52,6 +61,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FindRoute = FindRouteImport.update({
   id: '/find',
   path: '/find',
@@ -65,6 +79,16 @@ const LoginRoute = LoginRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShippingRoute = ShippingRouteImport.update({
+  id: '/shipping',
+  path: '/shipping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CSlugRoute = CSlugRouteImport.update({
@@ -86,13 +110,17 @@ const ProductImagesSplatRoute = ProductImagesSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/accessibility': typeof AccessibilityRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
   '/find': typeof FindRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/shipping': typeof ShippingRoute
+  '/terms': typeof TermsRoute
   '/c/$slug': typeof CSlugRoute
   '/print/$orderId': typeof PrintOrderIdRoute
   '/product-images/$': typeof ProductImagesSplatRoute
@@ -100,13 +128,17 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/accessibility': typeof AccessibilityRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
   '/find': typeof FindRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/shipping': typeof ShippingRoute
+  '/terms': typeof TermsRoute
   '/c/$slug': typeof CSlugRoute
   '/print/$orderId': typeof PrintOrderIdRoute
   '/product-images/$': typeof ProductImagesSplatRoute
@@ -115,13 +147,17 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/accessibility': typeof AccessibilityRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/contact': typeof ContactRoute
   '/find': typeof FindRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/shipping': typeof ShippingRoute
+  '/terms': typeof TermsRoute
   '/c/$slug': typeof CSlugRoute
   '/print/$orderId': typeof PrintOrderIdRoute
   '/product-images/$': typeof ProductImagesSplatRoute
@@ -131,13 +167,17 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/accessibility'
     | '/account'
     | '/admin'
     | '/cart'
     | '/checkout'
+    | '/contact'
     | '/find'
     | '/login'
     | '/privacy'
+    | '/shipping'
+    | '/terms'
     | '/c/$slug'
     | '/print/$orderId'
     | '/product-images/$'
@@ -145,13 +185,17 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/accessibility'
     | '/account'
     | '/admin'
     | '/cart'
     | '/checkout'
+    | '/contact'
     | '/find'
     | '/login'
     | '/privacy'
+    | '/shipping'
+    | '/terms'
     | '/c/$slug'
     | '/print/$orderId'
     | '/product-images/$'
@@ -159,13 +203,17 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/accessibility'
     | '/account'
     | '/admin'
     | '/cart'
     | '/checkout'
+    | '/contact'
     | '/find'
     | '/login'
     | '/privacy'
+    | '/shipping'
+    | '/terms'
     | '/c/$slug'
     | '/print/$orderId'
     | '/product-images/$'
@@ -174,13 +222,17 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AccessibilityRoute: typeof AccessibilityRoute
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  ContactRoute: typeof ContactRoute
   FindRoute: typeof FindRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
+  ShippingRoute: typeof ShippingRoute
+  TermsRoute: typeof TermsRoute
   CSlugRoute: typeof CSlugRoute
   PrintOrderIdRoute: typeof PrintOrderIdRoute
   ProductImagesSplatRoute: typeof ProductImagesSplatRoute
@@ -200,6 +252,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessibility': {
+      id: '/accessibility'
+      path: '/accessibility'
+      fullPath: '/accessibility'
+      preLoaderRoute: typeof AccessibilityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account': {
@@ -230,6 +289,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/find': {
       id: '/find'
       path: '/find'
@@ -249,6 +315,20 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shipping': {
+      id: '/shipping'
+      path: '/shipping'
+      fullPath: '/shipping'
+      preLoaderRoute: typeof ShippingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/c/$slug': {
@@ -278,13 +358,17 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AccessibilityRoute: AccessibilityRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  ContactRoute: ContactRoute,
   FindRoute: FindRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
+  ShippingRoute: ShippingRoute,
+  TermsRoute: TermsRoute,
   CSlugRoute: CSlugRoute,
   PrintOrderIdRoute: PrintOrderIdRoute,
   ProductImagesSplatRoute: ProductImagesSplatRoute,

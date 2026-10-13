@@ -37,16 +37,16 @@ function CategoryPage() {
     <main className="relative overflow-hidden">
       <div className="pointer-events-none absolute -top-40 -start-40 size-[520px] rounded-full bg-gold/20 blur-[140px] animate-glow" />
       <section className="relative mx-auto max-w-7xl px-6 pt-14 pb-20">
-        <p className="text-xs text-navy/60">{t("giftsIn")}</p>
+        <p className="text-xs text-navy/70">{t("giftsIn")}</p>
         <h1 className="mt-2 font-heb text-4xl font-bold text-navy">
           {cat ? tl(cat.label) : slug}
         </h1>
         {isError ? (
           <p className="mt-10 text-sm text-red-600">{t("loadError")}</p>
         ) : isLoading ? (
-          <p className="mt-10 text-sm text-navy/60">{t("loading")}</p>
+          <p className="mt-10 text-sm text-navy/70">{t("loading")}</p>
         ) : items.length === 0 ? (
-          <p className="mt-10 text-sm text-navy/60">{t("noProducts")}</p>
+          <p className="mt-10 text-sm text-navy/70">{t("noProducts")}</p>
         ) : null}
         <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((p) => (

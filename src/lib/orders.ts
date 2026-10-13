@@ -47,7 +47,7 @@ export const statusTone: Record<string, string> = {
   preparing: "border-sky-300/40 bg-sky-300/10 text-sky-700",
   shipped: "border-violet-300/40 bg-violet-300/10 text-violet-700",
   delivered: "border-emerald-300/40 bg-emerald-300/10 text-emerald-700",
-  cancelled: "border-navy/15 bg-white/70 text-navy/60",
+  cancelled: "border-navy/15 bg-white/70 text-navy/70",
 };
 
 export type OrderRow = {
