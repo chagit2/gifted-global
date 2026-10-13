@@ -18,8 +18,8 @@ import { extFor, shrinkImage } from "@/lib/shrinkImage";
 
 const BUCKET = "product-images";
 const field =
-  "mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none";
-const label = "text-xs text-ivory/60";
+  "mt-1 w-full rounded-lg border border-navy/10 bg-transparent px-3 py-2 text-sm text-navy placeholder:text-navy/35 focus:border-gold/50 focus:outline-none";
+const label = "text-xs text-navy/65";
 
 // Uploaded photos are served by the site at /product-images/<file> (the bucket
 // is private). Returns the storage path for those, or null for other images
@@ -43,6 +43,7 @@ export function ProductsAdmin() {
   const { all, isLoading, isError } = useProducts();
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState("");
+  const topRef = useRef<HTMLDivElement>(null);
   const [editing, setEditing] = useState<Product | "new" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -147,18 +148,24 @@ export function ProductsAdmin() {
   }
 
   return (
-    <div>
+    <div ref={topRef} className="scroll-mt-24">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <select
           value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          onChange={(e) => {
+            setFilter(e.target.value);
+            // A shorter list would leave the page scrolled past its end;
+            // bring the top of the list back into view instead.
+            if (topRef.current && topRef.current.getBoundingClientRect().top < 0)
+              topRef.current.scrollIntoView({ block: "start" });
+          }}
           className={`${field} mt-0 w-auto`}
         >
-          <option value="" className="bg-navy-2">
+          <option value="" className="bg-white">
             {t("allCategories")} ({all.length})
           </option>
           {categories.map((c) => (
-            <option key={c.slug} value={c.slug} className="bg-navy-2">
+            <option key={c.slug} value={c.slug} className="bg-white">
               {tl(c.label)} ({all.filter((p) => p.categories.includes(c.slug)).length})
             </option>
           ))}
@@ -168,7 +175,7 @@ export function ProductsAdmin() {
             type="button"
             onClick={optimizeExisting}
             disabled={optimizing !== null}
-            className="rounded-full border border-white/15 px-4 py-2 text-xs text-ivory transition hover:border-gold/50 hover:text-gold-2 disabled:opacity-60"
+            className="rounded-full border border-navy/15 px-4 py-2 text-xs text-navy transition hover:border-gold/50 hover:text-gold-deep disabled:opacity-60"
           >
             {optimizing
               ? t("optimizing")
@@ -184,19 +191,19 @@ export function ProductsAdmin() {
           </button>
         </div>
       </div>
-      {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
-      {optimized && <p className="mt-3 text-sm text-emerald-300">{optimized}</p>}
+      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+      {optimized && <p className="mt-3 text-sm text-emerald-700">{optimized}</p>}
 
       <ul className="mt-6 space-y-3">
         {isError ? (
-          <li className="text-sm text-red-300">{t("loadError")}</li>
+          <li className="text-sm text-red-600">{t("loadError")}</li>
         ) : isLoading ? (
-          <li className="text-sm text-ivory/50">{t("loading")}</li>
+          <li className="text-sm text-navy/60">{t("loading")}</li>
         ) : (
           shown.map((p, i) => (
             <li
               key={p.id}
-              className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl"
+              className="flex items-center gap-4 rounded-2xl border border-navy/10 bg-white/70 p-3 backdrop-blur-xl"
             >
               <div className="flex flex-col">
                 <button
@@ -204,7 +211,7 @@ export function ProductsAdmin() {
                   title={t("moveUp")}
                   disabled={i === 0 || moving}
                   onClick={() => move(i, -1)}
-                  className="text-ivory/50 hover:text-gold-2 disabled:opacity-20"
+                  className="text-navy/60 hover:text-gold-deep disabled:opacity-20"
                 >
                   <ChevronUp className="size-4" />
                 </button>
@@ -213,42 +220,42 @@ export function ProductsAdmin() {
                   title={t("moveDown")}
                   disabled={i === shown.length - 1 || moving}
                   onClick={() => move(i, 1)}
-                  className="text-ivory/50 hover:text-gold-2 disabled:opacity-20"
+                  className="text-navy/60 hover:text-gold-deep disabled:opacity-20"
                 >
                   <ChevronDown className="size-4" />
                 </button>
               </div>
               <img src={p.images[0]} alt="" className="size-16 shrink-0 rounded-xl object-cover" />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm text-ivory">
+                <p className="truncate text-sm text-navy">
                   {tl(p.name) || p.name.he}
                   {!p.active && (
-                    <span className="ms-2 rounded-full border border-white/15 px-2 py-0.5 text-[10px] text-ivory/50">
+                    <span className="ms-2 rounded-full border border-navy/15 px-2 py-0.5 text-[10px] text-navy/60">
                       {t("hiddenBadge")}
                     </span>
                   )}
                   {!p.inStock && (
-                    <span className="ms-2 rounded-full border border-red-300/40 px-2 py-0.5 text-[10px] text-red-200">
+                    <span className="ms-2 rounded-full border border-red-300/40 px-2 py-0.5 text-[10px] text-red-700">
                       {t("outOfStock")}
                     </span>
                   )}
                 </p>
-                <p className="text-xs text-ivory/50">
+                <p className="text-xs text-navy/60">
                   {p.categories
                     .map((slug) => (getCategory(slug) ? tl(getCategory(slug)!.label) : slug))
                     .join(", ")}{" "}
-                  · <span className="text-gold-2">{formatPrice(p.price, lang)}</span>
+                  · <span className="text-gold-deep">{formatPrice(p.price, lang)}</span>
                 </p>
               </div>
               <button
                 onClick={() => setEditing(p)}
-                className="text-sm text-ivory/70 hover:text-gold-2"
+                className="text-sm text-navy/75 hover:text-gold-deep"
               >
                 {t("edit")}
               </button>
               <button
                 onClick={() => onDelete(p)}
-                className="text-sm text-red-300/80 hover:text-red-300"
+                className="text-sm text-red-300/80 hover:text-red-600"
               >
                 {t("delete")}
               </button>
@@ -438,9 +445,9 @@ function ProductForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="space-y-6 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
+      className="space-y-6 rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl"
     >
-      <h2 className="font-heb text-2xl text-ivory">
+      <h2 className="font-heb text-2xl text-navy">
         {product ? t("editProduct") : t("addProduct")}
       </h2>
 
@@ -458,8 +465,8 @@ function ProductForm({
                 onClick={() => toggleCat(c.slug)}
                 className={`rounded-full border px-3 py-1.5 text-xs transition ${
                   on
-                    ? "border-gold bg-gold/20 text-gold-2"
-                    : "border-white/15 text-ivory/60 hover:border-gold/50 hover:text-ivory"
+                    ? "border-gold bg-gold/20 text-gold-deep"
+                    : "border-navy/15 text-navy/65 hover:border-gold/50 hover:text-navy"
                 }`}
               >
                 {on ? "✓ " : ""}
@@ -484,7 +491,7 @@ function ProductForm({
             className={field}
           />
         </label>
-        <label className="flex items-center gap-2 self-end pb-2 text-sm text-ivory">
+        <label className="flex items-center gap-2 self-end pb-2 text-sm text-navy">
           <input
             type="checkbox"
             checked={active}
@@ -493,7 +500,7 @@ function ProductForm({
           />
           {t("visible")}
         </label>
-        <label className="flex items-center gap-2 self-end pb-2 text-sm text-ivory">
+        <label className="flex items-center gap-2 self-end pb-2 text-sm text-navy">
           <input
             type="checkbox"
             checked={inStock}
@@ -507,11 +514,11 @@ function ProductForm({
       {/* One column per language; Hebrew name is the only required text. */}
       <div className="grid gap-4 lg:grid-cols-3">
         {FORM_LANGS.map((l) => (
-          <fieldset key={l.code} className="space-y-3 rounded-xl border border-white/10 p-4">
-            <legend className="px-1 text-xs text-gold-2">
+          <fieldset key={l.code} className="space-y-3 rounded-xl border border-navy/10 p-4">
+            <legend className="px-1 text-xs text-gold-deep">
               {l.label}
               {l.code !== "he" && !name[l.code].trim() && (
-                <span className="ms-2 text-ivory/40">({t("missingTranslation")})</span>
+                <span className="ms-2 text-navy/55">({t("missingTranslation")})</span>
               )}
             </legend>
             {l.code === "he" && (
@@ -519,7 +526,7 @@ function ProductForm({
                 type="button"
                 onClick={translate}
                 disabled={!name.he.trim() || translating}
-                className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 px-3 py-1.5 text-xs text-gold-2 transition hover:bg-gold/10 disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 px-3 py-1.5 text-xs text-gold-deep transition hover:bg-gold/10 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Languages className="size-3.5" />
                 {translating ? t("translating") : t("translateToOthers")}
@@ -529,8 +536,8 @@ function ProductForm({
               <label
                 className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-xs transition ${
                   review[l.code] === "approved"
-                    ? "border-emerald-300/40 bg-emerald-300/10 text-emerald-200"
-                    : "border-gold/50 bg-gold/10 text-gold-2"
+                    ? "border-emerald-300/40 bg-emerald-300/10 text-emerald-700"
+                    : "border-gold/50 bg-gold/10 text-gold-deep"
                 }`}
               >
                 <input
@@ -576,7 +583,7 @@ function ProductForm({
           {images.map((url, i) => (
             <div
               key={url}
-              className="relative size-28 overflow-hidden rounded-xl border border-white/10"
+              className="relative size-28 overflow-hidden rounded-xl border border-navy/10"
             >
               <img src={url} alt="" className="size-full object-cover" />
               {i === 0 && (
@@ -588,7 +595,7 @@ function ProductForm({
                 type="button"
                 aria-label={t("delete")}
                 onClick={() => setImages((prev) => prev.filter((u) => u !== url))}
-                className="absolute top-1 end-1 grid size-6 place-items-center rounded-full bg-navy/80 text-ivory hover:text-red-300"
+                className="absolute top-1 end-1 grid size-6 place-items-center rounded-full bg-navy/40 text-navy hover:text-red-600"
               >
                 <X className="size-3.5" />
               </button>
@@ -598,7 +605,7 @@ function ProductForm({
                   aria-label="previous"
                   disabled={i === 0}
                   onClick={() => move(i, -1)}
-                  className="grid size-6 place-items-center rounded-full bg-navy/80 text-ivory disabled:opacity-30"
+                  className="grid size-6 place-items-center rounded-full bg-navy/40 text-navy disabled:opacity-30"
                 >
                   <Prev className="size-3.5" />
                 </button>
@@ -607,14 +614,14 @@ function ProductForm({
                   aria-label="next"
                   disabled={i === images.length - 1}
                   onClick={() => move(i, 1)}
-                  className="grid size-6 place-items-center rounded-full bg-navy/80 text-ivory disabled:opacity-30"
+                  className="grid size-6 place-items-center rounded-full bg-navy/40 text-navy disabled:opacity-30"
                 >
                   <Next className="size-3.5" />
                 </button>
               </div>
             </div>
           ))}
-          <label className="grid size-28 cursor-pointer place-items-center rounded-xl border border-dashed border-white/20 text-center text-xs text-ivory/60 hover:border-gold/50 hover:text-gold-2">
+          <label className="grid size-28 cursor-pointer place-items-center rounded-xl border border-dashed border-navy/20 text-center text-xs text-navy/65 hover:border-gold/50 hover:text-gold-deep">
             {uploading ? t("uploading") : `+ ${t("addImages")}`}
             <input
               type="file"
@@ -629,10 +636,10 @@ function ProductForm({
             />
           </label>
         </div>
-        <p className="mt-2 text-[11px] text-ivory/40">{t("pasteImageHint")}</p>
+        <p className="mt-2 text-[11px] text-navy/55">{t("pasteImageHint")}</p>
       </div>
 
-      {error && <p className="text-sm text-red-300">{error}</p>}
+      {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex gap-3">
         <button
           type="submit"
@@ -644,7 +651,7 @@ function ProductForm({
         <button
           type="button"
           onClick={cancel}
-          className="rounded-full border border-white/15 px-6 py-2.5 text-sm text-ivory transition hover:border-gold/50"
+          className="rounded-full border border-navy/15 px-6 py-2.5 text-sm text-navy transition hover:border-gold/50"
         >
           {t("cancel")}
         </button>

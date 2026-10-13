@@ -12,7 +12,7 @@ function ToggleButton({ open, onClick }: { open: boolean; onClick: () => void })
       type="button"
       onClick={onClick}
       aria-expanded={open}
-      className="mt-1 inline-flex items-center gap-1 text-xs text-gold-2/80 hover:text-gold-2"
+      className="mt-1 inline-flex items-center gap-1 text-xs text-gold-deep/80 hover:text-gold-deep"
     >
       {open ? t("letterCollapse") : t("letterExpand")}
       <ChevronDown className={`size-3.5 transition ${open ? "rotate-180" : ""}`} />
@@ -63,14 +63,14 @@ export function LetterField({
         maxLength={MAX}
         value={value}
         onChange={(e) => onChange(e.target.value.slice(0, MAX))}
-        className={`w-full resize-none rounded-lg border border-white/10 bg-transparent p-3 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none ${className}`}
+        className={`w-full resize-none rounded-lg border border-navy/10 bg-transparent p-3 text-sm text-navy placeholder:text-navy/35 focus:border-gold/50 focus:outline-none ${className}`}
       />
       <div className="flex flex-wrap items-center justify-between gap-x-4">
         <button
           type="button"
           onClick={() => setIdeas((v) => !v)}
           aria-expanded={ideas}
-          className="mt-1 inline-flex items-center gap-1 text-xs text-gold-2/80 hover:text-gold-2"
+          className="mt-1 inline-flex items-center gap-1 text-xs text-gold-deep/80 hover:text-gold-deep"
         >
           <Sparkles className="size-3.5" />
           {t("greetingIdeas")}
@@ -78,7 +78,7 @@ export function LetterField({
         {long && <ToggleButton open={open} onClick={() => setOpen((o) => !o)} />}
       </div>
       {ideas && (
-        <ul className="mt-2 max-h-60 space-y-1.5 overflow-y-auto rounded-lg border border-white/10 bg-navy-2/80 p-2">
+        <ul className="mt-2 max-h-60 space-y-1.5 overflow-y-auto rounded-lg border border-navy/10 bg-white/80 p-2">
           {greetingsFor(categories).map((g) => (
             <li key={g.title.en}>
               <button
@@ -86,8 +86,8 @@ export function LetterField({
                 onClick={() => pick(tl(g.text))}
                 className="w-full rounded-md px-3 py-2 text-start transition hover:bg-gold/10"
               >
-                <span className="block text-[11px] font-semibold text-gold-2">{tl(g.title)}</span>
-                <span className="block text-xs text-ivory/80">{tl(g.text)}</span>
+                <span className="block text-[11px] font-semibold text-gold-deep">{tl(g.title)}</span>
+                <span className="block text-xs text-navy/85">{tl(g.text)}</span>
               </button>
             </li>
           ))}
@@ -126,7 +126,7 @@ function CopyButton({ text }: { text: string }) {
       aria-label={t("copyLetter")}
       title={t("copyLetter")}
       className={`inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-1 text-[11px] transition ${
-        copied ? "text-emerald-300" : "text-ivory/50 hover:bg-white/5 hover:text-gold-2"
+        copied ? "text-emerald-700" : "text-navy/60 hover:bg-navy/5 hover:text-gold-deep"
       }`}
     >
       {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
@@ -156,7 +156,7 @@ export function LetterPreview({
   }, [text, open]);
 
   return (
-    <div className="rounded-lg border border-white/10 bg-navy-2/50 px-3 py-2 text-xs text-ivory/70">
+    <div className="rounded-lg border border-navy/10 bg-white/50 px-3 py-2 text-xs text-navy/75">
       <div className="flex items-start gap-2">
         <p ref={ref} className={`min-w-0 flex-1 whitespace-pre-wrap ${open ? "" : "line-clamp-3"}`}>
           {label}

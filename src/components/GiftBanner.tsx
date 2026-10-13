@@ -22,7 +22,7 @@ export function GiftBanner() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl sm:aspect-[21/9]">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] border border-gold/30 shadow-2xl shadow-navy/20 sm:aspect-[21/9]">
         {bannerSlides.map((s, i) => (
           <div
             key={s.key}

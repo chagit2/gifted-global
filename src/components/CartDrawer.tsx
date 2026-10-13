@@ -49,27 +49,27 @@ export function CartDrawer() {
         role="dialog"
         aria-modal="true"
         aria-label={t("cart")}
-        className={`absolute inset-y-0 end-0 flex w-full max-w-sm flex-col border-s border-white/10 bg-navy-2 shadow-2xl transition-transform duration-300 ease-out ${
+        className={`absolute inset-y-0 end-0 flex w-full max-w-sm flex-col border-s border-navy/10 bg-white shadow-2xl transition-transform duration-300 ease-out ${
           open ? "translate-x-0" : "ltr:translate-x-full rtl:-translate-x-full"
         }`}
       >
-        <header className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-          <h2 className="inline-flex items-center gap-2 font-heb text-xl text-ivory">
-            <ShoppingBag className="size-5 text-gold-2" />
+        <header className="flex items-center justify-between border-b border-navy/10 px-5 py-4">
+          <h2 className="inline-flex items-center gap-2 font-heb text-xl text-navy">
+            <ShoppingBag className="size-5 text-gold-deep" />
             {t("cart")}
           </h2>
           <button
             type="button"
             onClick={close}
             aria-label={t("close")}
-            className="grid size-8 place-items-center rounded-full text-ivory/60 transition hover:bg-white/10 hover:text-ivory"
+            className="grid size-8 place-items-center rounded-full text-navy/65 transition hover:bg-navy/5 hover:text-navy"
           >
             <X className="size-5" />
           </button>
         </header>
 
         {lines.length === 0 ? (
-          <p className="p-6 text-sm text-ivory/60">{t("emptyCart")}</p>
+          <p className="p-6 text-sm text-navy/65">{t("emptyCart")}</p>
         ) : (
           <>
             <ul className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
@@ -84,24 +84,24 @@ export function CartDrawer() {
                       className="size-16 shrink-0 rounded-lg object-cover"
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm text-ivory">{tl(p.name)}</p>
-                      <p className="text-xs text-gold-2">{money(p.price * line.qty)}</p>
+                      <p className="truncate text-sm text-navy">{tl(p.name)}</p>
+                      <p className="text-xs text-gold-deep">{money(p.price * line.qty)}</p>
                       <div className="mt-2 flex items-center gap-3">
-                        <div className="inline-flex items-center rounded-full border border-white/15">
+                        <div className="inline-flex items-center rounded-full border border-navy/15">
                           <button
                             type="button"
                             onClick={() => setQty(line.productId, line.qty - 1)}
                             aria-label="−"
-                            className="grid size-7 place-items-center text-ivory/70 hover:text-gold-2"
+                            className="grid size-7 place-items-center text-navy/75 hover:text-gold-deep"
                           >
                             <Minus className="size-3.5" />
                           </button>
-                          <span className="w-6 text-center text-xs text-ivory">{line.qty}</span>
+                          <span className="w-6 text-center text-xs text-navy">{line.qty}</span>
                           <button
                             type="button"
                             onClick={() => setQty(line.productId, line.qty + 1)}
                             aria-label="+"
-                            className="grid size-7 place-items-center text-ivory/70 hover:text-gold-2"
+                            className="grid size-7 place-items-center text-navy/75 hover:text-gold-deep"
                           >
                             <Plus className="size-3.5" />
                           </button>
@@ -109,7 +109,7 @@ export function CartDrawer() {
                         <button
                           type="button"
                           onClick={() => remove(line.productId)}
-                          className="text-xs text-ivory/40 hover:text-red-300"
+                          className="text-xs text-navy/55 hover:text-red-600"
                         >
                           {t("remove")}
                         </button>
@@ -120,14 +120,14 @@ export function CartDrawer() {
               })}
             </ul>
 
-            <footer className="space-y-3 border-t border-white/10 px-5 py-4">
-              <p className="inline-flex items-center gap-1.5 text-xs text-ivory/60">
-                <PenLine className="size-3.5 text-gold-2" />
+            <footer className="space-y-3 border-t border-navy/10 px-5 py-4">
+              <p className="inline-flex items-center gap-1.5 text-xs text-navy/65">
+                <PenLine className="size-3.5 text-gold-deep" />
                 {t("drawerLetterHint")}
               </p>
-              <div className="flex items-center justify-between font-heb text-lg text-ivory">
+              <div className="flex items-center justify-between font-heb text-lg text-navy">
                 <span>{t("total")}</span>
-                <span className="text-gold-2">{money(total)}</span>
+                <span className="text-gold-deep">{money(total)}</span>
               </div>
               <Link
                 to="/cart"
@@ -138,7 +138,7 @@ export function CartDrawer() {
               <button
                 type="button"
                 onClick={close}
-                className="block w-full rounded-full border border-white/15 px-5 py-2.5 text-sm text-ivory transition hover:border-gold/50 hover:text-gold-2"
+                className="block w-full rounded-full border border-navy/15 px-5 py-2.5 text-sm text-navy transition hover:border-gold/50 hover:text-gold-deep"
               >
                 {t("drawerContinue")}
               </button>

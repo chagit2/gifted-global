@@ -26,7 +26,7 @@ export function ProductCard({
   );
 
   return (
-    <article className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl transition hover:border-gold/40">
+    <article className="rounded-2xl border border-navy/10 bg-white/70 p-4 backdrop-blur-xl transition hover:border-gold/40">
       <button className="relative block w-full" onClick={() => onPreview(product)}>
         <FadeImage
           src={product.images[0]}
@@ -34,7 +34,7 @@ export function ProductCard({
           loading="lazy"
           width={1024}
           height={1024}
-          className="aspect-square w-full rounded-xl object-cover outline-1 -outline-offset-1 outline-white/10"
+          className="aspect-square w-full rounded-xl object-cover outline-1 -outline-offset-1 outline-navy/10"
         />
         {cat && (
           <span className="absolute top-2 start-2 rounded-full bg-gold/90 px-2.5 py-1 text-[10px] font-bold text-navy">
@@ -42,15 +42,15 @@ export function ProductCard({
           </span>
         )}
         {!product.inStock && (
-          <span className="absolute top-2 end-2 rounded-full bg-navy/90 px-2.5 py-1 text-[10px] font-bold text-ivory">
+          <span className="absolute top-2 end-2 rounded-full bg-navy/90 px-2.5 py-1 text-[10px] font-bold text-pearl">
             {t("outOfStock")}
           </span>
         )}
       </button>
-      <h3 className="mt-4 font-heb text-lg text-ivory">{tl(product.name)}</h3>
-      <p className="mt-1 text-xs text-ivory/50">{tl(product.subtitle)}</p>
+      <h3 className="mt-4 font-heb text-lg text-navy">{tl(product.name)}</h3>
+      <p className="mt-1 text-xs text-navy/60">{tl(product.subtitle)}</p>
       <div className="mt-4 flex items-center justify-between gap-2">
-        <span className="font-semibold text-gold-2">{money(product.price)}</span>
+        <span className="font-semibold text-gold-deep">{money(product.price)}</span>
         {product.inStock ? (
           <div className="flex gap-2">
             <button
@@ -58,7 +58,7 @@ export function ProductCard({
                 add(product);
                 setDrawerOpen(true);
               }}
-              className="rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs text-ivory hover:bg-white/20 transition"
+              className="rounded-full border border-navy/10 bg-white px-3 py-1.5 text-xs text-navy hover:bg-navy/10 transition"
             >
               {t("addToCart")}
             </button>
@@ -73,7 +73,7 @@ export function ProductCard({
             </button>
           </div>
         ) : (
-          <span className="text-xs text-ivory/50">{t("outOfStock")}</span>
+          <span className="text-xs text-navy/60">{t("outOfStock")}</span>
         )}
       </div>
     </article>

@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/i18n";
 export function SiteFooter() {
   const { t } = useI18n();
   return (
-    <footer className="relative border-t border-white/5 print:hidden">
+    <footer className="relative border-t-2 border-gold/60 bg-navy print:hidden">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-xs text-ivory/50">
         <span className="inline-flex items-center gap-1.5 text-gold-2/80">
           <MapPin className="size-3.5" />

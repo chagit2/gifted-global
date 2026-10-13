@@ -6,8 +6,8 @@ import { formatPrice, useI18n } from "@/lib/i18n";
 type CouponRow = Database["public"]["Tables"]["coupons"]["Row"];
 
 const field =
-  "mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-ivory focus:border-gold/50 focus:outline-none";
-const label = "text-xs text-ivory/60";
+  "mt-1 w-full rounded-lg border border-navy/10 bg-transparent px-3 py-2 text-sm text-navy focus:border-gold/50 focus:outline-none";
+const label = "text-xs text-navy/65";
 
 export function CouponsAdmin() {
   const { t, lang } = useI18n();
@@ -73,7 +73,7 @@ export function CouponsAdmin() {
     <div className="space-y-6">
       <form
         onSubmit={add}
-        className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl sm:grid-cols-5"
+        className="grid gap-4 rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl sm:grid-cols-5"
       >
         <label className="block sm:col-span-2">
           <span className={label}>{t("coupon")}</span>
@@ -110,10 +110,10 @@ export function CouponsAdmin() {
             onChange={(e) => setKind(e.target.value as "percent" | "fixed")}
             className={field}
           >
-            <option value="percent" className="bg-navy-2">
+            <option value="percent" className="bg-white">
               {t("couponPercent")}
             </option>
-            <option value="fixed" className="bg-navy-2">
+            <option value="fixed" className="bg-white">
               {t("couponFixed")}
             </option>
           </select>
@@ -136,41 +136,41 @@ export function CouponsAdmin() {
           >
             + {t("addCoupon")}
           </button>
-          {error && <span className="ms-3 text-xs text-red-300">{error}</span>}
+          {error && <span className="ms-3 text-xs text-red-600">{error}</span>}
         </div>
       </form>
 
       <ul className="space-y-3">
         {failed ? (
-          <li className="text-sm text-red-300">{t("loadError")}</li>
+          <li className="text-sm text-red-600">{t("loadError")}</li>
         ) : coupons === null ? (
-          <li className="text-sm text-ivory/50">{t("loading")}</li>
+          <li className="text-sm text-navy/60">{t("loading")}</li>
         ) : coupons.length === 0 ? (
-          <li className="text-sm text-ivory/50">{t("noCoupons")}</li>
+          <li className="text-sm text-navy/60">{t("noCoupons")}</li>
         ) : (
           coupons.map((c) => {
             const expired = !!c.expires_on && c.expires_on < today;
             return (
               <li
                 key={c.code}
-                className="flex flex-wrap items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl"
+                className="flex flex-wrap items-center gap-4 rounded-2xl border border-navy/10 bg-white/70 p-4 backdrop-blur-xl"
               >
-                <span dir="ltr" className="font-mono text-sm text-gold-2">
+                <span dir="ltr" className="font-mono text-sm text-gold-deep">
                   {c.code}
                 </span>
-                <span className="text-sm text-ivory">
+                <span className="text-sm text-navy">
                   {c.kind === "percent"
                     ? `${Number(c.amount)}%`
                     : formatPrice(Number(c.amount), lang)}
                 </span>
                 {c.expires_on && (
-                  <span className={`text-xs ${expired ? "text-red-300" : "text-ivory/50"}`}>
+                  <span className={`text-xs ${expired ? "text-red-600" : "text-navy/60"}`}>
                     {expired
                       ? t("couponExpired")
                       : `${t("couponExpires").split(" (")[0]}: ${c.expires_on}`}
                   </span>
                 )}
-                <label className="ms-auto flex items-center gap-2 text-xs text-ivory/70">
+                <label className="ms-auto flex items-center gap-2 text-xs text-navy/75">
                   <input
                     type="checkbox"
                     checked={c.active}
@@ -181,7 +181,7 @@ export function CouponsAdmin() {
                 </label>
                 <button
                   onClick={() => remove(c)}
-                  className="text-xs text-red-300/80 hover:text-red-300"
+                  className="text-xs text-red-300/80 hover:text-red-600"
                 >
                   {t("delete")}
                 </button>

@@ -40,22 +40,22 @@ function Index() {
       <section className="relative mx-auto max-w-7xl px-6 pt-12 pb-20">
         <Link
           to="/find"
-          className="group mb-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gold/30 bg-gradient-to-l from-gold/15 to-white/5 p-6 backdrop-blur-xl transition hover:border-gold/60"
+          className="group mb-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gold/30 bg-gradient-to-l from-gold/15 to-white/70 p-6 backdrop-blur-xl transition hover:border-gold/60"
         >
           <div>
-            <p className="font-heb text-2xl text-ivory">{t("finderCtaTitle")}</p>
-            <p className="mt-1 text-sm text-ivory/70">{t("finderCtaText")}</p>
+            <p className="font-heb text-2xl text-navy">{t("finderCtaTitle")}</p>
+            <p className="mt-1 text-sm text-navy/75">{t("finderCtaText")}</p>
           </div>
           <span className="inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy transition group-hover:bg-gold-2">
             <Sparkles className="size-4" />
             {t("finderTitle")}
           </span>
         </Link>
-        <h2 className="font-heb text-3xl font-bold text-ivory">{t("allGifts")}</h2>
+        <h2 className="font-heb text-3xl font-bold text-navy">{t("allGifts")}</h2>
         {isError ? (
-          <p className="mt-8 text-sm text-red-300">{t("loadError")}</p>
+          <p className="mt-8 text-sm text-red-600">{t("loadError")}</p>
         ) : isLoading ? (
-          <p className="mt-8 text-sm text-ivory/50">{t("loading")}</p>
+          <p className="mt-8 text-sm text-navy/60">{t("loading")}</p>
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {gifts.map((p) => (

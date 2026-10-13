@@ -34,11 +34,11 @@ export const Route = createFileRoute("/checkout")({
 });
 
 const field =
-  "mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none";
-const label = "text-xs text-ivory/60";
+  "mt-1 w-full rounded-lg border border-navy/10 bg-transparent px-3 py-2 text-sm text-navy placeholder:text-navy/35 focus:border-gold/50 focus:outline-none";
+const label = "text-xs text-navy/65";
 
 const Req = () => (
-  <span aria-hidden className="text-gold-2">
+  <span aria-hidden className="text-gold-deep">
     *
   </span>
 );
@@ -59,7 +59,9 @@ function CheckoutPage() {
     if (done !== null) window.scrollTo({ top: 0 });
   }, [done]);
   const [error, setError] = useState<string | null>(null);
-  const { shippingFee } = useSettings();
+  const { shippingFee: fee } = useSettings();
+  // Shipping is charged only when there is at least one gift.
+  const shippingFee = lines.length > 0 ? fee : 0;
   const [couponInput, setCouponInput] = useState("");
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [couponError, setCouponError] = useState(false);
@@ -172,13 +174,13 @@ function CheckoutPage() {
     return (
       <main className="mx-auto max-w-2xl px-6 py-28 text-center">
         <Confetti />
-        <div className="mx-auto mb-6 grid size-20 place-items-center rounded-full border border-gold/40 bg-gold/10 text-gold-2 shadow-[0_0_60px_-10px] shadow-gold/60 animate-floaty">
+        <div className="mx-auto mb-6 grid size-20 place-items-center rounded-full border border-gold/40 bg-gold/10 text-gold-deep shadow-[0_0_60px_-10px] shadow-gold/60 animate-floaty">
           <Gift className="size-9" />
         </div>
-        <h1 className="font-heb text-4xl font-bold leading-tight text-gold-2 sm:text-5xl">
+        <h1 className="font-heb text-4xl font-bold leading-tight text-gold-deep sm:text-5xl">
           {t(done > 1 ? "orderDoneMany" : "orderDoneOne")}
         </h1>
-        <p className="mt-5 text-lg text-ivory/80">{t(user ? "orderTrack" : "orderTrackGuest")}</p>
+        <p className="mt-5 text-lg text-navy/85">{t(user ? "orderTrack" : "orderTrackGuest")}</p>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           <Link
             to={user ? "/account" : "/login"}
@@ -188,7 +190,7 @@ function CheckoutPage() {
           </Link>
           <button
             onClick={() => navigate({ to: "/" })}
-            className="rounded-full border border-white/15 px-7 py-3 text-sm text-ivory transition hover:border-gold/50"
+            className="rounded-full border border-navy/15 px-7 py-3 text-sm text-navy transition hover:border-gold/50"
           >
             {t("backHome")}
           </button>
@@ -200,8 +202,8 @@ function CheckoutPage() {
   if (lines.length === 0) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-28 text-center">
-        <p className="text-ivory/60">{t("emptyCart")}</p>
-        <Link to="/" className="mt-6 inline-block text-sm text-gold-2 underline">
+        <p className="text-navy/65">{t("emptyCart")}</p>
+        <Link to="/" className="mt-6 inline-block text-sm text-gold-deep underline">
           {t("backHome")}
         </Link>
       </main>
@@ -210,9 +212,9 @@ function CheckoutPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-6 pt-14 pb-24">
-      <h1 className="font-heb text-4xl font-bold text-ivory">{t("checkout")}</h1>
+      <h1 className="font-heb text-4xl font-bold text-navy">{t("checkout")}</h1>
       {!user && (
-        <p className="mt-4 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-gold-2">
+        <p className="mt-4 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-gold-deep">
           {t("loginForOrders")}{" "}
           <Link to="/login" className="font-semibold underline">
             {t("login")}
@@ -220,20 +222,20 @@ function CheckoutPage() {
         </p>
       )}
 
-      <p className="mt-4 text-xs text-ivory/50">{t("requiredNote")}</p>
-      {prefilled && <p className="mt-2 text-xs text-gold-2/80">{t("prefilledNote")}</p>}
+      <p className="mt-4 text-xs text-navy/60">{t("requiredNote")}</p>
+      {prefilled && <p className="mt-2 text-xs text-gold-deep/80">{t("prefilledNote")}</p>}
 
       <form ref={formRef} onSubmit={onSubmit} className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-6">
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-            <h2 className="font-heb text-lg text-ivory">{t("senderDetails")}</h2>
+          <section className="rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
+            <h2 className="font-heb text-lg text-navy">{t("senderDetails")}</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <span className={label}>
                   {t("senderName")} <Req />
                 </span>
                 <input name="senderName" required className={field} />
-                <p className="mt-2 rounded-lg border border-gold/30 bg-gold/10 px-3 py-2 text-xs text-gold-2">
+                <p className="mt-2 rounded-lg border border-gold/30 bg-gold/10 px-3 py-2 text-xs text-gold-deep">
                   {t("senderNameNote")}
                 </p>
               </div>
@@ -249,14 +251,14 @@ function CheckoutPage() {
                   maxLength={40}
                   className={field}
                 />
-                <p className="mt-1 text-[11px] text-ivory/40">{t("phoneNote")}</p>
+                <p className="mt-1 text-[11px] text-navy/55">{t("phoneNote")}</p>
               </div>
             </div>
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-            <h2 className="font-heb text-lg text-ivory">{t("recipientTitle")}</h2>
-            <p className="mt-2 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs text-gold-2">
+          <section className="rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
+            <h2 className="font-heb text-lg text-navy">{t("recipientTitle")}</h2>
+            <p className="mt-2 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs text-gold-deep">
               <MapPin className="size-3.5" />
               {t("shipsIsraelOnly")}
             </p>
@@ -280,11 +282,11 @@ function CheckoutPage() {
                   className={field}
                 />
               </div>
-              <p className="-mt-2 text-[11px] text-ivory/40 sm:col-span-2">
+              <p className="-mt-2 text-[11px] text-navy/55 sm:col-span-2">
                 {t("recipientPhoneNote")}
               </p>
             </div>
-            <h3 className="mt-6 text-sm text-ivory/80">{t("shippingTitle")}</h3>
+            <h3 className="mt-6 text-sm text-navy/85">{t("shippingTitle")}</h3>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <span className={label}>
@@ -319,16 +321,16 @@ function CheckoutPage() {
                     readOnly
                     disabled
                     aria-readonly
-                    className={`${field} cursor-not-allowed bg-white/5 pe-9 text-ivory/60`}
+                    className={`${field} cursor-not-allowed bg-white/70 pe-9 text-navy/65`}
                   />
-                  <Lock className="pointer-events-none absolute end-3 top-1/2 mt-0.5 size-4 -translate-y-1/2 text-ivory/40" />
+                  <Lock className="pointer-events-none absolute end-3 top-1/2 mt-0.5 size-4 -translate-y-1/2 text-navy/55" />
                 </div>
               </div>
             </div>
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-            <p className="flex items-start gap-2 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-gold-2">
+          <section className="rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
+            <p className="flex items-start gap-2 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-gold-deep">
               <Truck className="mt-0.5 size-4 shrink-0" />
               {t("shipCommitment")}
             </p>
@@ -342,7 +344,7 @@ function CheckoutPage() {
                   className={`${field} [color-scheme:dark]`}
                 />
                 {minDate && (
-                  <span className="mt-1 block text-[11px] text-ivory/40">
+                  <span className="mt-1 block text-[11px] text-navy/55">
                     {t("deliveryDateHint").replace(
                       "{date}",
                       new Date(`${minDate}T12:00`).toLocaleDateString(
@@ -360,30 +362,30 @@ function CheckoutPage() {
                   maxLength={1000}
                   className={`${field} resize-y`}
                 />
-                <span className="mt-1 block text-[11px] text-ivory/40">
+                <span className="mt-1 block text-[11px] text-navy/55">
                   {t("customerNoteHint")}
                 </span>
               </label>
             </div>
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-            <h2 className="font-heb text-lg text-ivory">{t("lettersTitle")}</h2>
-            <p className="mt-1 text-xs text-ivory/50">{t("letterNote")}</p>
+          <section className="rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
+            <h2 className="font-heb text-lg text-navy">{t("lettersTitle")}</h2>
+            <p className="mt-1 text-xs text-navy/60">{t("letterNote")}</p>
             <div className="mt-4 space-y-4">
               {lines.map((l) => {
                 const p = getProduct(l.productId);
                 if (!p) return null;
                 return (
-                  <div key={l.productId} className="rounded-xl border border-white/10 p-3">
-                    <p className="text-sm text-ivory">
+                  <div key={l.productId} className="rounded-xl border border-navy/10 p-3">
+                    <p className="text-sm text-navy">
                       {tl(p.name)}
-                      {l.qty > 1 && <span className="text-ivory/50"> × {l.qty}</span>}
+                      {l.qty > 1 && <span className="text-navy/60"> × {l.qty}</span>}
                     </p>
                     {l.letters.map((letter, i) => (
                       <div key={i} className="mt-2">
                         {l.qty > 1 && (
-                          <p className="text-xs text-gold-2">
+                          <p className="text-xs text-gold-deep">
                             {t("letterN").replace("{n}", String(i + 1))}
                           </p>
                         )}
@@ -401,8 +403,8 @@ function CheckoutPage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-            <h2 className="font-heb text-lg text-ivory">{t("paymentTitle")}</h2>
+          <section className="rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
+            <h2 className="font-heb text-lg text-navy">{t("paymentTitle")}</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <span className={label}>
@@ -438,28 +440,28 @@ function CheckoutPage() {
           </section>
         </div>
 
-        <aside className="h-fit rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl lg:sticky lg:top-24">
-          <h2 className="font-heb text-lg text-ivory">{t("cart")}</h2>
+        <aside className="h-fit rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl lg:sticky lg:top-24">
+          <h2 className="font-heb text-lg text-navy">{t("cart")}</h2>
           <ul className="mt-4 space-y-3 text-sm">
             {lines.map((l) => {
               const p = getProduct(l.productId);
               if (!p) return null;
               return (
-                <li key={l.productId} className="flex justify-between gap-3 text-ivory/70">
+                <li key={l.productId} className="flex justify-between gap-3 text-navy/75">
                   <span>
                     {tl(p.name)} × {l.qty}
                   </span>
-                  <span className="whitespace-nowrap text-gold-2">
+                  <span className="whitespace-nowrap text-gold-deep">
                     {money(p.price * l.qty)}
                   </span>
                 </li>
               );
             })}
           </ul>
-          <div className="mt-5 border-t border-white/10 pt-4">
+          <div className="mt-5 border-t border-navy/10 pt-4">
             <span className={label}>{t("coupon")}</span>
             {coupon ? (
-              <div className="mt-1 flex items-center justify-between rounded-lg border border-emerald-300/40 bg-emerald-300/10 px-3 py-2 text-sm text-emerald-200">
+              <div className="mt-1 flex items-center justify-between rounded-lg border border-emerald-300/40 bg-emerald-300/10 px-3 py-2 text-sm text-emerald-700">
                 <span dir="ltr">{coupon.code}</span>
                 <button
                   type="button"
@@ -494,21 +496,21 @@ function CheckoutPage() {
                   type="button"
                   onClick={applyCoupon}
                   disabled={checkingCoupon || !couponInput.trim()}
-                  className="shrink-0 rounded-lg border border-white/15 px-3 text-xs text-ivory transition hover:border-gold/50 disabled:opacity-40"
+                  className="shrink-0 rounded-lg border border-navy/15 px-3 text-xs text-navy transition hover:border-gold/50 disabled:opacity-40"
                 >
                   {t("applyCoupon")}
                 </button>
               </div>
             )}
-            {couponError && <p className="mt-1 text-xs text-red-300">{t("couponInvalid")}</p>}
+            {couponError && <p className="mt-1 text-xs text-red-600">{t("couponInvalid")}</p>}
           </div>
-          <div className="mt-4 space-y-1 border-t border-white/10 pt-4 text-sm text-ivory/70">
+          <div className="mt-4 space-y-1 border-t border-navy/10 pt-4 text-sm text-navy/75">
             <div className="flex justify-between">
               <span>{t("subtotal")}</span>
               <span>{money(total)}</span>
             </div>
             {discount > 0 && (
-              <div className="flex justify-between text-emerald-200">
+              <div className="flex justify-between text-emerald-700">
                 <span>{t("discount")}</span>
                 <span>−{money(discount)}</span>
               </div>
@@ -518,12 +520,12 @@ function CheckoutPage() {
               <span>{money(shippingFee)}</span>
             </div>
           </div>
-          <div className="mt-3 flex justify-between border-t border-white/10 pt-3 font-heb text-lg text-ivory">
+          <div className="mt-3 flex justify-between border-t border-navy/10 pt-3 font-heb text-lg text-navy">
             <span>{t("total")}</span>
-            <span className="text-gold-2">{money(grandTotal)}</span>
+            <span className="text-gold-deep">{money(grandTotal)}</span>
           </div>
           {currency !== "ILS" && rate !== null && rateSource && (
-            <p className="mt-2 text-[11px] leading-relaxed text-ivory/50">
+            <p className="mt-2 text-[11px] leading-relaxed text-navy/60">
               {t("chargeIn")
                 .replace("{currency}", t(`currency_${currency}`))
                 .replace("{source}", t(rateSource === "boi" ? "rateBoi" : "rateEcb"))
@@ -534,7 +536,7 @@ function CheckoutPage() {
                 .replace("{ils}", formatPrice(grandTotal, lang))}
             </p>
           )}
-          {error && <p className="mt-3 text-xs text-red-300">{error}</p>}
+          {error && <p className="mt-3 text-xs text-red-600">{error}</p>}
           <button
             type="submit"
             disabled={busy}
