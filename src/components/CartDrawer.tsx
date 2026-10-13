@@ -53,16 +53,16 @@ export function CartDrawer() {
           open ? "translate-x-0" : "ltr:translate-x-full rtl:-translate-x-full"
         }`}
       >
-        <header className="flex items-center justify-between border-b border-navy/10 px-5 py-4">
-          <h2 className="inline-flex items-center gap-2 font-heb text-xl text-navy">
-            <ShoppingBag className="size-5 text-gold-deep" />
+        <header className="flex items-center justify-between border-b-2 border-gold/60 bg-navy px-5 py-4">
+          <h2 className="inline-flex items-center gap-2 font-heb text-xl text-pearl">
+            <ShoppingBag className="size-5 text-gold-2" />
             {t("cart")}
           </h2>
           <button
             type="button"
             onClick={close}
             aria-label={t("close")}
-            className="grid size-8 place-items-center rounded-full text-navy/65 transition hover:bg-navy/5 hover:text-navy"
+            className="grid size-8 place-items-center rounded-full text-pearl/75 transition hover:bg-white/10 hover:text-pearl"
           >
             <X className="size-5" />
           </button>

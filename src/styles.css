@@ -108,9 +108,9 @@
 
 :root {
   --radius: 0.625rem;
-  --navy: oklch(0.18 0.042 264);
-  --navy-2: oklch(0.24 0.05 262);
-  --navy-3: oklch(0.3 0.06 263);
+  --navy: oklch(0.28 0.085 263);
+  --navy-2: oklch(0.32 0.09 263);
+  --navy-3: oklch(0.36 0.1 263);
   --gold: oklch(0.72 0.11 85);
   --gold-2: oklch(0.85 0.09 90);
   --ivory: oklch(0.94 0.02 90);

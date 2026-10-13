@@ -71,8 +71,8 @@ function AboutPage() {
       </section>
 
       <section className="relative mx-auto max-w-7xl px-6 pb-16">
-        <div className="rounded-[2rem] border border-gold/25 bg-gold/10 px-6 py-12 text-center">
-          <p className="mx-auto max-w-2xl font-heb text-2xl leading-snug text-navy sm:text-3xl">{t("aboutClosing")}</p>
+        <div className="rounded-[2rem] border border-gold/40 bg-navy px-6 py-12 text-center shadow-xl shadow-navy/15">
+          <p className="mx-auto max-w-2xl font-heb text-2xl leading-snug text-pearl sm:text-3xl">{t("aboutClosing")}</p>
           <Link
             to="/"
             className="mt-8 inline-block rounded-full bg-gold px-7 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2"
