@@ -136,7 +136,7 @@ function RootComponent() {
         <CurrencyProvider>
         <AuthProvider>
         <CartProvider>
-          <div className="flex min-h-screen flex-col bg-navy print:bg-white">
+          <div className="flex min-h-screen flex-col bg-pearl print:bg-white">
             <SiteHeader />
             <HolidayBanner />
             {/* Keyed by path so each page fades in when it opens. */}

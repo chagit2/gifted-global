@@ -66,19 +66,19 @@ export function OrderCard({
     new Date(`${order.delivery_date}T23:59`).getTime() - Date.now() < 3 * 86400000;
 
   return (
-    <article className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+    <article className="rounded-2xl border border-navy/10 bg-white/70 p-5 backdrop-blur-xl">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="font-heb text-lg text-ivory">
+          <p className="font-heb text-lg text-navy">
             {t("order")} #{order.id.slice(0, 8).toUpperCase()}
           </p>
-          <p className="text-xs text-ivory/50">{date}</p>
+          <p className="text-xs text-navy/60">{date}</p>
           {order.delivery_date && (
             <p
               className={`mt-1 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] ${
                 admin && soon
-                  ? "border-red-300/50 bg-red-300/10 text-red-200"
-                  : "border-gold/30 text-gold-2"
+                  ? "border-red-300/50 bg-red-300/10 text-red-700"
+                  : "border-gold/30 text-gold-deep"
               }`}
             >
               <CalendarClock className="size-3" />
@@ -90,17 +90,17 @@ export function OrderCard({
         {statusSlot ?? <StatusBadge status={order.status} />}
       </header>
 
-      <ul className="mt-4 space-y-3 border-t border-white/10 pt-4">
+      <ul className="mt-4 space-y-3 border-t border-navy/10 pt-4">
         {[...groups.entries()].map(([id, g]) => (
           <li key={id}>
             <div className="flex justify-between gap-3 text-sm">
-              <span className="text-ivory">
+              <span className="text-navy">
                 {g.name}
                 {g.letters.length > 1 && (
-                  <span className="text-ivory/50"> × {g.letters.length}</span>
+                  <span className="text-navy/60"> × {g.letters.length}</span>
                 )}
               </span>
-              <span className="whitespace-nowrap text-gold-2">{formatPrice(g.price, lang)}</span>
+              <span className="whitespace-nowrap text-gold-deep">{formatPrice(g.price, lang)}</span>
             </div>
             {g.letters.some(Boolean) && (
               <ul className="mt-1 space-y-1">
@@ -112,7 +112,7 @@ export function OrderCard({
                         copyable={admin === true}
                         label={
                           g.letters.length > 1 && (
-                            <span className="text-gold-2">
+                            <span className="text-gold-deep">
                               {t("letterN").replace("{n}", String(i + 1))}:{" "}
                             </span>
                           )
@@ -128,15 +128,15 @@ export function OrderCard({
       </ul>
 
       {order.customer_note && (
-        <div className="mt-4 rounded-lg border border-gold/20 bg-gold/5 px-3 py-2 text-xs text-ivory/80">
-          <span className="text-gold-2">{t("customerNote")}: </span>
+        <div className="mt-4 rounded-lg border border-gold/20 bg-gold/5 px-3 py-2 text-xs text-navy/85">
+          <span className="text-gold-deep">{t("customerNote")}: </span>
           <span className="whitespace-pre-wrap">{order.customer_note}</span>
         </div>
       )}
 
-      <footer className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t border-white/10 pt-4 text-sm">
-        <div className="text-ivory/60">
-          <p className="text-xs text-ivory/40">{t("shipTo")}</p>
+      <footer className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t border-navy/10 pt-4 text-sm">
+        <div className="text-navy/65">
+          <p className="text-xs text-navy/55">{t("shipTo")}</p>
           <p>
             {order.recipient_name && <>{order.recipient_name} · </>}
             {order.ship_street}, {order.ship_city}
@@ -158,22 +158,22 @@ export function OrderCard({
         </div>
         <div className="text-end">
           {order.discount > 0 && (
-            <p className="text-xs text-emerald-200">
+            <p className="text-xs text-emerald-700">
               {t("discount")}
               {order.coupon_code && <span dir="ltr"> ({order.coupon_code})</span>}: −
               {formatPrice(order.discount, lang)}
             </p>
           )}
           {shipping > 0 && (
-            <p className="text-xs text-ivory/50">
+            <p className="text-xs text-navy/60">
               {t("shipping")}: {formatPrice(shipping, lang)}
             </p>
           )}
-          <p className="font-heb text-lg text-ivory">
-            {t("total")}: <span className="text-gold-2">{formatPrice(order.total, lang)}</span>
+          <p className="font-heb text-lg text-navy">
+            {t("total")}: <span className="text-gold-deep">{formatPrice(order.total, lang)}</span>
           </p>
           {(order.currency === "EUR" || order.currency === "USD") && order.total_in_currency && (
-            <p className="text-xs text-gold-2/80">
+            <p className="text-xs text-gold-deep/80">
               {t("paidIn").replace("{currency}", t(`currency_${order.currency}`))}:{" "}
               {formatMoney(Number(order.total_in_currency), order.currency, lang)}
             </p>
@@ -206,12 +206,12 @@ function AdminTools({ order }: { order: OrderRow }) {
   };
 
   const printBtn =
-    "inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-xs text-ivory transition hover:border-gold/50 hover:text-gold-2";
+    "inline-flex items-center gap-1.5 rounded-full border border-navy/15 px-3 py-1.5 text-xs text-navy transition hover:border-gold/50 hover:text-gold-deep";
 
   return (
-    <div className="mt-4 space-y-3 border-t border-dashed border-white/10 pt-4">
+    <div className="mt-4 space-y-3 border-t border-dashed border-navy/10 pt-4">
       <label className="block">
-        <span className="text-xs text-ivory/50">{t("adminNote")}</span>
+        <span className="text-xs text-navy/60">{t("adminNote")}</span>
         <div className="mt-1 flex gap-2">
           <textarea
             value={note}
@@ -221,22 +221,22 @@ function AdminTools({ order }: { order: OrderRow }) {
             }}
             rows={1}
             maxLength={2000}
-            className="min-h-9 w-full resize-y rounded-lg border border-white/10 bg-transparent px-3 py-2 text-xs text-ivory focus:border-gold/50 focus:outline-none"
+            className="min-h-9 w-full resize-y rounded-lg border border-navy/10 bg-transparent px-3 py-2 text-xs text-navy focus:border-gold/50 focus:outline-none"
           />
           <button
             type="button"
             onClick={save}
             disabled={note === saved || state === "saving"}
-            className="shrink-0 rounded-lg border border-white/15 px-3 text-xs text-ivory transition hover:border-gold/50 disabled:opacity-40"
+            className="shrink-0 rounded-lg border border-navy/15 px-3 text-xs text-navy transition hover:border-gold/50 disabled:opacity-40"
           >
             {t("save")}
           </button>
         </div>
         {state === "saved" && note === saved && (
-          <span className="mt-1 block text-[11px] text-emerald-300">{t("saved")}</span>
+          <span className="mt-1 block text-[11px] text-emerald-700">{t("saved")}</span>
         )}
         {state === "error" && (
-          <span className="mt-1 block text-[11px] text-red-300">{t("saveError")}</span>
+          <span className="mt-1 block text-[11px] text-red-600">{t("saveError")}</span>
         )}
       </label>
       <div className="flex flex-wrap gap-2">

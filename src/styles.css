@@ -64,6 +64,9 @@
   --color-gold: var(--gold);
   --color-gold-2: var(--gold-2);
   --color-ivory: var(--ivory);
+  --color-pearl: var(--pearl);
+  --color-pearl-2: var(--pearl-2);
+  --color-gold-deep: var(--gold-deep);
   --font-display: "Cormorant Garamond", serif;
   --font-sans: "Manrope", sans-serif;
   --font-heb: "Ellinia CLM", serif;
@@ -111,24 +114,29 @@
   --gold: oklch(0.72 0.11 85);
   --gold-2: oklch(0.85 0.09 90);
   --ivory: oklch(0.94 0.02 90);
-  --background: var(--navy);
-  --foreground: var(--ivory);
-  --card: var(--navy-2);
-  --card-foreground: var(--ivory);
-  --popover: var(--navy-2);
-  --popover-foreground: var(--ivory);
+  /* Pearl leads; navy and gold accompany it. */
+  --pearl: oklch(0.973 0.009 85);
+  --pearl-2: oklch(0.945 0.014 85);
+  /* Gold dark enough for text on pearl. */
+  --gold-deep: oklch(0.56 0.105 78);
+  --background: var(--pearl);
+  --foreground: var(--navy);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--navy);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--navy);
   --primary: var(--gold);
   --primary-foreground: var(--navy);
-  --secondary: var(--navy-3);
-  --secondary-foreground: var(--ivory);
-  --muted: var(--navy-3);
-  --muted-foreground: oklch(0.72 0.02 90);
-  --accent: var(--navy-3);
-  --accent-foreground: var(--gold-2);
+  --secondary: var(--pearl-2);
+  --secondary-foreground: var(--navy);
+  --muted: var(--pearl-2);
+  --muted-foreground: oklch(0.45 0.03 262);
+  --accent: var(--pearl-2);
+  --accent-foreground: var(--gold-deep);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: oklch(0.18 0.042 264 / 10%);
+  --input: oklch(0.18 0.042 264 / 15%);
   --ring: var(--gold);
 
   --chart-1: oklch(0.646 0.222 41.116);

@@ -27,7 +27,7 @@ const AUTH_ERRORS: Record<string, Key> = {
 };
 
 const field =
-  "mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-ivory placeholder:text-ivory/30 focus:border-gold/50 focus:outline-none";
+  "mt-1 w-full rounded-lg border border-navy/10 bg-transparent px-3 py-2 text-sm text-navy placeholder:text-navy/35 focus:border-gold/50 focus:outline-none";
 
 function LoginPage() {
   const { t } = useI18n();
@@ -97,14 +97,14 @@ function LoginPage() {
 
   return (
     <main className="mx-auto max-w-md px-6 pt-16 pb-24">
-      <h1 className="font-heb text-4xl font-bold text-ivory">{mode === "in" ? t("login") : t("signup")}</h1>
-      <form onSubmit={onSubmit} className="mt-8 space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+      <h1 className="font-heb text-4xl font-bold text-navy">{mode === "in" ? t("login") : t("signup")}</h1>
+      <form onSubmit={onSubmit} className="mt-8 space-y-4 rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
         <label className="block">
-          <span className="text-xs text-ivory/60">{t("email")}</span>
+          <span className="text-xs text-navy/65">{t("email")}</span>
           <input name="email" type="email" required autoComplete="email" dir="ltr" className={field} />
         </label>
         <label className="block">
-          <span className="text-xs text-ivory/60">{t("password")}</span>
+          <span className="text-xs text-navy/65">{t("password")}</span>
           <input
             name="password"
             type="password"
@@ -114,10 +114,10 @@ function LoginPage() {
             dir="ltr"
             className={field}
           />
-          {mode === "up" && <span className="mt-1 block text-[11px] text-ivory/40">{t("passwordHint")}</span>}
+          {mode === "up" && <span className="mt-1 block text-[11px] text-navy/55">{t("passwordHint")}</span>}
         </label>
         {error && (
-          <p className="text-xs text-red-300">
+          <p className="text-xs text-red-600">
             {error}
             {errorDetail && (
               <span className="mt-1 block text-[11px] text-red-300/70" dir="ltr">
@@ -127,7 +127,7 @@ function LoginPage() {
           </p>
         )}
         {notice && (
-          <p className="rounded-lg border border-gold/30 bg-gold/10 px-3 py-2 text-xs text-gold-2">{notice}</p>
+          <p className="rounded-lg border border-gold/30 bg-gold/10 px-3 py-2 text-xs text-gold-deep">{notice}</p>
         )}
         <button
           type="submit"
@@ -143,7 +143,7 @@ function LoginPage() {
             setError(null);
             setNotice(null);
           }}
-          className="w-full text-center text-xs text-ivory/60 underline hover:text-gold-2"
+          className="w-full text-center text-xs text-navy/65 underline hover:text-gold-deep"
         >
           {mode === "in" ? t("noAccount") : t("haveAccount")}
         </button>

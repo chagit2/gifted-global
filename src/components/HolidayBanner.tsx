@@ -47,10 +47,10 @@ export function HolidayBanner() {
 
   return (
     <div className="border-b border-gold/20 bg-gradient-to-r from-gold/15 via-gold/5 to-gold/15 print:hidden">
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2 text-xs text-ivory sm:px-6 sm:text-sm">
-        <Gift className="size-4 shrink-0 text-gold-2" />
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2 text-xs text-navy sm:px-6 sm:text-sm">
+        <Gift className="size-4 shrink-0 text-gold-deep" />
         <p className="min-w-0 flex-1">
-          <span className="font-semibold text-gold-2">
+          <span className="font-semibold text-gold-deep">
             {t("holidayDaysLeft")
               .replace("{n}", String(h.daysLeft))
               .replace("{holiday}", tl(category.label))}
@@ -62,7 +62,7 @@ export function HolidayBanner() {
           <Link
             to="/c/$slug"
             params={{ slug: h.slug }}
-            className="whitespace-nowrap font-semibold text-gold-2 underline-offset-4 hover:underline"
+            className="whitespace-nowrap font-semibold text-gold-deep underline-offset-4 hover:underline"
           >
             {t("holidayShop")}
           </Link>
@@ -71,7 +71,7 @@ export function HolidayBanner() {
           type="button"
           onClick={close}
           aria-label={t("close")}
-          className="grid size-7 shrink-0 place-items-center rounded-full text-ivory/60 transition hover:bg-white/10 hover:text-ivory"
+          className="grid size-7 shrink-0 place-items-center rounded-full text-navy/65 transition hover:bg-navy/5 hover:text-navy"
         >
           <X className="size-4" />
         </button>

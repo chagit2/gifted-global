@@ -40,14 +40,14 @@ function AccountPage() {
       });
   }, [user]);
 
-  if (!user) return <main className="mx-auto max-w-4xl px-6 py-24 text-ivory/60">{t("loading")}</main>;
+  if (!user) return <main className="mx-auto max-w-4xl px-6 py-24 text-navy/65">{t("loading")}</main>;
 
   return (
     <main className="mx-auto max-w-4xl px-6 pt-14 pb-24">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-heb text-4xl font-bold text-ivory">{t("account")}</h1>
-          <p className="mt-1 text-sm text-ivory/50" dir="ltr">
+          <h1 className="font-heb text-4xl font-bold text-navy">{t("account")}</h1>
+          <p className="mt-1 text-sm text-navy/60" dir="ltr">
             {user.email}
           </p>
         </div>
@@ -62,21 +62,21 @@ function AccountPage() {
           )}
           <button
             onClick={signOut}
-            className="rounded-full border border-white/15 px-5 py-2 text-sm text-ivory transition hover:border-gold/50"
+            className="rounded-full border border-navy/15 px-5 py-2 text-sm text-navy transition hover:border-gold/50"
           >
             {t("signOut")}
           </button>
         </div>
       </div>
 
-      <h2 className="mt-12 font-heb text-2xl text-ivory">{t("myOrders")}</h2>
+      <h2 className="mt-12 font-heb text-2xl text-navy">{t("myOrders")}</h2>
       <div className="mt-6 space-y-4">
         {failed ? (
-          <p className="text-sm text-red-300">{t("loadError")}</p>
+          <p className="text-sm text-red-600">{t("loadError")}</p>
         ) : orders === null ? (
-          <p className="text-sm text-ivory/50">{t("loading")}</p>
+          <p className="text-sm text-navy/60">{t("loading")}</p>
         ) : orders.length === 0 ? (
-          <p className="text-sm text-ivory/50">{t("noOrders")}</p>
+          <p className="text-sm text-navy/60">{t("noOrders")}</p>
         ) : (
           orders.map((o) => <OrderCard key={o.id} order={o} actions={<OrderAgain order={o} />} />)
         )}
@@ -124,12 +124,12 @@ function OrderAgain({ order }: { order: OrderRow }) {
       <button
         type="button"
         onClick={again}
-        className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 px-4 py-2 text-xs font-semibold text-gold-2 transition hover:bg-gold/10"
+        className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 px-4 py-2 text-xs font-semibold text-gold-deep transition hover:bg-gold/10"
       >
         <RotateCcw className="size-3.5" />
         {t("orderAgain")}
       </button>
-      {note && <span className="text-xs text-ivory/60">{note}</span>}
+      {note && <span className="text-xs text-navy/65">{note}</span>}
     </div>
   );
 }

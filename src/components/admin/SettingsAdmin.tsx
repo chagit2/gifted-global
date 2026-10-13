@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { SETTINGS_KEY, useSettings } from "@/lib/settings";
 
 const field =
-  "mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2 text-sm text-ivory focus:border-gold/50 focus:outline-none";
+  "mt-1 w-full rounded-lg border border-navy/10 bg-transparent px-3 py-2 text-sm text-navy focus:border-gold/50 focus:outline-none";
 
 const BUCKET = "product-images";
 const IMAGE_ROUTE = "/product-images/";
@@ -76,27 +76,27 @@ function LetterBackgrounds() {
   };
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-      <h2 className="font-heb text-lg text-ivory">{t("letterBackgrounds")}</h2>
-      <p className="mt-1 text-xs text-ivory/50">{t("letterBackgroundsHint")}</p>
+    <section className="rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
+      <h2 className="font-heb text-lg text-navy">{t("letterBackgrounds")}</h2>
+      <p className="mt-1 text-xs text-navy/60">{t("letterBackgroundsHint")}</p>
       <div className="mt-4 flex flex-wrap gap-3">
         {letterBackgrounds.map((url) => (
           <div
             key={url}
-            className="relative h-36 w-[102px] overflow-hidden rounded-lg border border-white/10 bg-white"
+            className="relative h-36 w-[102px] overflow-hidden rounded-lg border border-navy/10 bg-white"
           >
             <img src={url} alt="" className="size-full object-cover" />
             <button
               type="button"
               aria-label={t("delete")}
               onClick={() => remove(url)}
-              className="absolute top-1 end-1 grid size-6 place-items-center rounded-full bg-navy/80 text-ivory hover:text-red-300"
+              className="absolute top-1 end-1 grid size-6 place-items-center rounded-full bg-navy/40 text-navy hover:text-red-600"
             >
               <X className="size-3.5" />
             </button>
           </div>
         ))}
-        <label className="grid h-36 w-[102px] cursor-pointer place-items-center rounded-lg border border-dashed border-white/20 p-2 text-center text-xs text-ivory/60 hover:border-gold/50 hover:text-gold-2">
+        <label className="grid h-36 w-[102px] cursor-pointer place-items-center rounded-lg border border-dashed border-navy/20 p-2 text-center text-xs text-navy/65 hover:border-gold/50 hover:text-gold-deep">
           {busy ? t("uploading") : `+ ${t("addBackground")}`}
           <input
             type="file"
@@ -111,7 +111,7 @@ function LetterBackgrounds() {
           />
         </label>
       </div>
-      {error && <p className="mt-3 text-xs text-red-300">{error}</p>}
+      {error && <p className="mt-3 text-xs text-red-600">{error}</p>}
     </section>
   );
 }
@@ -142,10 +142,10 @@ function ShippingFee() {
   return (
     <form
       onSubmit={onSubmit}
-      className="max-w-sm rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
+      className="max-w-sm rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl"
     >
       <label className="block">
-        <span className="text-xs text-ivory/60">{t("shippingFeeLabel")}</span>
+        <span className="text-xs text-navy/65">{t("shippingFeeLabel")}</span>
         <input
           type="number"
           min={0}
@@ -167,8 +167,8 @@ function ShippingFee() {
       >
         {t("save")}
       </button>
-      {state === "saved" && <span className="ms-3 text-xs text-emerald-300">{t("saved")}</span>}
-      {state === "error" && <p className="mt-2 text-xs text-red-300">{t("saveError")}</p>}
+      {state === "saved" && <span className="ms-3 text-xs text-emerald-700">{t("saved")}</span>}
+      {state === "error" && <p className="mt-2 text-xs text-red-600">{t("saveError")}</p>}
     </form>
   );
 }

@@ -65,9 +65,9 @@ function PrintPage() {
   }, [order, what, letterBackgrounds.length]);
 
   if (!ready || (user && isAdmin && !order && !failed))
-    return <main className="p-10 text-ivory/60">{t("loading")}</main>;
-  if (!user || !isAdmin) return <main className="p-10 text-ivory/60">{t("notAllowed")}</main>;
-  if (failed || !order) return <main className="p-10 text-red-300">{t("loadError")}</main>;
+    return <main className="p-10 text-navy/65">{t("loading")}</main>;
+  if (!user || !isAdmin) return <main className="p-10 text-navy/65">{t("notAllowed")}</main>;
+  if (failed || !order) return <main className="p-10 text-red-600">{t("loadError")}</main>;
 
   const letters = order.order_items.filter((it) => it.letter.trim());
   const num = order.id.slice(0, 8).toUpperCase();
@@ -77,7 +77,7 @@ function PrintPage() {
       <style>{"@page { size: A4; margin: 0 }"}</style>
       {what === "letters" && letterBackgrounds.length > 0 && (
         <div className="mx-auto flex max-w-[210mm] flex-wrap items-center gap-3 pt-6 print:hidden">
-          <span className="text-sm text-ivory/70">{t("background")}:</span>
+          <span className="text-sm text-navy/75">{t("background")}:</span>
           <button
             onClick={() => chooseBg("")}
             className={`grid h-20 w-14 place-items-center rounded border-2 bg-white text-[10px] text-neutral-500 ${
@@ -131,7 +131,7 @@ function PrintPage() {
           </div>
         </section>
       ) : letters.length === 0 ? (
-        <p className="py-10 text-center text-ivory/60">—</p>
+        <p className="py-10 text-center text-navy/65">—</p>
       ) : (
         letters.map((it, i) => (
           <section

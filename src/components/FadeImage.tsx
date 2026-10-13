@@ -19,7 +19,7 @@ export function FadeImage({ className = "", onLoad, ...props }: ImgHTMLAttribute
         setLoaded(true);
         onLoad?.(e);
       }}
-      className={`bg-white/5 transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
+      className={`bg-white/70 transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"} ${className}`}
     />
   );
 }

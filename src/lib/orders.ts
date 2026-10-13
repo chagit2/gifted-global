@@ -43,11 +43,11 @@ export const statusKey = (s: string): Key =>
   (ORDER_STATUSES as readonly string[]).includes(s) ? (`status_${s}` as Key) : "status_new";
 
 export const statusTone: Record<string, string> = {
-  new: "border-gold/40 bg-gold/10 text-gold-2",
-  preparing: "border-sky-300/40 bg-sky-300/10 text-sky-200",
-  shipped: "border-violet-300/40 bg-violet-300/10 text-violet-200",
-  delivered: "border-emerald-300/40 bg-emerald-300/10 text-emerald-200",
-  cancelled: "border-white/15 bg-white/5 text-ivory/50",
+  new: "border-gold/40 bg-gold/10 text-gold-deep",
+  preparing: "border-sky-300/40 bg-sky-300/10 text-sky-700",
+  shipped: "border-violet-300/40 bg-violet-300/10 text-violet-700",
+  delivered: "border-emerald-300/40 bg-emerald-300/10 text-emerald-700",
+  cancelled: "border-navy/15 bg-white/70 text-navy/60",
 };
 
 export type OrderRow = {

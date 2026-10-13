@@ -66,7 +66,7 @@ function FinderPage() {
   return (
     <main className="relative mx-auto max-w-5xl px-6 pt-14 pb-24">
       <div className="pointer-events-none absolute -top-24 start-1/2 size-[420px] -translate-x-1/2 rounded-full bg-gold/15 blur-[120px]" />
-      <p className="relative inline-flex items-center gap-2 text-sm text-gold-2">
+      <p className="relative inline-flex items-center gap-2 text-sm text-gold-deep">
         <Sparkles className="size-4" />
         {t("finderTitle")}
       </p>
@@ -77,14 +77,14 @@ function FinderPage() {
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
-                className={`h-1.5 flex-1 rounded-full transition ${i <= step ? "bg-gold" : "bg-white/10"}`}
+                className={`h-1.5 flex-1 rounded-full transition ${i <= step ? "bg-gold" : "bg-white"}`}
               />
             ))}
           </div>
-          <p className="mt-6 text-xs text-ivory/50">
+          <p className="mt-6 text-xs text-navy/60">
             {t("finderStep").replace("{n}", String(step + 1))}
           </p>
-          <h1 className="mt-1 font-heb text-3xl font-bold text-ivory sm:text-4xl">
+          <h1 className="mt-1 font-heb text-3xl font-bold text-navy sm:text-4xl">
             {questions[step]!.title}
           </h1>
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -93,7 +93,7 @@ function FinderPage() {
                 key={o.id}
                 type="button"
                 onClick={() => questions[step]!.pick(o.id)}
-                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-6 font-heb text-lg text-ivory backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-gold/60 hover:bg-gold/10 hover:text-gold-2"
+                className="rounded-2xl border border-navy/10 bg-white/70 px-4 py-6 font-heb text-lg text-navy backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-gold/60 hover:bg-gold/10 hover:text-gold-deep"
               >
                 {tl(o.label)}
               </button>
@@ -103,7 +103,7 @@ function FinderPage() {
             <button
               type="button"
               onClick={back}
-              className="mt-8 inline-flex items-center gap-1.5 text-sm text-ivory/60 hover:text-gold-2"
+              className="mt-8 inline-flex items-center gap-1.5 text-sm text-navy/65 hover:text-gold-deep"
             >
               <ArrowRight className="size-4 ltr:rotate-180" />
               {t("finderBack")}
@@ -112,23 +112,23 @@ function FinderPage() {
         </div>
       ) : (
         <div className="relative animate-page-in">
-          <h1 className="mt-4 font-heb text-3xl font-bold text-ivory sm:text-4xl">
+          <h1 className="mt-4 font-heb text-3xl font-bold text-navy sm:text-4xl">
             {t(result?.exact ? "finderResults" : "finderNear")}
           </h1>
-          <p className="mt-2 text-sm text-ivory/60">
+          <p className="mt-2 text-sm text-navy/65">
             {tl(who!.label)} · {tl(occasion!.label)} · {tl(budget!.label)}
           </p>
           <button
             type="button"
             onClick={restart}
-            className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/15 px-4 py-2 text-sm text-ivory transition hover:border-gold/50 hover:text-gold-2"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-navy/15 px-4 py-2 text-sm text-navy transition hover:border-gold/50 hover:text-gold-deep"
           >
             <RotateCcw className="size-4" />
             {t("finderRestart")}
           </button>
 
           {isLoading ? (
-            <p className="mt-8 text-sm text-ivory/50">{t("loading")}</p>
+            <p className="mt-8 text-sm text-navy/60">{t("loading")}</p>
           ) : result && result.gifts.length ? (
             <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {result.gifts.map((p) => (
@@ -136,9 +136,9 @@ function FinderPage() {
               ))}
             </div>
           ) : (
-            <p className="mt-8 text-sm text-ivory/60">
+            <p className="mt-8 text-sm text-navy/65">
               {t("finderNone")}{" "}
-              <Link to="/" className="text-gold-2 underline">
+              <Link to="/" className="text-gold-deep underline">
                 {t("allGifts")}
               </Link>
             </p>
