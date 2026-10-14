@@ -21,6 +21,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { CookieConsent } from "@/components/CookieConsent";
 import { HolidayBanner } from "@/components/HolidayBanner";
 import { CartDrawer } from "@/components/CartDrawer";
+import { Sparkles } from "@/components/Sparkles";
 
 function NotFoundComponent() {
   return (
@@ -136,7 +137,8 @@ function RootComponent() {
         <CurrencyProvider>
         <AuthProvider>
         <CartProvider>
-          <div className="flex min-h-screen flex-col bg-pearl print:bg-white">
+          <div className="relative isolate flex min-h-screen flex-col bg-pearl print:bg-white">
+            {!pathname.startsWith("/print") && <Sparkles />}
             <a
               href="#content"
               className="sr-only z-[90] rounded-full bg-gold px-5 py-2 text-sm font-semibold text-navy focus:not-sr-only focus:fixed focus:top-3 focus:start-3"
