@@ -54,7 +54,7 @@ export function Sparkles() {
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const target = Math.min(680, Math.round((w * h) / 2250));
+      const target = Math.min(2700, Math.round((w * h) / 560));
       if (!oldW) sparkles = Array.from({ length: target }, make);
       else {
         // Keep popped ones popped: rescale positions instead of starting over.
