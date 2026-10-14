@@ -118,7 +118,7 @@
   --pearl: oklch(0.973 0.009 85);
   --pearl-2: oklch(0.945 0.014 85);
   /* Gold dark enough for text on pearl. */
-  --gold-deep: oklch(0.56 0.105 78);
+  --gold-deep: oklch(0.52 0.1 76);
   --background: var(--pearl);
   --foreground: var(--navy);
   --card: oklch(1 0 0);
@@ -198,6 +198,12 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+  }
+
+  /* A clear ring on whatever the keyboard is on. */
+  :focus-visible {
+    outline: 2px solid var(--gold-deep);
+    outline-offset: 2px;
   }
 
   html:lang(he) body {

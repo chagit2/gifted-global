@@ -60,6 +60,7 @@ export function LetterField({
       <textarea
         ref={ref}
         rows={3}
+        aria-label={t("letterTitle")}
         maxLength={MAX}
         value={value}
         onChange={(e) => onChange(e.target.value.slice(0, MAX))}
@@ -126,7 +127,7 @@ function CopyButton({ text }: { text: string }) {
       aria-label={t("copyLetter")}
       title={t("copyLetter")}
       className={`inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-1 text-[11px] transition ${
-        copied ? "text-emerald-700" : "text-navy/60 hover:bg-navy/5 hover:text-gold-deep"
+        copied ? "text-emerald-700" : "text-navy/70 hover:bg-navy/5 hover:text-gold-deep"
       }`}
     >
       {copied ? <Check className="size-4" /> : <Copy className="size-4" />}

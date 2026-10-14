@@ -47,7 +47,7 @@ function AccountPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-heb text-4xl font-bold text-navy">{t("account")}</h1>
-          <p className="mt-1 text-sm text-navy/60" dir="ltr">
+          <p className="mt-1 text-sm text-navy/70" dir="ltr">
             {user.email}
           </p>
         </div>
@@ -74,9 +74,9 @@ function AccountPage() {
         {failed ? (
           <p className="text-sm text-red-600">{t("loadError")}</p>
         ) : orders === null ? (
-          <p className="text-sm text-navy/60">{t("loading")}</p>
+          <p className="text-sm text-navy/70">{t("loading")}</p>
         ) : orders.length === 0 ? (
-          <p className="text-sm text-navy/60">{t("noOrders")}</p>
+          <p className="text-sm text-navy/70">{t("noOrders")}</p>
         ) : (
           orders.map((o) => <OrderCard key={o.id} order={o} actions={<OrderAgain order={o} />} />)
         )}

@@ -1,13 +1,9 @@
-import type { L } from "./i18n";
+import type { LegalSection } from "@/components/LegalPage";
 
-// Contact address shown in the privacy policy. Fill in before publishing.
-export const PRIVACY_CONTACT_EMAIL = "";
 // Date the policy was last updated (shown at the top).
 export const PRIVACY_UPDATED = "2026-10-08";
 
-type Section = { title: L; body: L[] };
-
-export const privacySections: Section[] = [
+export const privacySections: LegalSection[] = [
   {
     title: { he: "מי אנחנו", fr: "Qui sommes-nous", en: "Who we are" },
     body: [

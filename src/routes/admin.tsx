@@ -156,9 +156,9 @@ function AdminPage() {
             {failed ? (
               <p className="text-sm text-red-600">{t("loadError")}</p>
             ) : orders === null ? (
-              <p className="text-sm text-navy/60">{t("loading")}</p>
+              <p className="text-sm text-navy/70">{t("loading")}</p>
             ) : shown.length === 0 ? (
-              <p className="text-sm text-navy/60">{t("noOrders")}</p>
+              <p className="text-sm text-navy/70">{t("noOrders")}</p>
             ) : (
               shown.map((o) => (
                 <OrderCard
@@ -167,7 +167,7 @@ function AdminPage() {
                   admin
                   statusSlot={
                     <div className="text-end">
-                      <label className="flex items-center gap-2 text-xs text-navy/60">
+                      <label className="flex items-center gap-2 text-xs text-navy/70">
                         {t("statusLabel")}
                         <select
                           value={o.status}

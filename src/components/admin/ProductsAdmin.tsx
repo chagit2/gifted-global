@@ -198,7 +198,7 @@ export function ProductsAdmin() {
         {isError ? (
           <li className="text-sm text-red-600">{t("loadError")}</li>
         ) : isLoading ? (
-          <li className="text-sm text-navy/60">{t("loading")}</li>
+          <li className="text-sm text-navy/70">{t("loading")}</li>
         ) : (
           shown.map((p, i) => (
             <li
@@ -211,7 +211,7 @@ export function ProductsAdmin() {
                   title={t("moveUp")}
                   disabled={i === 0 || moving}
                   onClick={() => move(i, -1)}
-                  className="text-navy/60 hover:text-gold-deep disabled:opacity-20"
+                  className="text-navy/70 hover:text-gold-deep disabled:opacity-20"
                 >
                   <ChevronUp className="size-4" />
                 </button>
@@ -220,7 +220,7 @@ export function ProductsAdmin() {
                   title={t("moveDown")}
                   disabled={i === shown.length - 1 || moving}
                   onClick={() => move(i, 1)}
-                  className="text-navy/60 hover:text-gold-deep disabled:opacity-20"
+                  className="text-navy/70 hover:text-gold-deep disabled:opacity-20"
                 >
                   <ChevronDown className="size-4" />
                 </button>
@@ -230,7 +230,7 @@ export function ProductsAdmin() {
                 <p className="truncate text-sm text-navy">
                   {tl(p.name) || p.name.he}
                   {!p.active && (
-                    <span className="ms-2 rounded-full border border-navy/15 px-2 py-0.5 text-[10px] text-navy/60">
+                    <span className="ms-2 rounded-full border border-navy/15 px-2 py-0.5 text-[10px] text-navy/70">
                       {t("hiddenBadge")}
                     </span>
                   )}
@@ -240,7 +240,7 @@ export function ProductsAdmin() {
                     </span>
                   )}
                 </p>
-                <p className="text-xs text-navy/60">
+                <p className="text-xs text-navy/70">
                   {p.categories
                     .map((slug) => (getCategory(slug) ? tl(getCategory(slug)!.label) : slug))
                     .join(", ")}{" "}
@@ -518,7 +518,7 @@ function ProductForm({
             <legend className="px-1 text-xs text-gold-deep">
               {l.label}
               {l.code !== "he" && !name[l.code].trim() && (
-                <span className="ms-2 text-navy/55">({t("missingTranslation")})</span>
+                <span className="ms-2 text-navy/70">({t("missingTranslation")})</span>
               )}
             </legend>
             {l.code === "he" && (
@@ -636,7 +636,7 @@ function ProductForm({
             />
           </label>
         </div>
-        <p className="mt-2 text-[11px] text-navy/55">{t("pasteImageHint")}</p>
+        <p className="mt-2 text-[11px] text-navy/70">{t("pasteImageHint")}</p>
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}

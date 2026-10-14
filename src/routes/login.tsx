@@ -114,7 +114,7 @@ function LoginPage() {
             dir="ltr"
             className={field}
           />
-          {mode === "up" && <span className="mt-1 block text-[11px] text-navy/55">{t("passwordHint")}</span>}
+          {mode === "up" && <span className="mt-1 block text-[11px] text-navy/70">{t("passwordHint")}</span>}
         </label>
         {error && (
           <p className="text-xs text-red-600">

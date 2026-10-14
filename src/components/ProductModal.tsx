@@ -154,7 +154,7 @@ export function ProductModal({
             <span className="text-3xl font-bold text-gold-deep">
               {money(product.price)}
             </span>
-            <span className="text-xs text-navy/60">{tl(product.subtitle)}</span>
+            <span className="text-xs text-navy/70">{tl(product.subtitle)}</span>
           </div>
 
           {!product.inStock ? (

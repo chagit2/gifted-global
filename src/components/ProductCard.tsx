@@ -48,34 +48,32 @@ export function ProductCard({
         )}
       </button>
       <h3 className="mt-4 font-heb text-lg text-navy">{tl(product.name)}</h3>
-      <p className="mt-1 text-xs text-navy/60">{tl(product.subtitle)}</p>
-      <div className="mt-4 flex items-center justify-between gap-2">
-        <span className="font-semibold text-gold-deep">{money(product.price)}</span>
-        {product.inStock ? (
-          <div className="flex gap-2">
-            <button
-              onClick={() => {
-                add(product);
-                setDrawerOpen(true);
-              }}
-              className="rounded-full bg-navy px-3 py-1.5 text-xs text-pearl hover:bg-navy-3 transition"
-            >
-              {t("addToCart")}
-            </button>
-            <button
-              onClick={() => {
-                add(product);
-                navigate({ to: "/checkout" });
-              }}
-              className="rounded-full bg-gold px-3 py-1.5 text-xs font-semibold text-navy hover:bg-gold-2 transition"
-            >
-              {t("buyNow")}
-            </button>
-          </div>
-        ) : (
-          <span className="text-xs text-navy/60">{t("outOfStock")}</span>
-        )}
-      </div>
+      <p className="mt-1 text-xs text-navy/70">{tl(product.subtitle)}</p>
+      <p className="mt-3 font-semibold text-gold-deep">{money(product.price)}</p>
+      {product.inStock ? (
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <button
+            onClick={() => {
+              add(product);
+              setDrawerOpen(true);
+            }}
+            className="whitespace-nowrap rounded-full bg-navy px-2 py-2 text-xs text-pearl transition hover:bg-navy-3"
+          >
+            {t("addToCart")}
+          </button>
+          <button
+            onClick={() => {
+              add(product);
+              navigate({ to: "/checkout" });
+            }}
+            className="whitespace-nowrap rounded-full bg-gold px-2 py-2 text-xs font-semibold text-navy transition hover:bg-gold-2"
+          >
+            {t("buyNow")}
+          </button>
+        </div>
+      ) : (
+        <p className="mt-3 text-xs text-navy/70">{t("outOfStock")}</p>
+      )}
     </article>
   );
 }

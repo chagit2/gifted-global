@@ -109,7 +109,7 @@ export function CartDrawer() {
                         <button
                           type="button"
                           onClick={() => remove(line.productId)}
-                          className="text-xs text-navy/55 hover:text-red-600"
+                          className="text-xs text-navy/70 hover:text-red-600"
                         >
                           {t("remove")}
                         </button>

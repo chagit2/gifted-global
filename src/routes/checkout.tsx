@@ -222,7 +222,7 @@ function CheckoutPage() {
         </p>
       )}
 
-      <p className="mt-4 text-xs text-navy/60">{t("requiredNote")}</p>
+      <p className="mt-4 text-xs text-navy/70">{t("requiredNote")}</p>
       {prefilled && <p className="mt-2 text-xs text-gold-deep/80">{t("prefilledNote")}</p>}
 
       <form ref={formRef} onSubmit={onSubmit} className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -231,19 +231,19 @@ function CheckoutPage() {
             <h2 className="font-heb text-lg text-navy">{t("senderDetails")}</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <span className={label}>
+                <label htmlFor="f-senderName" className={label}>
                   {t("senderName")} <Req />
-                </span>
-                <input name="senderName" required className={field} />
+                </label>
+                <input id="f-senderName" name="senderName" required className={field} />
                 <p className="mt-2 rounded-lg border border-gold/30 bg-gold/10 px-3 py-2 text-xs text-gold-deep">
                   {t("senderNameNote")}
                 </p>
               </div>
               <div className="sm:col-span-2">
-                <span className={label}>
+                <label htmlFor="f-phone" className={label}>
                   {t("phone")} <Req />
-                </span>
-                <input
+                </label>
+                <input id="f-phone"
                   name="phone"
                   type="tel"
                   required
@@ -251,7 +251,7 @@ function CheckoutPage() {
                   maxLength={40}
                   className={field}
                 />
-                <p className="mt-1 text-[11px] text-navy/55">{t("phoneNote")}</p>
+                <p className="mt-1 text-[11px] text-navy/70">{t("phoneNote")}</p>
               </div>
             </div>
           </section>
@@ -264,16 +264,16 @@ function CheckoutPage() {
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div>
-                <span className={label}>
+                <label htmlFor="f-recipientName" className={label}>
                   {t("recipientName")} <Req />
-                </span>
-                <input name="recipientName" required maxLength={120} className={field} />
+                </label>
+                <input id="f-recipientName" name="recipientName" required maxLength={120} className={field} />
               </div>
               <div>
-                <span className={label}>
+                <label htmlFor="f-recipientPhone" className={label}>
                   {t("recipientPhone")} <Req />
-                </span>
-                <input
+                </label>
+                <input id="f-recipientPhone"
                   name="recipientPhone"
                   type="tel"
                   required
@@ -282,29 +282,29 @@ function CheckoutPage() {
                   className={field}
                 />
               </div>
-              <p className="-mt-2 text-[11px] text-navy/55 sm:col-span-2">
+              <p className="-mt-2 text-[11px] text-navy/70 sm:col-span-2">
                 {t("recipientPhoneNote")}
               </p>
             </div>
             <h3 className="mt-6 text-sm text-navy/85">{t("shippingTitle")}</h3>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <span className={label}>
+                <label htmlFor="f-city" className={label}>
                   {t("city")} <Req />
-                </span>
-                <input name="city" required maxLength={120} className={field} />
+                </label>
+                <input id="f-city" name="city" required maxLength={120} className={field} />
               </div>
               <div>
-                <span className={label}>
+                <label htmlFor="f-street" className={label}>
                   {t("street")} <Req />
-                </span>
-                <input name="street" required maxLength={150} className={field} />
+                </label>
+                <input id="f-street" name="street" required maxLength={150} className={field} />
               </div>
               <div>
-                <span className={label}>
+                <label htmlFor="f-houseNumber" className={label}>
                   {t("houseNumber")} <Req />
-                </span>
-                <input
+                </label>
+                <input id="f-houseNumber"
                   name="houseNumber"
                   required
                   maxLength={10}
@@ -314,16 +314,16 @@ function CheckoutPage() {
                 />
               </div>
               <div className="sm:col-span-2">
-                <span className={label}>{t("country")}</span>
+                <label htmlFor="f-country" className={label}>{t("country")}</label>
                 <div className="relative">
-                  <input
+                  <input id="f-country"
                     value={t("israel")}
                     readOnly
                     disabled
                     aria-readonly
                     className={`${field} cursor-not-allowed bg-white/70 pe-9 text-navy/65`}
                   />
-                  <Lock className="pointer-events-none absolute end-3 top-1/2 mt-0.5 size-4 -translate-y-1/2 text-navy/55" />
+                  <Lock className="pointer-events-none absolute end-3 top-1/2 mt-0.5 size-4 -translate-y-1/2 text-navy/70" />
                 </div>
               </div>
             </div>
@@ -336,15 +336,15 @@ function CheckoutPage() {
             </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <label className="block">
-                <span className={label}>{t("deliveryDate")}</span>
-                <input
+                <label htmlFor="f-deliveryDate" className={label}>{t("deliveryDate")}</label>
+                <input id="f-deliveryDate"
                   name="deliveryDate"
                   type="date"
                   min={minDate || undefined}
                   className={`${field} [color-scheme:dark]`}
                 />
                 {minDate && (
-                  <span className="mt-1 block text-[11px] text-navy/55">
+                  <span className="mt-1 block text-[11px] text-navy/70">
                     {t("deliveryDateHint").replace(
                       "{date}",
                       new Date(`${minDate}T12:00`).toLocaleDateString(
@@ -355,14 +355,14 @@ function CheckoutPage() {
                 )}
               </label>
               <label className="block sm:col-span-2">
-                <span className={label}>{t("customerNote")}</span>
-                <textarea
+                <label htmlFor="f-customerNote" className={label}>{t("customerNote")}</label>
+                <textarea id="f-customerNote"
                   name="customerNote"
                   rows={2}
                   maxLength={1000}
                   className={`${field} resize-y`}
                 />
-                <span className="mt-1 block text-[11px] text-navy/55">
+                <span className="mt-1 block text-[11px] text-navy/70">
                   {t("customerNoteHint")}
                 </span>
               </label>
@@ -371,7 +371,7 @@ function CheckoutPage() {
 
           <section className="rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
             <h2 className="font-heb text-lg text-navy">{t("lettersTitle")}</h2>
-            <p className="mt-1 text-xs text-navy/60">{t("letterNote")}</p>
+            <p className="mt-1 text-xs text-navy/70">{t("letterNote")}</p>
             <div className="mt-4 space-y-4">
               {lines.map((l) => {
                 const p = getProduct(l.productId);
@@ -380,7 +380,7 @@ function CheckoutPage() {
                   <div key={l.productId} className="rounded-xl border border-navy/10 p-3">
                     <p className="text-sm text-navy">
                       {tl(p.name)}
-                      {l.qty > 1 && <span className="text-navy/60"> × {l.qty}</span>}
+                      {l.qty > 1 && <span className="text-navy/70"> × {l.qty}</span>}
                     </p>
                     {l.letters.map((letter, i) => (
                       <div key={i} className="mt-2">
@@ -407,16 +407,16 @@ function CheckoutPage() {
             <h2 className="font-heb text-lg text-navy">{t("paymentTitle")}</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <span className={label}>
+                <label htmlFor="f-cardHolder" className={label}>
                   {t("cardHolder")} <Req />
-                </span>
-                <input name="cardHolder" required className={field} />
+                </label>
+                <input id="f-cardHolder" name="cardHolder" required className={field} />
               </div>
               <div className="sm:col-span-2">
-                <span className={label}>
+                <label htmlFor="f-cardNumber" className={label}>
                   {t("cardNumber")} <Req />
-                </span>
-                <input
+                </label>
+                <input id="f-cardNumber"
                   name="cardNumber"
                   inputMode="numeric"
                   required
@@ -425,16 +425,16 @@ function CheckoutPage() {
                 />
               </div>
               <div>
-                <span className={label}>
+                <label htmlFor="f-expiry" className={label}>
                   {t("expiry")} <Req />
-                </span>
-                <input name="expiry" required placeholder="MM/YY" className={field} />
+                </label>
+                <input id="f-expiry" name="expiry" required placeholder="MM/YY" className={field} />
               </div>
               <div>
-                <span className={label}>
+                <label htmlFor="f-cvv" className={label}>
                   {t("cvv")} <Req />
-                </span>
-                <input name="cvv" required inputMode="numeric" className={field} />
+                </label>
+                <input id="f-cvv" name="cvv" required inputMode="numeric" className={field} />
               </div>
             </div>
           </section>
@@ -459,7 +459,7 @@ function CheckoutPage() {
             })}
           </ul>
           <div className="mt-5 border-t border-navy/10 pt-4">
-            <span className={label}>{t("coupon")}</span>
+            <label htmlFor="f-coupon" className={label}>{t("coupon")}</label>
             {coupon ? (
               <div className="mt-1 flex items-center justify-between rounded-lg border border-emerald-300/40 bg-emerald-300/10 px-3 py-2 text-sm text-emerald-700">
                 <span dir="ltr">{coupon.code}</span>
@@ -476,7 +476,7 @@ function CheckoutPage() {
               </div>
             ) : (
               <div className="mt-1 flex gap-2">
-                <input
+                <input id="f-coupon"
                   value={couponInput}
                   onChange={(e) => {
                     setCouponInput(e.target.value);
@@ -525,7 +525,7 @@ function CheckoutPage() {
             <span className="text-gold-deep">{money(grandTotal)}</span>
           </div>
           {currency !== "ILS" && rate !== null && rateSource && (
-            <p className="mt-2 text-[11px] leading-relaxed text-navy/60">
+            <p className="mt-2 text-[11px] leading-relaxed text-navy/70">
               {t("chargeIn")
                 .replace("{currency}", t(`currency_${currency}`))
                 .replace("{source}", t(rateSource === "boi" ? "rateBoi" : "rateEcb"))

@@ -16,6 +16,7 @@ export function SettingsAdmin() {
   return (
     <div className="space-y-6">
       <ShippingFee />
+      <ContactSettings />
       <LetterBackgrounds />
     </div>
   );
@@ -78,7 +79,7 @@ function LetterBackgrounds() {
   return (
     <section className="rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
       <h2 className="font-heb text-lg text-navy">{t("letterBackgrounds")}</h2>
-      <p className="mt-1 text-xs text-navy/60">{t("letterBackgroundsHint")}</p>
+      <p className="mt-1 text-xs text-navy/70">{t("letterBackgroundsHint")}</p>
       <div className="mt-4 flex flex-wrap gap-3">
         {letterBackgrounds.map((url) => (
           <div
@@ -169,6 +170,85 @@ function ShippingFee() {
       </button>
       {state === "saved" && <span className="ms-3 text-xs text-emerald-700">{t("saved")}</span>}
       {state === "error" && <p className="mt-2 text-xs text-red-600">{t("saveError")}</p>}
+    </form>
+  );
+}
+
+// Email and phone (also used for WhatsApp) shown on the contact page, plus
+// the accessibility coordinator named in the accessibility statement.
+function ContactSettings() {
+  const { t } = useI18n();
+  const { contact, isLoading } = useSettings();
+  const queryClient = useQueryClient();
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [coordinator, setCoordinator] = useState("");
+  const [state, setState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+
+  useEffect(() => {
+    if (isLoading) return;
+    setEmail(contact.email);
+    setPhone(contact.phone);
+    setCoordinator(contact.accessibilityCoordinator);
+  }, [isLoading, contact.email, contact.phone, contact.accessibilityCoordinator]);
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setState("saving");
+    // These columns come from db/contact.sql and aren't in the generated types yet.
+    const values = {
+      contact_email: email.trim(),
+      contact_phone: phone.trim(),
+      accessibility_coordinator: coordinator.trim(),
+    } as Record<string, string>;
+    const { error } = await supabase.from("site_settings").update(values as never).eq("id", 1);
+    if (error) return setState("error");
+    await queryClient.invalidateQueries({ queryKey: SETTINGS_KEY });
+    setState("saved");
+  };
+
+  const edit = (set: (v: string) => void) => (e: { target: { value: string } }) => {
+    set(e.target.value);
+    setState("idle");
+  };
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="max-w-md space-y-4 rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl"
+    >
+      <div>
+        <h2 className="font-heb text-lg text-navy">{t("contactSettings")}</h2>
+        <p className="mt-1 text-xs text-navy/70">{t("contactSettingsHint")}</p>
+      </div>
+      <label className="block">
+        <span className="text-xs text-navy/65">{t("email")}</span>
+        <input type="email" value={email} onChange={edit(setEmail)} dir="ltr" className={field} />
+      </label>
+      <label className="block">
+        <span className="text-xs text-navy/65">{t("contactPhoneLabel")}</span>
+        <input
+          type="tel"
+          value={phone}
+          onChange={edit(setPhone)}
+          dir="ltr"
+          placeholder="050-0000000"
+          className={field}
+        />
+      </label>
+      <label className="block">
+        <span className="text-xs text-navy/65">{t("a11yCoordinatorLabel")}</span>
+        <input value={coordinator} onChange={edit(setCoordinator)} className={field} />
+      </label>
+      <button
+        type="submit"
+        disabled={state === "saving" || isLoading}
+        className="rounded-full bg-gold px-6 py-2.5 text-sm font-semibold text-navy transition hover:bg-gold-2 disabled:opacity-60"
+      >
+        {t("save")}
+      </button>
+      {state === "saved" && <span className="ms-3 text-xs text-emerald-700">{t("saved")}</span>}
+      {state === "error" && <p className="text-xs text-red-600">{t("contactSaveError")}</p>}
     </form>
   );
 }
