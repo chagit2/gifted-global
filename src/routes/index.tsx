@@ -63,8 +63,15 @@ function Index() {
             </span>
           </Link>
         </Reveal>
-        <h2 className="font-heb text-3xl font-bold text-navy sm:text-4xl">{t("allGifts")}</h2>
-        <Ornament className="mt-3" />
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="font-heb text-3xl font-bold text-navy sm:text-4xl">{t("allGifts")}</h2>
+            <Ornament className="mt-3" />
+          </div>
+          <Link to="/gifts" className="text-sm font-semibold text-gold-deep underline-offset-4 hover:underline">
+            {t("searchAndFilter")}
+          </Link>
+        </div>
         {isError ? (
           <p className="mt-8 text-sm text-red-600">{t("loadError")}</p>
         ) : isLoading ? (

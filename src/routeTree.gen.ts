@@ -18,6 +18,7 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FindRouteImport } from './routes/find'
+import { Route as GiftsRouteImport } from './routes/gifts'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ShippingRouteImport } from './routes/shipping'
@@ -71,6 +72,11 @@ const FindRoute = FindRouteImport.update({
   path: '/find',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GiftsRoute = GiftsRouteImport.update({
+  id: '/gifts',
+  path: '/gifts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/find': typeof FindRoute
+  '/gifts': typeof GiftsRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/shipping': typeof ShippingRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/find': typeof FindRoute
+  '/gifts': typeof GiftsRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/shipping': typeof ShippingRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/find': typeof FindRoute
+  '/gifts': typeof GiftsRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/shipping': typeof ShippingRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/find'
+    | '/gifts'
     | '/login'
     | '/privacy'
     | '/shipping'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/find'
+    | '/gifts'
     | '/login'
     | '/privacy'
     | '/shipping'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/contact'
     | '/find'
+    | '/gifts'
     | '/login'
     | '/privacy'
     | '/shipping'
@@ -229,6 +241,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   FindRoute: typeof FindRoute
+  GiftsRoute: typeof GiftsRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   ShippingRoute: typeof ShippingRoute
@@ -303,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FindRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/gifts': {
+      id: '/gifts'
+      path: '/gifts'
+      fullPath: '/gifts'
+      preLoaderRoute: typeof GiftsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -365,6 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   FindRoute: FindRoute,
+  GiftsRoute: GiftsRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   ShippingRoute: ShippingRoute,

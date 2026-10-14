@@ -12,7 +12,7 @@ export const Route = createFileRoute("/c/$slug")({
   head: ({ params }) => {
     const cat = getCategory(params.slug);
     const title = cat ? `${cat.label.he} · מתנות` : "קטגוריה · מתנות";
-    const description = "מתנות יוקרה ארוזות בעבודת יד, עם מכתב אישי ומשלוח עד הבית.";
+    const description = "מתנות יוקרה באריזה מהודרת, עם מכתב אישי ומשלוח עד הבית.";
     return {
       meta: [
         { title },

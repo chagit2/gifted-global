@@ -185,6 +185,7 @@ export function SiteHeader() {
           <Home className="size-5" />
         </Link>
         <div className="order-last flex w-full items-center justify-center gap-5 sm:order-none sm:w-auto sm:justify-start sm:gap-6">
+          <Link to="/gifts" className={navLink}>{t("navAllGifts")}</Link>
           <Dropdown label={t("navHolidays")} items={holidays} />
           <Link to="/c/$slug" params={{ slug: "judaica" }} className={navLink}>{t("navJudaica")}</Link>
           <Link to="/c/$slug" params={{ slug: "for-boy" }} className={navLink}>{t("navForBoy")}</Link>
