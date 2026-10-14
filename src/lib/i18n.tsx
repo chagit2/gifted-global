@@ -543,13 +543,13 @@ const dict = {
   heroWord5: { he: "לתינוק החדש", fr: "pour le nouveau-né", en: "for a new baby" },
   heroWord6: { he: "לשבת", fr: "pour Chabbat", en: "for Shabbat" },
   heroSub: {
-    he: "מתנות יוקרה ארוזות בעבודת יד, עם מכתב אישי ממך, עד הבית בכל ישראל",
-    fr: "Des cadeaux de luxe emballés à la main, avec votre lettre, livrés partout en Israël",
-    en: "Hand-wrapped luxury gifts with your personal letter, delivered anywhere in Israel",
+    he: "מתנות יוקרה באריזה מהודרת, עם מכתב אישי ממך, עד הבית בכל ישראל",
+    fr: "Des cadeaux de luxe joliment emballés, avec votre lettre, livrés partout en Israël",
+    en: "Beautifully wrapped luxury gifts with your personal letter, delivered anywhere in Israel",
   },
   perksLabel: { he: "מה מקבלים איתנו", fr: "Ce qui est inclus", en: "What you get" },
   perkLetter: { he: "מכתב אישי לכל מתנה", fr: "Une lettre personnelle par cadeau", en: "A personal letter with every gift" },
-  perkWrap: { he: "אריזת יוקרה בעבודת יד", fr: "Écrin de luxe emballé à la main", en: "Hand-wrapped luxury box" },
+  perkWrap: { he: "אריזת מתנה יוקרתית", fr: "Un emballage cadeau de luxe", en: "Luxury gift wrapping" },
   perkHome: { he: "משלוח עד הבית בכל ישראל", fr: "Livraison à domicile partout en Israël", en: "Home delivery anywhere in Israel" },
   perkDays: { he: "יוצאת לדרך תוך 7 ימי עסקים", fr: "Expédié sous 7 jours ouvrés", en: "Ships within 7 business days" },
   emptyCartText: {
