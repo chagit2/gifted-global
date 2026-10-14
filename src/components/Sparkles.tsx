@@ -4,6 +4,10 @@ import { useEffect, useRef } from "react";
 // sparkles away; clicking on the background (not on a button or link) pops
 // the ones under it. A page reload brings them all back.
 const COLORS = ["#c9a85a", "#e3c77d", "#b8964a", "#1f3a7a", "#2c4a94"];
+// Text and panels keep a quiet background: no sparkles are drawn behind them.
+const QUIET =
+  "main h1, main h2, main h3, main h4, main p, main li, main label, main dt, main dd, main blockquote, main .rounded-2xl, main .rounded-3xl, main .rounded-\\[2rem\\], footer, header";
+const QUIET_PAD = 6;
 const INTERACTIVE = "a,button,input,textarea,select,label,summary,[role=button],[role=dialog]";
 
 type Sparkle = {
@@ -31,6 +35,24 @@ export function Sparkles() {
     let h = 0;
     let sparkles: Sparkle[] = [];
     const pointer = { x: -1e4, y: -1e4 };
+    let quiet: { l: number; t: number; r: number; b: number }[] = [];
+    let quietDirty = true;
+    const measureQuiet = () => {
+      quietDirty = false;
+      quiet = [];
+      for (const el of document.querySelectorAll(QUIET)) {
+        const r = el.getBoundingClientRect();
+        if (r.width === 0 || r.bottom < 0 || r.top > h || r.right < 0 || r.left > w) continue;
+        quiet.push({
+          l: r.left - QUIET_PAD,
+          t: r.top - QUIET_PAD,
+          r: r.right + QUIET_PAD,
+          b: r.bottom + QUIET_PAD,
+        });
+      }
+    };
+    const inQuiet = (x: number, y: number) =>
+      quiet.some((q) => x > q.l && x < q.r && y > q.t && y < q.b);
 
     const make = (): Sparkle => ({
       x: Math.random() * w,
@@ -77,6 +99,7 @@ export function Sparkles() {
 
     let raf = 0;
     const frame = (t: number) => {
+      if (quietDirty) measureQuiet();
       ctx.clearRect(0, 0, w, h);
       for (const s of sparkles) {
         // Push away from the pointer, then ease back to rest.
@@ -102,6 +125,7 @@ export function Sparkles() {
           r = s.r * (1 + s.pop * 2.5);
           alpha = Math.max(0, 1 - s.pop);
         }
+        if (s.pop === 0 && inQuiet(s.x + s.dx, s.y + s.dy)) continue;
         ctx.globalAlpha = alpha;
         ctx.fillStyle = s.color;
         const x = s.x + s.dx;
@@ -147,6 +171,13 @@ export function Sparkles() {
     resize();
     raf = requestAnimationFrame(frame);
     window.addEventListener("resize", resize);
+    // Text moves with scrolling and page changes; re-measure then, and now and then.
+    const markQuiet = () => {
+      quietDirty = true;
+    };
+    window.addEventListener("scroll", markQuiet, { passive: true, capture: true });
+    window.addEventListener("resize", markQuiet);
+    const quietTimer = window.setInterval(markQuiet, 700);
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerdown", onDown, { passive: true });
     document.addEventListener("pointerleave", onLeave);
@@ -154,6 +185,9 @@ export function Sparkles() {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", markQuiet, { capture: true });
+      window.removeEventListener("resize", markQuiet);
+      window.clearInterval(quietTimer);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);
       document.removeEventListener("pointerleave", onLeave);
