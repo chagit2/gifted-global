@@ -14,6 +14,7 @@ import {
 import { upcomingHoliday } from "@/lib/holidays";
 import { useI18n, type L } from "@/lib/i18n";
 import { useProducts, type Product } from "@/lib/products";
+import { ProductGridSkeleton } from "@/components/ProductGridSkeleton";
 
 export const Route = createFileRoute("/find")({
   head: () => ({
@@ -64,8 +65,9 @@ function FinderPage() {
   const result = who && occasion && budget ? findGifts(live, { who, occasion, budget }, boost) : null;
 
   return (
-    <main className="relative mx-auto max-w-5xl px-6 pt-14 pb-24">
-      <div className="pointer-events-none absolute -top-24 start-1/2 size-[420px] -translate-x-1/2 rounded-full bg-gold/15 blur-[120px]" />
+    // overflow-x-clip keeps the soft glow from widening the page on phones.
+    <main className="relative mx-auto max-w-5xl overflow-x-clip px-6 pt-14 pb-24">
+      <div className="pointer-events-none absolute -top-24 inset-x-0 mx-auto size-[420px] max-w-full rounded-full bg-gold/15 blur-[120px]" />
       <p className="relative inline-flex items-center gap-2 text-sm text-gold-deep">
         <Sparkles className="size-4" />
         {t("finderTitle")}
@@ -77,7 +79,7 @@ function FinderPage() {
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
-                className={`h-1.5 flex-1 rounded-full transition ${i <= step ? "bg-gold" : "bg-white"}`}
+                className={`h-1.5 flex-1 rounded-full transition-colors duration-500 ${i <= step ? "bg-gold" : "bg-white outline-1 -outline-offset-1 outline-navy/10"}`}
               />
             ))}
           </div>
@@ -88,12 +90,13 @@ function FinderPage() {
             {questions[step]!.title}
           </h1>
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {questions[step]!.options.map((o) => (
+            {questions[step]!.options.map((o, i) => (
               <button
                 key={o.id}
                 type="button"
                 onClick={() => questions[step]!.pick(o.id)}
-                className="rounded-2xl border border-navy/10 bg-white/70 px-4 py-6 font-heb text-lg text-navy backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-gold/60 hover:bg-gold/10 hover:text-gold-deep"
+                style={{ animationDelay: `${i * 60}ms` }}
+                className="rounded-2xl border border-navy/10 bg-white/70 px-4 py-6 font-heb text-lg text-navy backdrop-blur-xl transition duration-300 animate-in fade-in-0 slide-in-from-bottom-2 fill-mode-backwards hover:border-gold/60 hover:bg-gold/10 hover:text-gold-deep hover:shadow-lg hover:shadow-gold/15 active:scale-[0.97] motion-safe:hover:-translate-y-0.5 motion-reduce:animate-none"
               >
                 {tl(o.label)}
               </button>
@@ -103,7 +106,7 @@ function FinderPage() {
             <button
               type="button"
               onClick={back}
-              className="mt-8 inline-flex items-center gap-1.5 text-sm text-navy/65 hover:text-gold-deep"
+              className="mt-8 inline-flex min-h-10 items-center gap-1.5 text-sm text-navy/70 hover:text-gold-deep"
             >
               <ArrowRight className="size-4 ltr:rotate-180" />
               {t("finderBack")}
@@ -128,11 +131,11 @@ function FinderPage() {
           </button>
 
           {isLoading ? (
-            <p className="mt-8 text-sm text-navy/70">{t("loading")}</p>
+            <ProductGridSkeleton count={3} />
           ) : result && result.gifts.length ? (
             <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {result.gifts.map((p) => (
-                <ProductCard key={p.id} product={p} onPreview={setPreview} />
+              {result.gifts.map((p, i) => (
+                <ProductCard key={p.id} product={p} onPreview={setPreview} index={i} />
               ))}
             </div>
           ) : (

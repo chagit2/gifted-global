@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { MapPin } from "lucide-react";
+import { MapPin, Minus, Plus } from "lucide-react";
+import { EmptyCart } from "@/components/EmptyCart";
+import { Ornament } from "@/components/Reveal";
 import { useCart } from "@/lib/cart";
 import { LetterField } from "@/components/Letter";
 import { useProducts } from "@/lib/products";
@@ -33,9 +35,12 @@ function CartPage() {
   return (
     <main className="relative mx-auto max-w-5xl px-6 pt-14 pb-24">
       <h1 className="font-heb text-4xl font-bold text-navy">{t("cart")}</h1>
+      <Ornament className="mt-3" />
 
       {lines.length === 0 ? (
-        <p className="mt-10 text-navy/65">{t("emptyCart")}</p>
+        <div className="mt-8 rounded-2xl border border-navy/10 bg-white/70 backdrop-blur-xl">
+          <EmptyCart />
+        </div>
       ) : (
         <>
           <div className="mt-8 space-y-4">
@@ -45,7 +50,7 @@ function CartPage() {
               return (
                 <div
                   key={line.productId}
-                  className="rounded-2xl border border-navy/10 bg-white/70 p-4 backdrop-blur-xl"
+                  className="rounded-2xl border border-navy/10 bg-white/70 p-4 backdrop-blur-xl transition hover:border-gold/40 hover:shadow-lg hover:shadow-navy/5"
                 >
                   <div className="flex gap-4">
                     <img
@@ -69,18 +74,26 @@ function CartPage() {
                       </div>
                       <div className="mt-3 flex items-center gap-3 text-xs text-navy/75">
                         <span>{t("qty")}</span>
-                        <div className="flex items-center rounded-full border border-navy/10">
-                          <button className="px-3 py-1" onClick={() => setQty(line.productId, line.qty - 1)}>
-                            −
+                        <div className="flex items-center rounded-full border border-navy/15 bg-white/60">
+                          <button
+                            aria-label={t("qtyDown")}
+                            className="grid size-10 place-items-center rounded-full transition hover:bg-navy/5 hover:text-gold-deep active:scale-90"
+                            onClick={() => setQty(line.productId, line.qty - 1)}
+                          >
+                            <Minus className="size-3.5" />
                           </button>
-                          <span className="px-2">{line.qty}</span>
-                          <button className="px-3 py-1" onClick={() => setQty(line.productId, line.qty + 1)}>
-                            +
+                          <span className="w-6 text-center text-sm text-navy">{line.qty}</span>
+                          <button
+                            aria-label={t("qtyUp")}
+                            className="grid size-10 place-items-center rounded-full transition hover:bg-navy/5 hover:text-gold-deep active:scale-90"
+                            onClick={() => setQty(line.productId, line.qty + 1)}
+                          >
+                            <Plus className="size-3.5" />
                           </button>
                         </div>
                         <button
                           onClick={() => remove(line.productId)}
-                          className="text-navy/70 hover:text-gold-deep"
+                          className="min-h-10 px-1 text-navy/70 underline-offset-4 hover:text-gold-deep hover:underline"
                         >
                           {t("remove")}
                         </button>
@@ -111,7 +124,7 @@ function CartPage() {
             <MapPin className="size-3.5" />
             {t("shipsIsraelOnly")}
           </p>
-          <div className="mt-3 flex items-center justify-between rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-gold/30 bg-white/80 p-5 shadow-lg shadow-navy/5 backdrop-blur-xl sm:p-6">
             <div>
               <p className="text-xs text-navy/70">
                 {t("subtotal")}: {money(total)} · {t("shipping")}: {money(shippingFee)}
@@ -122,7 +135,7 @@ function CartPage() {
             </div>
             <Link
               to="/checkout"
-              className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2"
+              className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy shadow-md shadow-gold/25 transition hover:bg-gold-2 active:scale-[0.97]"
             >
               {t("toCheckout")}
             </Link>

@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Minus, PenLine, Plus, ShoppingBag, X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { EmptyCart } from "@/components/EmptyCart";
 import { useCart } from "@/lib/cart";
 import { useCurrency } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
@@ -15,6 +16,18 @@ export function CartDrawer() {
   const { getProduct } = useProducts();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const close = () => setDrawerOpen(false);
+
+  // Remember which gift was just added, so its row can glow for a moment.
+  const prevQty = useRef<Map<string, number> | null>(null);
+  const [justAdded, setJustAdded] = useState<{ id: string; n: number } | null>(null);
+  useEffect(() => {
+    const next = new Map(lines.map((l) => [l.productId, l.qty]));
+    const prev = prevQty.current;
+    prevQty.current = next;
+    if (!prev) return; // first read of the saved cart
+    const grown = lines.find((l) => l.qty > (prev.get(l.productId) ?? 0));
+    if (grown) setJustAdded((j) => ({ id: grown.productId, n: (j?.n ?? 0) + 1 }));
+  }, [lines]);
 
   // Navigating anywhere closes the panel.
   useEffect(() => {
@@ -62,14 +75,16 @@ export function CartDrawer() {
             type="button"
             onClick={close}
             aria-label={t("close")}
-            className="grid size-8 place-items-center rounded-full text-pearl/75 transition hover:bg-white/10 hover:text-pearl"
+            className="grid size-10 place-items-center rounded-full text-pearl/75 transition hover:rotate-90 hover:bg-white/10 hover:text-pearl motion-reduce:hover:rotate-0"
           >
             <X className="size-5" />
           </button>
         </header>
 
         {lines.length === 0 ? (
-          <p className="p-6 text-sm text-navy/65">{t("emptyCart")}</p>
+          <div className="flex-1 overflow-y-auto">
+            <EmptyCart compact onNavigate={close} />
+          </div>
         ) : (
           <>
             <ul className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
@@ -77,7 +92,14 @@ export function CartDrawer() {
                 const p = getProduct(line.productId);
                 if (!p) return null;
                 return (
-                  <li key={line.productId} className="flex gap-3">
+                  <li key={line.productId} className="relative -mx-2 flex gap-3 rounded-xl p-2">
+                    {justAdded?.id === line.productId && (
+                      <span
+                        key={justAdded.n}
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 rounded-xl animate-flash"
+                      />
+                    )}
                     <img
                       src={p.images[0]}
                       alt=""
@@ -91,8 +113,8 @@ export function CartDrawer() {
                           <button
                             type="button"
                             onClick={() => setQty(line.productId, line.qty - 1)}
-                            aria-label="−"
-                            className="grid size-7 place-items-center text-navy/75 hover:text-gold-deep"
+                            aria-label={t("qtyDown")}
+                            className="grid size-9 place-items-center rounded-full text-navy/75 transition hover:bg-navy/5 hover:text-gold-deep active:scale-90"
                           >
                             <Minus className="size-3.5" />
                           </button>
@@ -100,8 +122,8 @@ export function CartDrawer() {
                           <button
                             type="button"
                             onClick={() => setQty(line.productId, line.qty + 1)}
-                            aria-label="+"
-                            className="grid size-7 place-items-center text-navy/75 hover:text-gold-deep"
+                            aria-label={t("qtyUp")}
+                            className="grid size-9 place-items-center rounded-full text-navy/75 transition hover:bg-navy/5 hover:text-gold-deep active:scale-90"
                           >
                             <Plus className="size-3.5" />
                           </button>
@@ -109,7 +131,7 @@ export function CartDrawer() {
                         <button
                           type="button"
                           onClick={() => remove(line.productId)}
-                          className="text-xs text-navy/70 hover:text-red-600"
+                          className="min-h-9 px-1 text-xs text-navy/70 underline-offset-4 hover:text-red-600 hover:underline"
                         >
                           {t("remove")}
                         </button>
@@ -131,7 +153,7 @@ export function CartDrawer() {
               </div>
               <Link
                 to="/cart"
-                className="block rounded-full bg-gold px-5 py-3 text-center text-sm font-semibold text-navy transition hover:bg-gold-2"
+                className="block rounded-full bg-gold px-5 py-3 text-center text-sm font-semibold text-navy shadow-md shadow-gold/25 transition hover:bg-gold-2 active:scale-[0.98]"
               >
                 {t("drawerToCart")}
               </Link>
