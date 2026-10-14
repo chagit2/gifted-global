@@ -43,6 +43,13 @@
       "when": 1791704783132,
       "tag": "0005_add_order_currency_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791966802959,
+      "tag": "0006_contact_settings_columns",
+      "breakpoints": true
     }
   ]
 }
