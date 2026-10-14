@@ -222,16 +222,25 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          accessibility_coordinator: string
+          contact_email: string
+          contact_phone: string
           id: number
           letter_backgrounds: string[]
           shipping_fee: number
         }
         Insert: {
+          accessibility_coordinator?: string
+          contact_email?: string
+          contact_phone?: string
           id?: number
           letter_backgrounds?: string[]
           shipping_fee?: number
         }
         Update: {
+          accessibility_coordinator?: string
+          contact_email?: string
+          contact_phone?: string
           id?: number
           letter_backgrounds?: string[]
           shipping_fee?: number
