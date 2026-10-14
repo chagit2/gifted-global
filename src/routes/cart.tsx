@@ -124,7 +124,7 @@ function CartPage() {
               to="/checkout"
               className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2"
             >
-              {t("checkout")}
+              {t("toCheckout")}
             </Link>
           </div>
         </>
