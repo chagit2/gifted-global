@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Gift, PenLine, ShieldCheck, Sparkles } from "lucide-react";
 import heroGift from "@/assets/hero-gift.jpg";
 import { useI18n } from "@/lib/i18n";
+import { Ornament, Reveal } from "@/components/Reveal";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -51,39 +52,46 @@ function AboutPage() {
           loading="lazy"
           width={1024}
           height={1280}
-          className="aspect-[4/5] w-full rounded-2xl object-cover outline-1 -outline-offset-1 outline-navy/10"
+          className="aspect-[4/5] w-full rounded-2xl object-cover shadow-2xl shadow-navy/15 outline-1 -outline-offset-1 outline-navy/10"
         />
       </section>
 
       <section className="relative mx-auto max-w-7xl px-6 pb-16">
         <h2 className="font-heb text-3xl font-bold text-navy">{t("aboutValuesTitle")}</h2>
+        <Ornament className="mt-3" />
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
-          {values.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
-              <span className="grid size-11 place-items-center rounded-full bg-gold/15 text-gold-deep">
-                <Icon className="size-5" />
-              </span>
-              <h3 className="mt-4 font-heb text-xl text-navy">{t(title)}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-navy/70">{t(body)}</p>
-            </div>
+          {values.map(({ icon: Icon, title, body }, i) => (
+            <Reveal key={title} delay={(i % 2) * 110}>
+              <div className="group h-full rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl transition duration-300 hover:border-gold/50 hover:shadow-xl hover:shadow-gold/10 motion-safe:hover:-translate-y-1">
+                <span className="grid size-11 place-items-center rounded-full bg-gold/15 text-gold-deep transition duration-500 group-hover:bg-gold group-hover:text-navy motion-safe:group-hover:rotate-[-8deg]">
+                  <Icon className="size-5" />
+                </span>
+                <h3 className="mt-4 font-heb text-xl text-navy">{t(title)}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-navy/70">{t(body)}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
       <section className="relative mx-auto max-w-7xl px-6 pb-16">
+        <Reveal>
         <div className="rounded-[2rem] border border-gold/40 bg-navy px-6 py-12 text-center shadow-xl shadow-navy/15">
+          <Ornament center className="mb-6 text-gold-2" />
           <p className="mx-auto max-w-2xl font-heb text-2xl leading-snug text-pearl sm:text-3xl">{t("aboutClosing")}</p>
           <Link
             to="/"
-            className="mt-8 inline-block rounded-full bg-gold px-7 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2"
+            className="mt-8 inline-block rounded-full bg-gold px-7 py-3 text-sm font-semibold text-navy shadow-lg shadow-black/20 transition hover:bg-gold-2 active:scale-[0.97]"
           >
             {t("ctaBrowse")}
           </Link>
         </div>
+        </Reveal>
       </section>
 
       <section className="relative mx-auto max-w-7xl px-6 pb-24">
         <h2 className="font-heb text-2xl font-bold text-navy">{t("howTitle")}</h2>
+        <Ornament className="mt-3" />
         <ol className="mt-5 grid grid-cols-3 gap-3 sm:gap-5">
           {[
             [t("how1"), t("how1t")],
@@ -94,7 +102,9 @@ function AboutPage() {
               key={title}
               className="flex flex-col gap-1 rounded-2xl border border-navy/10 bg-white/70 p-3 backdrop-blur-xl sm:flex-row sm:items-center sm:gap-4 sm:p-4"
             >
-              <span className="font-display text-2xl leading-none text-gold-deep/70 sm:text-3xl">{i + 1}</span>
+              <span className="grid size-9 shrink-0 place-items-center rounded-full border border-gold/50 bg-gold/10 font-display text-xl leading-none text-gold-deep sm:size-11 sm:text-2xl">
+                {i + 1}
+              </span>
               <span>
                 <span className="block font-heb text-sm text-navy sm:text-base">{title}</span>
                 <span className="block text-xs text-navy/65">{sub}</span>

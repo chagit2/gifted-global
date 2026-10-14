@@ -535,6 +535,30 @@ const dict = {
   how2t: { he: "מכתב אישי לכל מתנה", fr: "Une lettre par cadeau", en: "One letter per gift" },
   how3: { he: "אנחנו שולחים", fr: "Nous livrons", en: "We deliver" },
   how3t: { he: "אריזת יוקרה עד הבית", fr: "Écrin de luxe à domicile", en: "Luxury box to the door" },
+  heroLine: { he: "שולחים מתנה מכל הלב", fr: "Offrez un cadeau du fond du cœur", en: "Send a gift from the heart" },
+  heroWord1: { he: "לחג", fr: "pour les fêtes", en: "for the holidays" },
+  heroWord2: { he: "ליום הולדת", fr: "pour un anniversaire", en: "for a birthday" },
+  heroWord3: { he: "לבר מצווה", fr: "pour une Bar Mitsva", en: "for a Bar Mitzvah" },
+  heroWord4: { he: "לבת מצווה", fr: "pour une Bat Mitsva", en: "for a Bat Mitzvah" },
+  heroWord5: { he: "לתינוק החדש", fr: "pour le nouveau-né", en: "for a new baby" },
+  heroWord6: { he: "לשבת", fr: "pour Chabbat", en: "for Shabbat" },
+  heroSub: {
+    he: "מתנות יוקרה ארוזות בעבודת יד, עם מכתב אישי ממך, עד הבית בכל ישראל",
+    fr: "Des cadeaux de luxe emballés à la main, avec votre lettre, livrés partout en Israël",
+    en: "Hand-wrapped luxury gifts with your personal letter, delivered anywhere in Israel",
+  },
+  perksLabel: { he: "מה מקבלים איתנו", fr: "Ce qui est inclus", en: "What you get" },
+  perkLetter: { he: "מכתב אישי לכל מתנה", fr: "Une lettre personnelle par cadeau", en: "A personal letter with every gift" },
+  perkWrap: { he: "אריזת יוקרה בעבודת יד", fr: "Écrin de luxe emballé à la main", en: "Hand-wrapped luxury box" },
+  perkHome: { he: "משלוח עד הבית בכל ישראל", fr: "Livraison à domicile partout en Israël", en: "Home delivery anywhere in Israel" },
+  perkDays: { he: "יוצאת לדרך תוך 7 ימי עסקים", fr: "Expédié sous 7 jours ouvrés", en: "Ships within 7 business days" },
+  emptyCartText: {
+    he: "עוד רגע הוא יתמלא במתנות יפות. מה נשלח היום?",
+    fr: "Il va bientôt se remplir de beaux cadeaux. Qu'envoyons-nous aujourd'hui ?",
+    en: "It'll soon fill up with lovely gifts. What shall we send today?",
+  },
+  qtyDown: { he: "להוריד אחד", fr: "Retirer un", en: "One less" },
+  qtyUp: { he: "להוסיף עוד אחד", fr: "Ajouter un", en: "One more" },
 } satisfies Record<string, L>;
 
 export type Key = keyof typeof dict;
