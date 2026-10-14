@@ -83,13 +83,20 @@ export function ProductModal({
     "absolute top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full border border-navy/15 bg-white/70 text-navy backdrop-blur transition hover:border-gold/50 hover:text-gold-deep";
 
   return (
-    <div ref={scroller} className="fixed inset-0 z-50 grid place-items-center overflow-y-auto overscroll-contain p-4" dir={dir}>
+    <div
+      ref={scroller}
+      role="dialog"
+      aria-modal="true"
+      aria-label={tl(product.name)}
+      className="fixed inset-0 z-50 grid place-items-center overflow-y-auto overscroll-contain p-4"
+      dir={dir}
+    >
       <div className="fixed inset-0 bg-navy/40 backdrop-blur-sm" onClick={onClose} />
       <div className="relative my-8 grid w-full max-w-5xl grid-cols-1 gap-10 rounded-3xl border border-navy/15 bg-white p-8 shadow-2xl shadow-navy/10 backdrop-blur-2xl lg:grid-cols-2">
         <button
           onClick={onClose}
-          className="absolute top-4 end-4 grid size-9 place-items-center rounded-full border border-navy/15 bg-white/70 text-navy hover:border-gold/50"
-          aria-label="close"
+          className="absolute top-4 end-4 z-10 grid size-10 place-items-center rounded-full border border-navy/15 bg-white/70 text-navy transition hover:border-gold/50 hover:bg-white hover:text-gold-deep"
+          aria-label={t("close")}
         >
           ✕
         </button>
@@ -234,7 +241,7 @@ export function ProductModal({
           <button
             type="button"
             aria-label={t("close")}
-            className="absolute top-4 end-4 grid size-10 place-items-center rounded-full border border-navy/20 bg-white/70 text-navy"
+            className="absolute top-4 end-4 grid size-10 place-items-center rounded-full border border-navy/20 bg-white/70 text-navy transition hover:border-gold/60 hover:bg-white hover:text-gold-deep motion-safe:hover:rotate-90"
           >
             ✕
           </button>

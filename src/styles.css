@@ -274,12 +274,183 @@
   animation: confettifall var(--fall, 3s) cubic-bezier(0.25, 0.6, 0.5, 1) var(--delay, 0s) both;
 }
 
+/* Rolling word in the home headline: the next word rolls up into place. */
+.roll-word {
+  transition:
+    translate 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.45s ease;
+}
+
+/* Benefits strip that glides slowly; it pauses under the pointer or focus.
+   The copy is doubled, so moving it by half its width loops seamlessly. */
+@keyframes marquee {
+  to {
+    transform: translate3d(var(--marquee-to, -50%), 0, 0);
+  }
+}
+.marquee-track {
+  animation: marquee 38s linear infinite;
+}
+[dir="rtl"] .marquee-track {
+  --marquee-to: 50%;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Sections ease up into view on scroll. Only elements that start below the
+   fold are "armed" (by useReveal), so nothing is hidden without JavaScript. */
+.reveal[data-reveal="armed"] {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+}
+@media print {
+  .reveal[data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+.reveal[data-reveal="shown"] {
+  transition:
+    opacity 0.7s ease-out,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Cart icon gives a little hop when a gift goes in; the count pops. */
+@keyframes bump {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.22) rotate(-8deg);
+  }
+  60% {
+    transform: scale(0.94) rotate(4deg);
+  }
+}
+@utility animate-bump {
+  animation: bump 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@utility animate-pop {
+  animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* The gift just added glows gold for a moment in the cart panel. */
+@keyframes flash {
+  0% {
+    background-color: color-mix(in oklab, var(--gold) 30%, transparent);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+@utility animate-flash {
+  animation: flash 1.6s ease-out;
+}
+
+/* Soft sheen across loading placeholders. */
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@utility animate-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    var(--pearl-2) 30%,
+    color-mix(in oklab, var(--gold-2) 35%, white) 50%,
+    var(--pearl-2) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+@layer components {
+/* Gold line with a small diamond, under section headings. */
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--gold);
+}
+.ornament::before,
+.ornament::after {
+  content: "";
+  height: 2px;
+  border-radius: 9999px;
+  background: currentColor;
+}
+.ornament::before {
+  width: 2.5rem;
+}
+.ornament::after {
+  width: 1rem;
+  opacity: 0.6;
+}
+.ornament > i {
+  width: 0.4rem;
+  height: 0.4rem;
+  transform: rotate(45deg);
+  background: currentColor;
+}
+.ornament.ornament-center {
+  justify-content: center;
+}
+.ornament.ornament-center::after {
+  width: 2.5rem;
+  opacity: 1;
+}
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-page-in,
-  .animate-confetti {
+  .animate-confetti,
+  .animate-floaty,
+  .animate-glow,
+  .animate-bump,
+  .animate-pop,
+  .animate-flash,
+  .animate-shimmer {
     animation: none !important;
   }
   .animate-confetti {
     display: none;
+  }
+  .roll-word,
+  .reveal[data-reveal] {
+    transition: none !important;
+  }
+  .reveal[data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* Benefits sit still, wrapped, shown once. */
+  .marquee-track {
+    animation: none !important;
+    width: auto !important;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .marquee-track > ul {
+    flex-wrap: wrap;
+    flex-shrink: 1;
+    justify-content: center;
+  }
+  .marquee-dup {
+    display: none !important;
   }
 }

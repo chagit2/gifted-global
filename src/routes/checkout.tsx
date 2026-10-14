@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { EmptyCart } from "@/components/EmptyCart";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Gift, Lock, MapPin, Truck } from "lucide-react";
 import { Confetti } from "@/components/Confetti";
@@ -201,11 +202,10 @@ function CheckoutPage() {
 
   if (lines.length === 0) {
     return (
-      <main className="mx-auto max-w-2xl px-6 py-28 text-center">
-        <p className="text-navy/65">{t("emptyCart")}</p>
-        <Link to="/" className="mt-6 inline-block text-sm text-gold-deep underline">
-          {t("backHome")}
-        </Link>
+      <main className="mx-auto max-w-2xl px-6 py-16">
+        <div className="rounded-2xl border border-navy/10 bg-white/70 backdrop-blur-xl">
+          <EmptyCart />
+        </div>
       </main>
     );
   }
@@ -540,7 +540,7 @@ function CheckoutPage() {
           <button
             type="submit"
             disabled={busy}
-            className="mt-6 w-full rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy transition hover:bg-gold-2 disabled:opacity-60"
+            className="mt-6 w-full rounded-full bg-gold px-6 py-3.5 text-sm font-semibold text-navy shadow-md shadow-gold/25 transition hover:bg-gold-2 hover:shadow-lg active:scale-[0.98] disabled:opacity-60 disabled:active:scale-100"
           >
             {t("placeOrder")}
           </button>

@@ -24,9 +24,10 @@ const panel =
 const itemCls =
   "block w-full whitespace-nowrap rounded-xl px-3 py-2 text-start text-sm text-navy/75 hover:bg-navy/5 hover:text-gold-deep transition-colors";
 
-const navLink = "whitespace-nowrap text-sm text-pearl/85 hover:text-gold-2 transition-colors";
+const navLink =
+  "relative whitespace-nowrap py-2 text-sm text-pearl/85 hover:text-gold-2 transition-colors after:absolute after:inset-x-0 after:bottom-1 after:h-px after:origin-center after:scale-x-0 after:bg-gold-2 after:transition-transform after:duration-300 hover:after:scale-x-100 [&.active]:text-gold-2 [&.active]:after:scale-x-100";
 const iconBtn =
-  "grid size-9 shrink-0 place-items-center rounded-full border border-gold/30 bg-white/5 text-pearl hover:border-gold/70 hover:text-gold-2 transition sm:size-10";
+  "grid size-10 shrink-0 place-items-center rounded-full border border-gold/30 bg-white/5 text-pearl hover:border-gold/70 hover:bg-white/10 hover:text-gold-2 active:scale-95 transition";
 
 function Dropdown({
   label,
@@ -63,13 +64,13 @@ function Dropdown({
       <button
         aria-expanded={open}
         onClick={() => setOpen((o) => (hovering.current ? true : !o))}
-        className="flex items-center gap-1 whitespace-nowrap text-sm text-pearl/85 hover:text-gold-2 transition-colors"
+        className="flex items-center gap-1 whitespace-nowrap py-2 text-sm text-pearl/85 hover:text-gold-2 transition-colors"
       >
-        {label} <ChevronDown className="size-3.5 text-gold-2/80" />
+        {label} <ChevronDown className={`size-3.5 text-gold-2/80 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
         // pt-2 (not a margin) keeps the gap under the label inside the hover area.
-        <div className="absolute top-full start-0 z-50 pt-2">
+        <div className="absolute top-full start-0 z-50 pt-2 animate-in fade-in-0 slide-in-from-top-1 duration-200 motion-reduce:animate-none">
           <ul className={`${panel} w-max`}>
             {items.map((i) => (
               <li key={i.slug}>
@@ -99,7 +100,7 @@ function LangMenu() {
         <Globe className="size-5" />
       </button>
       {open && (
-        <ul className={`${panel} absolute top-full end-0 z-50 mt-2 w-max`}>
+        <ul className={`${panel} absolute top-full end-0 z-50 mt-2 w-max animate-in fade-in-0 slide-in-from-top-1 duration-200 motion-reduce:animate-none`}>
           {LANGS.map((l) => (
             <li key={l.code}>
               <button
@@ -136,7 +137,7 @@ function CurrencyMenu() {
         {symbol}
       </button>
       {open && (
-        <ul className={`${panel} absolute top-full end-0 z-50 mt-2 w-max`}>
+        <ul className={`${panel} absolute top-full end-0 z-50 mt-2 w-max animate-in fade-in-0 slide-in-from-top-1 duration-200 motion-reduce:animate-none`}>
           {CURRENCIES.map((c) => (
             <li key={c.code}>
               <button
@@ -156,10 +157,22 @@ function CurrencyMenu() {
   );
 }
 
+// Bumps whenever the cart count goes up, to replay the hop animation.
+function useBumpOnIncrease(count: number) {
+  const prev = useRef(count);
+  const [bump, setBump] = useState(0);
+  useEffect(() => {
+    if (count > prev.current) setBump((b) => b + 1);
+    prev.current = count;
+  }, [count]);
+  return bump;
+}
+
 export function SiteHeader() {
   const { t, tl } = useI18n();
   const { count } = useCart();
   const { user } = useAuth();
+  const bump = useBumpOnIncrease(count);
 
   const holidays = categories.filter((c) => c.group === "holidays").map((c) => ({ slug: c.slug, label: tl(c.label) }));
 
@@ -172,6 +185,7 @@ export function SiteHeader() {
           <Home className="size-5" />
         </Link>
         <div className="order-last flex w-full items-center justify-center gap-5 sm:order-none sm:w-auto sm:justify-start sm:gap-6">
+          <Link to="/gifts" className={navLink}>{t("navAllGifts")}</Link>
           <Dropdown label={t("navHolidays")} items={holidays} />
           <Link to="/c/$slug" params={{ slug: "judaica" }} className={navLink}>{t("navJudaica")}</Link>
           <Link to="/c/$slug" params={{ slug: "for-boy" }} className={navLink}>{t("navForBoy")}</Link>
@@ -188,9 +202,12 @@ export function SiteHeader() {
             {user && <span className="absolute -top-0.5 -end-0.5 size-2.5 rounded-full bg-gold" />}
           </Link>
           <Link to="/cart" aria-label={t("cart")} className={`relative ${iconBtn}`}>
-            <ShoppingBag className="size-5" />
+            <ShoppingBag key={bump} className={`size-5 ${bump ? "animate-bump" : ""}`} />
             {count > 0 && (
-              <span className="absolute -top-1 -end-1 grid size-5 place-items-center rounded-full bg-gold text-[10px] font-bold text-navy">
+              <span
+                key={count}
+                className={`absolute -top-1 -end-1 grid size-5 place-items-center rounded-full bg-gold text-[10px] font-bold text-navy ring-2 ring-navy ${bump ? "animate-pop" : ""}`}
+              >
                 {count}
               </span>
             )}

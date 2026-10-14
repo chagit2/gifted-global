@@ -71,7 +71,7 @@ export function HolidayBanner() {
           type="button"
           onClick={close}
           aria-label={t("close")}
-          className="grid size-7 shrink-0 place-items-center rounded-full text-navy/65 transition hover:bg-navy/5 hover:text-navy"
+          className="-my-1 grid size-9 shrink-0 place-items-center rounded-full text-navy/70 transition hover:bg-navy/5 hover:text-navy"
         >
           <X className="size-4" />
         </button>
