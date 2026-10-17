@@ -1,4 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
+import { CreditCard, Plus, ShoppingBag } from "lucide-react";
 import { FadeImage } from "@/components/FadeImage";
 import type { Product } from "@/lib/products";
 import { getCategory } from "@/lib/catalog";
@@ -59,31 +60,44 @@ export function ProductCard({
       </button>
       <h3 className="mt-4 font-heb text-lg leading-snug text-navy transition-colors group-hover:text-gold-deep">{tl(product.name)}</h3>
       <p className="mt-1 text-xs text-navy/70">{tl(product.subtitle)}</p>
-      <p className="mt-auto pt-3 font-semibold text-gold-deep">{money(product.price)}</p>
-      {product.inStock ? (
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <button
-            onClick={() => {
-              add(product);
-              setDrawerOpen(true);
-            }}
-            className="min-h-10 whitespace-nowrap rounded-full bg-navy px-2 py-2 text-xs text-pearl transition hover:bg-navy-3 active:scale-95"
-          >
-            {t("addToCart")}
-          </button>
-          <button
-            onClick={() => {
-              add(product);
-              navigate({ to: "/checkout" });
-            }}
-            className="min-h-10 whitespace-nowrap rounded-full bg-gold px-2 py-2 text-xs font-semibold text-navy transition hover:bg-gold-2 hover:shadow-md hover:shadow-gold/30 active:scale-95"
-          >
-            {t("buyNow")}
-          </button>
-        </div>
-      ) : (
-        <p className="mt-3 text-xs text-navy/70">{t("outOfStock")}</p>
-      )}
+      {/* Compact icon buttons here; the full wording is in the gift's popup. */}
+      <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+        <p className="font-semibold text-gold-deep">{money(product.price)}</p>
+        {product.inStock ? (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                add(product);
+                setDrawerOpen(true);
+              }}
+              aria-label={t("addToCart")}
+              title={t("addToCart")}
+              className="relative grid size-11 place-items-center rounded-full bg-navy text-pearl transition hover:bg-navy-3 active:scale-90"
+            >
+              <ShoppingBag className="size-5" />
+              <Plus
+                className="absolute top-1.5 end-1.5 size-3.5 rounded-full bg-gold p-px text-navy"
+                strokeWidth={3}
+              />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                add(product);
+                navigate({ to: "/checkout" });
+              }}
+              aria-label={t("buyNow")}
+              title={t("buyNow")}
+              className="grid size-11 place-items-center rounded-full bg-gold text-navy transition hover:bg-gold-2 hover:shadow-md hover:shadow-gold/30 active:scale-90"
+            >
+              <CreditCard className="size-5" />
+            </button>
+          </div>
+        ) : (
+          <p className="text-xs text-navy/70">{t("outOfStock")}</p>
+        )}
+      </div>
     </article>
     </div>
   );
