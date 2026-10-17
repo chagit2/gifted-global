@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { IDLE_FLAG, useAuth } from "@/lib/auth";
 import { useI18n, type Key } from "@/lib/i18n";
@@ -38,6 +38,26 @@ function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Emails a link to /reset-password, where a new password is chosen.
+  const forgot = async () => {
+    const email = String(new FormData(formRef.current ?? undefined).get("email") ?? "").trim();
+    setError(null);
+    setErrorDetail(null);
+    setNotice(null);
+    if (!email) return setError(t("forgotNeedEmail"));
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setBusy(false);
+    if (error) {
+      const known = error.code ? AUTH_ERRORS[error.code] : undefined;
+      setError(t(known ?? "forgotError"));
+      if (!known) setErrorDetail(error.message);
+    } else setNotice(t("forgotSent"));
+  };
 
   // Arrived here because the idle timer signed the visitor out.
   useEffect(() => {
@@ -98,7 +118,7 @@ function LoginPage() {
   return (
     <main className="mx-auto max-w-md px-6 pt-16 pb-24">
       <h1 className="font-heb text-4xl font-bold text-navy">{mode === "in" ? t("login") : t("signup")}</h1>
-      <form onSubmit={onSubmit} className="mt-8 space-y-4 rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
+      <form ref={formRef} onSubmit={onSubmit} className="mt-8 space-y-4 rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl">
         <label className="block">
           <span className="text-xs text-navy/65">{t("email")}</span>
           <input name="email" type="email" required autoComplete="email" dir="ltr" className={field} />
@@ -116,6 +136,16 @@ function LoginPage() {
           />
           {mode === "up" && <span className="mt-1 block text-[11px] text-navy/70">{t("passwordHint")}</span>}
         </label>
+        {mode === "in" && (
+          <button
+            type="button"
+            onClick={forgot}
+            disabled={busy}
+            className="-mt-2 text-xs text-gold-deep underline-offset-4 hover:underline disabled:opacity-60"
+          >
+            {t("forgotPassword")}
+          </button>
+        )}
         {error && (
           <p className="text-xs text-red-600">
             {error}
