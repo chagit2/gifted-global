@@ -21,6 +21,7 @@ import { Route as FindRouteImport } from './routes/find'
 import { Route as GiftsRouteImport } from './routes/gifts'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
@@ -87,6 +88,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShippingRoute = ShippingRouteImport.update({
   id: '/shipping',
   path: '/shipping',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/gifts': typeof GiftsRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/c/$slug': typeof CSlugRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/gifts': typeof GiftsRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/c/$slug': typeof CSlugRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/gifts': typeof GiftsRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/c/$slug': typeof CSlugRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/gifts'
     | '/login'
     | '/privacy'
+    | '/reset-password'
     | '/shipping'
     | '/terms'
     | '/c/$slug'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/gifts'
     | '/login'
     | '/privacy'
+    | '/reset-password'
     | '/shipping'
     | '/terms'
     | '/c/$slug'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/gifts'
     | '/login'
     | '/privacy'
+    | '/reset-password'
     | '/shipping'
     | '/terms'
     | '/c/$slug'
@@ -244,6 +256,7 @@ export interface RootRouteChildren {
   GiftsRoute: typeof GiftsRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ShippingRoute: typeof ShippingRoute
   TermsRoute: typeof TermsRoute
   CSlugRoute: typeof CSlugRoute
@@ -337,6 +350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shipping': {
       id: '/shipping'
       path: '/shipping'
@@ -388,6 +408,7 @@ const rootRouteChildren: RootRouteChildren = {
   GiftsRoute: GiftsRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ShippingRoute: ShippingRoute,
   TermsRoute: TermsRoute,
   CSlugRoute: CSlugRoute,
