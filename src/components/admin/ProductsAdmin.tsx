@@ -6,6 +6,7 @@ import {
   ChevronRight,
   ChevronUp,
   Languages,
+  Star,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -382,6 +383,17 @@ function ProductForm({
       return next;
     });
 
+  // Drag a photo onto another, or "make main", to reorder.
+  const [dragging, setDragging] = useState<number | null>(null);
+  const moveTo = (from: number, to: number) =>
+    setImages((prev) => {
+      if (from === to) return prev;
+      const next = [...prev];
+      const [item] = next.splice(from, 1);
+      next.splice(to, 0, item!);
+      return next;
+    });
+
   const cancel = async () => {
     await removeStored(uploaded);
     onDone(false);
@@ -579,49 +591,74 @@ function ProductForm({
 
       <div>
         <p className={label}>{t("images")}</p>
+        <p className="mt-0.5 text-[11px] text-navy/70">{t("imagesOrderHint")}</p>
         <div className="mt-2 flex flex-wrap gap-3">
           {images.map((url, i) => (
             <div
               key={url}
-              className="relative size-28 overflow-hidden rounded-xl border border-navy/10"
+              draggable
+              onDragStart={() => setDragging(i)}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (dragging !== null) moveTo(dragging, i);
+                setDragging(null);
+              }}
+              onDragEnd={() => setDragging(null)}
+              className={`group relative size-32 cursor-grab overflow-hidden rounded-xl border-2 transition active:cursor-grabbing ${
+                i === 0 ? "border-gold" : "border-navy/10"
+              } ${dragging === i ? "opacity-40" : ""}`}
             >
-              <img src={url} alt="" className="size-full object-cover" />
-              {i === 0 && (
-                <span className="absolute top-1 start-1 rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-navy">
+              <img src={url} alt="" draggable={false} className="size-full object-cover" />
+              {i === 0 ? (
+                <span className="absolute top-1 start-1 rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-navy shadow">
                   {t("mainImage")}
                 </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => moveTo(i, 0)}
+                  aria-label={t("makeMainImage")}
+                  title={t("makeMainImage")}
+                  className="absolute top-1 start-1 grid size-7 place-items-center rounded-full bg-white/95 text-gold-deep shadow transition hover:bg-gold hover:text-navy"
+                >
+                  <Star className="size-4" />
+                </button>
               )}
               <button
                 type="button"
                 aria-label={t("delete")}
+                title={t("delete")}
                 onClick={() => setImages((prev) => prev.filter((u) => u !== url))}
-                className="absolute top-1 end-1 grid size-6 place-items-center rounded-full bg-navy/40 text-navy hover:text-red-600"
+                className="absolute top-1 end-1 grid size-6 place-items-center rounded-full bg-white/95 text-navy shadow hover:text-red-600"
               >
                 <X className="size-3.5" />
               </button>
               <div className="absolute inset-x-1 bottom-1 flex justify-between">
                 <button
                   type="button"
-                  aria-label="previous"
+                  aria-label={t("moveImageEarlier")}
+                  title={t("moveImageEarlier")}
                   disabled={i === 0}
                   onClick={() => move(i, -1)}
-                  className="grid size-6 place-items-center rounded-full bg-navy/40 text-navy disabled:opacity-30"
+                  className="grid size-7 place-items-center rounded-full bg-white/95 text-navy shadow hover:bg-gold disabled:opacity-0"
                 >
-                  <Prev className="size-3.5" />
+                  <Prev className="size-4" />
                 </button>
                 <button
                   type="button"
-                  aria-label="next"
+                  aria-label={t("moveImageLater")}
+                  title={t("moveImageLater")}
                   disabled={i === images.length - 1}
                   onClick={() => move(i, 1)}
-                  className="grid size-6 place-items-center rounded-full bg-navy/40 text-navy disabled:opacity-30"
+                  className="grid size-7 place-items-center rounded-full bg-white/95 text-navy shadow hover:bg-gold disabled:opacity-0"
                 >
-                  <Next className="size-3.5" />
+                  <Next className="size-4" />
                 </button>
               </div>
             </div>
           ))}
-          <label className="grid size-28 cursor-pointer place-items-center rounded-xl border border-dashed border-navy/20 text-center text-xs text-navy/65 hover:border-gold/50 hover:text-gold-deep">
+          <label className="grid size-32 cursor-pointer place-items-center rounded-xl border border-dashed border-navy/20 text-center text-xs text-navy/65 hover:border-gold/50 hover:text-gold-deep">
             {uploading ? t("uploading") : `+ ${t("addImages")}`}
             <input
               type="file"
