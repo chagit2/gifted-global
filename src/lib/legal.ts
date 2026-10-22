@@ -200,6 +200,11 @@ export const a11ySections: LegalSection[] = [
         en: "Images have alternative text, form fields have labels, and text colours were chosen for readable contrast.",
       },
       {
+        he: "בפינה הימנית התחתונה של כל עמוד יש כפתור נגישות (סמל כיסא גלגלים). הוא פותח תפריט להגדלת טקסט, ניגודיות גבוהה, הדגשת קישורים, גופן קריא ועצירת אנימציות. הבחירה נשמרת לביקור הבא.",
+        fr: "En bas à droite de chaque page, un bouton d'accessibilité (fauteuil roulant) ouvre un menu : taille du texte, contraste élevé, liens soulignés, police lisible et arrêt des animations. Vos choix sont mémorisés.",
+        en: "At the bottom right of every page, an accessibility button (wheelchair symbol) opens a menu: text size, high contrast, highlighted links, a readable font and stopping animations. Your choices are remembered.",
+      },
+      {
         he: "האתר מותאם לטלפונים ולהגדלת טקסט בדפדפן, זמין בעברית, בצרפתית ובאנגלית, ומכבד את הגדרת \"הפחתת תנועה\" במכשיר.",
         fr: "Le site s'adapte aux téléphones et au zoom du navigateur, existe en hébreu, français et anglais, et respecte le réglage « réduire les animations ».",
         en: "The site works on phones and with browser zoom, is available in Hebrew, French and English, and respects the device's \"reduce motion\" setting.",

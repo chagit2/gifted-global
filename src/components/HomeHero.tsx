@@ -1,5 +1,6 @@
 import { Clock, Gift, PenLine, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
+import { motionOff } from "@/lib/motion";
 import { useI18n, type Key } from "@/lib/i18n";
 
 const WORDS: Key[] = ["heroWord1", "heroWord2", "heroWord3", "heroWord4", "heroWord5", "heroWord6"];
@@ -14,7 +15,7 @@ export function HomeHero() {
 
   useEffect(() => {
     if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = setInterval(() => setActive((i) => (i + 1) % WORDS.length), INTERVAL_MS);
+    const id = setInterval(() => !motionOff() && setActive((i) => (i + 1) % WORDS.length), INTERVAL_MS);
     return () => clearInterval(id);
   }, [paused]);
 

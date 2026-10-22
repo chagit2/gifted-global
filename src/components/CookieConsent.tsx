@@ -25,7 +25,7 @@ export function CookieConsent() {
     <div
       role="dialog"
       aria-live="polite"
-      className="fixed inset-x-3 bottom-3 z-[60] mx-auto flex max-w-3xl flex-wrap items-center gap-3 rounded-2xl border border-gold/40 bg-navy p-4 text-sm text-pearl/90 shadow-2xl shadow-navy/30 backdrop-blur-xl print:hidden sm:flex-nowrap"
+      className="fixed inset-x-3 bottom-20 sm:bottom-3 z-[60] mx-auto flex max-w-3xl flex-wrap items-center gap-3 rounded-2xl border border-gold/40 bg-navy p-4 text-sm text-pearl/90 shadow-2xl shadow-navy/30 backdrop-blur-xl print:hidden sm:flex-nowrap"
     >
       <p className="flex-1">
         {t("cookieText")}{" "}

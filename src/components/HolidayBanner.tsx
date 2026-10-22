@@ -38,6 +38,12 @@ export function HolidayBanner() {
     setH(null);
   };
 
+  // "12 days left until Hanukkah", with the one-day and same-day wording.
+  const daysTitle = (n: number, holiday: string) =>
+    (n <= 0 ? t("holidayToday") : n === 1 ? t("holidayOneDay") : t("holidayDaysTitle"))
+      .replace("{n}", String(n))
+      .replace("{holiday}", holiday);
+
   const locale = lang === "he" ? "he-IL" : lang === "fr" ? "fr-FR" : "en-GB";
   const orderBy = h.orderBy.toLocaleDateString(locale, {
     weekday: "long",
@@ -50,7 +56,10 @@ export function HolidayBanner() {
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 px-12 py-3 text-center text-navy">
         <p className="inline-flex items-center gap-2 font-heb text-base font-semibold text-gold-deep sm:text-lg">
           <Gift className="size-5 shrink-0" />
-          {t("holidayCountdownTitle").replace("{holiday}", tl(category.label))}
+          {daysTitle(
+            Math.floor((holidayStart(h.date).getTime() - Date.now()) / 86400000),
+            tl(category.label),
+          )}
         </p>
         <Countdown to={holidayStart(h.date)} />
         <p className="text-xs text-navy/75 sm:text-sm">
