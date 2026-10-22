@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 const COLORS = ["#c9a85a", "#e3c77d", "#b8964a", "#1f3a7a", "#2c4a94"];
 // Text and panels keep a quiet background: no sparkles are drawn behind them.
 const QUIET =
-  "main h1, main h2, main h3, main h4, main p, main li, main label, main dt, main dd, main blockquote, main .rounded-2xl, main .rounded-3xl, main .rounded-\\[2rem\\], footer, header";
+  "main h1, main h2, main h3, main h4, main p, main li, main label, main dt, main dd, main blockquote, main .rounded-2xl, main .rounded-3xl, main .rounded-\\[2rem\\], footer, header, [data-quiet]";
 const QUIET_PAD = 6;
 const CELL = 12; // quiet-zone grid cell, px
 const INTERACTIVE = "a,button,input,textarea,select,label,summary,[role=button],[role=dialog]";
