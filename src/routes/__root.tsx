@@ -19,6 +19,7 @@ import { AuthProvider } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CookieConsent } from "@/components/CookieConsent";
+import { AccessibilityMenu } from "@/components/AccessibilityMenu";
 import { HolidayBanner } from "@/components/HolidayBanner";
 import { CartDrawer } from "@/components/CartDrawer";
 import { Sparkles } from "@/components/Sparkles";
@@ -156,6 +157,7 @@ function RootComponent() {
             <SiteFooter />
             <CartDrawer />
             <CookieConsent />
+            <AccessibilityMenu />
           </div>
         </CartProvider>
         </AuthProvider>

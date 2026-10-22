@@ -454,3 +454,48 @@
     display: none !important;
   }
 }
+
+/* Accessibility menu (components/AccessibilityMenu.tsx). */
+html.a11y-contrast body,
+html.a11y-contrast [class*="text-navy/"] {
+  color: var(--navy) !important;
+}
+html.a11y-contrast [class*="text-gold-deep"] {
+  color: oklch(0.42 0.09 76) !important;
+}
+html.a11y-contrast [class*="bg-white/"],
+html.a11y-contrast [class*="bg-pearl/"] {
+  background-color: #fff !important;
+}
+html.a11y-contrast [class*="border-navy/"] {
+  border-color: var(--navy) !important;
+}
+html.a11y-links a {
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+}
+html.a11y-links a:hover,
+html.a11y-links a:focus-visible {
+  background-color: oklch(0.85 0.09 90 / 0.5);
+}
+html.a11y-readable,
+html.a11y-readable body,
+html.a11y-readable * {
+  font-family: Arial, "Helvetica Neue", sans-serif !important;
+  letter-spacing: 0.01em;
+}
+html.a11y-readable p,
+html.a11y-readable li {
+  line-height: 1.8 !important;
+}
+html.a11y-no-motion *,
+html.a11y-no-motion *::before,
+html.a11y-no-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+html.a11y-no-motion canvas[aria-hidden] {
+  display: none;
+}

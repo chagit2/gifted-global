@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { bannerSlides } from "@/lib/catalog";
+import { motionOff } from "@/lib/motion";
 import { useI18n } from "@/lib/i18n";
 
 const INTERVAL_MS = 4000;
@@ -11,7 +12,7 @@ export function GiftBanner() {
 
   useEffect(() => {
     if (paused) return;
-    const id = setInterval(() => setActive((i) => (i + 1) % bannerSlides.length), INTERVAL_MS);
+    const id = setInterval(() => !motionOff() && setActive((i) => (i + 1) % bannerSlides.length), INTERVAL_MS);
     return () => clearInterval(id);
   }, [paused]);
 

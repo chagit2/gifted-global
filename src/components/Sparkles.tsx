@@ -152,6 +152,11 @@ export function Sparkles() {
         return;
       }
       lastDraw = t;
+      // Switched off in the accessibility menu: draw nothing (CSS hides the canvas).
+      if (document.documentElement.classList.contains("a11y-no-motion")) {
+        raf = requestAnimationFrame(frame);
+        return;
+      }
       if (quietDirty) measureQuiet();
       if (!still && lastT) {
         slowFrames = t - lastT > 45 ? slowFrames + 1 : Math.max(0, slowFrames - 1);
