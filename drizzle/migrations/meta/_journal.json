@@ -50,6 +50,13 @@
       "when": 1791966802959,
       "tag": "0006_contact_settings_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792964053714,
+      "tag": "0007_create_wa_messages",
+      "breakpoints": true
     }
   ]
 }

@@ -265,6 +265,42 @@ export type Database = {
         }
         Relationships: []
       }
+      wa_messages: {
+        Row: {
+          body: string
+          contact_name: string
+          created_at: string
+          direction: string
+          id: string
+          read_at: string | null
+          status: string
+          wa_id: string
+          wa_message_id: string | null
+        }
+        Insert: {
+          body?: string
+          contact_name?: string
+          created_at?: string
+          direction: string
+          id?: string
+          read_at?: string | null
+          status?: string
+          wa_id: string
+          wa_message_id?: string | null
+        }
+        Update: {
+          body?: string
+          contact_name?: string
+          created_at?: string
+          direction?: string
+          id?: string
+          read_at?: string | null
+          status?: string
+          wa_id?: string
+          wa_message_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
