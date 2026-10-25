@@ -24,6 +24,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as ApiWhatsappRouteImport } from './routes/api.whatsapp'
 import { Route as CSlugRouteImport } from './routes/c.$slug'
 import { Route as PrintOrderIdRouteImport } from './routes/print.$orderId'
 import { Route as ProductImagesSplatRouteImport } from './routes/product-images.$'
@@ -103,6 +104,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWhatsappRoute = ApiWhatsappRouteImport.update({
+  id: '/api/whatsapp',
+  path: '/api/whatsapp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CSlugRoute = CSlugRouteImport.update({
   id: '/c/$slug',
   path: '/c/$slug',
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
+  '/api/whatsapp': typeof ApiWhatsappRoute
   '/c/$slug': typeof CSlugRoute
   '/print/$orderId': typeof PrintOrderIdRoute
   '/product-images/$': typeof ProductImagesSplatRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
+  '/api/whatsapp': typeof ApiWhatsappRoute
   '/c/$slug': typeof CSlugRoute
   '/print/$orderId': typeof PrintOrderIdRoute
   '/product-images/$': typeof ProductImagesSplatRoute
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
+  '/api/whatsapp': typeof ApiWhatsappRoute
   '/c/$slug': typeof CSlugRoute
   '/print/$orderId': typeof PrintOrderIdRoute
   '/product-images/$': typeof ProductImagesSplatRoute
@@ -198,6 +207,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/shipping'
     | '/terms'
+    | '/api/whatsapp'
     | '/c/$slug'
     | '/print/$orderId'
     | '/product-images/$'
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/shipping'
     | '/terms'
+    | '/api/whatsapp'
     | '/c/$slug'
     | '/print/$orderId'
     | '/product-images/$'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/shipping'
     | '/terms'
+    | '/api/whatsapp'
     | '/c/$slug'
     | '/print/$orderId'
     | '/product-images/$'
@@ -259,6 +271,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ShippingRoute: typeof ShippingRoute
   TermsRoute: typeof TermsRoute
+  ApiWhatsappRoute: typeof ApiWhatsappRoute
   CSlugRoute: typeof CSlugRoute
   PrintOrderIdRoute: typeof PrintOrderIdRoute
   ProductImagesSplatRoute: typeof ProductImagesSplatRoute
@@ -371,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/whatsapp': {
+      id: '/api/whatsapp'
+      path: '/api/whatsapp'
+      fullPath: '/api/whatsapp'
+      preLoaderRoute: typeof ApiWhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/c/$slug': {
       id: '/c/$slug'
       path: '/c/$slug'
@@ -411,6 +431,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ShippingRoute: ShippingRoute,
   TermsRoute: TermsRoute,
+  ApiWhatsappRoute: ApiWhatsappRoute,
   CSlugRoute: CSlugRoute,
   PrintOrderIdRoute: PrintOrderIdRoute,
   ProductImagesSplatRoute: ProductImagesSplatRoute,

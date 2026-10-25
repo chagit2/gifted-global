@@ -63,6 +63,11 @@ export const privacySections: LegalSection[] = [
         en: "The service providers the site relies on: hosting and database, an email service for order notifications, and Google Analytics (only with your consent). The courier receives the recipient's name, phone and address for delivery only.",
       },
       {
+        he: "מי שכותב לנו בוואטסאפ: ההודעות עוברות דרך WhatsApp (חברת Meta), ואנחנו שומרים את השם, מספר הטלפון ותוכן השיחה כדי לענות ולטפל בפנייה.",
+        fr: "Si vous nous écrivez sur WhatsApp : les messages transitent par WhatsApp (Meta), et nous conservons le nom, le numéro et la conversation pour vous répondre.",
+        en: "If you message us on WhatsApp: messages pass through WhatsApp (Meta), and we keep the name, phone number and conversation to answer you.",
+      },
+      {
         he: "חלק מהספקים האלה מעבדים מידע מחוץ לישראל ולאיחוד האירופי, בהתאם לתנאים שלהם.",
         fr: "Certains de ces prestataires traitent des données en dehors d'Israël et de l'Union européenne, selon leurs propres conditions.",
         en: "Some of these providers process data outside Israel and the European Union, under their own terms.",

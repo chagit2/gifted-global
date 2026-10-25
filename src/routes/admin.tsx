@@ -5,6 +5,7 @@ import { OrderCard } from "@/components/OrderCard";
 import { ProductsAdmin } from "@/components/admin/ProductsAdmin";
 import { CouponsAdmin } from "@/components/admin/CouponsAdmin";
 import { SettingsAdmin } from "@/components/admin/SettingsAdmin";
+import { unreadCount, useWhatsAppMessages, WhatsAppAdmin } from "@/components/admin/WhatsAppAdmin";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -28,10 +29,13 @@ function AdminPage() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<OrderRow[] | null>(null);
   const [failed, setFailed] = useState(false);
-  const [section, setSection] = useState<"orders" | "products" | "coupons" | "settings">("orders");
+  const [section, setSection] = useState<"orders" | "whatsapp" | "products" | "coupons" | "settings">("orders");
   const [tab, setTab] = useState<"open" | "done">("open");
   const [saving, setSaving] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  // Unread WhatsApp messages, shown on the tab (the query only runs for admins).
+  const { data: waMessages = [] } = useWhatsAppMessages(isAdmin);
+  const waUnread = unreadCount(waMessages);
   // Orders whose status was just changed stay where they are until the tab
   // is switched, so the list doesn't shrink and jump under the cursor.
   const [pinned, setPinned] = useState<Set<string>>(new Set());
@@ -98,6 +102,7 @@ function AdminPage() {
         {(
           [
             ["orders", t("tabOrders")],
+            ["whatsapp", t("tabWhatsApp")],
             ["products", t("tabProducts")],
             ["coupons", t("tabCoupons")],
             ["settings", t("tabSettings")],
@@ -113,11 +118,20 @@ function AdminPage() {
             }`}
           >
             {label}
+            {key === "whatsapp" && waUnread > 0 && (
+              <span className="ms-1.5 inline-grid size-5 place-items-center rounded-full bg-gold align-middle text-[10px] font-bold text-navy">
+                {waUnread}
+              </span>
+            )}
           </button>
         ))}
       </nav>
 
-      {section === "products" ? (
+      {section === "whatsapp" ? (
+        <div className="mt-8">
+          <WhatsAppAdmin />
+        </div>
+      ) : section === "products" ? (
         <div className="mt-8">
           <ProductsAdmin />
         </div>
