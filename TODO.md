@@ -35,12 +35,18 @@
 
 ## צ'אט וואטסאפ (הקוד מוכן, מחכה לחיבור)
 - [x] פתיחת חשבון פייסבוק
-- [ ] פתיחת Meta Business Portfolio (Business Manager)
+- [x] פתיחת Meta Business Portfolio (Business Manager)
 - [ ] מספר טלפון ייעודי לוואטסאפ של האתר (מספר שלא מחובר כרגע לוואטסאפ רגיל באפליקציה)
-- [ ] ב־Meta for Developers: יצירת אפליקציה מסוג Business והוספת המוצר WhatsApp
+- [x] ב־Meta for Developers: יצירת אפליקציה עם WhatsApp
 - [ ] הוספת המספר, אימות בקוד SMS, ושם תצוגה לעסק
 - [ ] יצירת מפתח גישה קבוע (System User token)
 - [ ] להוסיף ב־Lovable את ה־Secrets: `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_VERIFY_TOKEN` (מילה סודית שבוחרים), `WHATSAPP_APP_SECRET`
 - [ ] להריץ ב־Lovable את `db/whatsapp.sql`
 - [ ] ב־Meta: כתובת Webhook ‏`https://<האתר>/api/whatsapp`, אותה מילה סודית, והרשמה לשדה messages
 - [ ] לעדכן את מספר הוואטסאפ החדש בניהול ← הגדרות ← פרטי התקשרות
+
+## אבטחת חשבון העסק ב־Meta (לא דחוף, לחזור בהזדמנות)
+- [ ] אימות דו־שלבי: Security Center ← Two-Factor Authentication ← Everyone (אפשר עם קוד ב־SMS, לא צריך סמארטפון)
+- [ ] להוסיף מנהל נוסף שסומכים עליו (Add another admin), למקרה שננעלים מחוץ לחשבון
+- [ ] לא ללחוץ על Take action ליד "user without passkey" (זה מסיר אותך מהחשבון)
+- [ ] דומיינים מהימנים: רק כשיהיו פרסומות ממומנות ודומיין קבוע
