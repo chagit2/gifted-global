@@ -32,3 +32,15 @@
 ## עדכון ללקוח על שינוי סטטוס ההזמנה
 - [ ] לשלוח ללקוח הודעה כשההזמנה עוברת שלב (בהכנה, נשלחה, נמסרה)
 - [ ] לבחור ערוץ: מייל (דורש דומיין משלנו ב־Resend) או וואטסאפ (דורש WhatsApp Business API)
+
+## צ'אט וואטסאפ (הקוד מוכן, מחכה לחיבור)
+- [x] פתיחת חשבון פייסבוק
+- [ ] פתיחת Meta Business Portfolio (Business Manager)
+- [ ] מספר טלפון ייעודי לוואטסאפ של האתר (מספר שלא מחובר כרגע לוואטסאפ רגיל באפליקציה)
+- [ ] ב־Meta for Developers: יצירת אפליקציה מסוג Business והוספת המוצר WhatsApp
+- [ ] הוספת המספר, אימות בקוד SMS, ושם תצוגה לעסק
+- [ ] יצירת מפתח גישה קבוע (System User token)
+- [ ] להוסיף ב־Lovable את ה־Secrets: `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_VERIFY_TOKEN` (מילה סודית שבוחרים), `WHATSAPP_APP_SECRET`
+- [ ] להריץ ב־Lovable את `db/whatsapp.sql`
+- [ ] ב־Meta: כתובת Webhook ‏`https://<האתר>/api/whatsapp`, אותה מילה סודית, והרשמה לשדה messages
+- [ ] לעדכן את מספר הוואטסאפ החדש בניהול ← הגדרות ← פרטי התקשרות

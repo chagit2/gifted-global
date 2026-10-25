@@ -72,3 +72,29 @@ export async function notifyNewOrder(o: OrderEmail) {
     console.error("[notify] failed", e);
   }
 }
+
+// Email to the shop owner when customers write on WhatsApp (replies are made
+// from the admin area). Same secrets as the order email; silent without them.
+export async function notifyWhatsApp(messages: { name: string; text: string }[]) {
+  const key = process.env["RESEND_API_KEY"];
+  const to = process.env["ORDER_NOTIFY_EMAIL"];
+  if (!key || !to || !messages.length) return;
+  try {
+    const items = messages
+      .map((m) => `<p><b>${esc(m.name)}</b>: ${esc(m.text)}</p>`)
+      .join("");
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: process.env["ORDER_NOTIFY_FROM"] || "Matanot <onboarding@resend.dev>",
+        to: [to],
+        subject: `הודעת וואטסאפ חדשה מ${messages[0]!.name}`,
+        html: `<div dir="rtl" style="font-family:Arial,sans-serif">${items}<p>אפשר לענות באזור הניהול ← וואטסאפ.</p></div>`,
+      }),
+    });
+    if (!res.ok) console.error("[notify] Resend", res.status, await res.text());
+  } catch (e) {
+    console.error("[notify] whatsapp failed", e);
+  }
+}
