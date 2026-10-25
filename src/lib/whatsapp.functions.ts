@@ -54,3 +54,55 @@ export const sendWhatsAppReply = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+const MEDIA_BUCKET = "wa-media";
+const EXT: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "audio/ogg": "ogg",
+  "audio/mpeg": "mp3",
+  "audio/mp4": "m4a",
+  "audio/aac": "aac",
+  "video/mp4": "mp4",
+  "video/3gpp": "3gp",
+  "application/pdf": "pdf",
+};
+
+// A short-lived link to a message's photo / recording / file. The first
+// time, the file is copied from WhatsApp into the private wa-media bucket.
+export const getWhatsAppMedia = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const db = supabaseAdmin as unknown as SupabaseClient;
+    const { data: row } = await db
+      .from("wa_messages")
+      .select("media_id, media_path, mime_type, file_name")
+      .eq("id", data.id)
+      .maybeSingle();
+    const msg = row as { media_id: string; media_path: string; mime_type: string; file_name: string } | null;
+    if (!msg?.media_id) throw new Error("NO_MEDIA");
+
+    let path = msg.media_path;
+    if (!path) {
+      const { downloadMedia, whatsappConfigured } = await import("./whatsapp.server");
+      if (!whatsappConfigured()) throw new Error("NOT_CONFIGURED");
+      const { blob, mime } = await downloadMedia(msg.media_id);
+      const type = (mime || msg.mime_type).split(";")[0]!.trim();
+      const ext = msg.file_name.split(".").pop() || EXT[type] || "bin";
+      path = `${data.id}.${ext}`;
+      const { error } = await db.storage
+        .from(MEDIA_BUCKET)
+        .upload(path, blob, { contentType: type || "application/octet-stream", upsert: true });
+      if (error) throw new Error(`UPLOAD: ${error.message}`);
+      await db.from("wa_messages").update({ media_path: path }).eq("id", data.id);
+    }
+    const { data: signed, error } = await db.storage
+      .from(MEDIA_BUCKET)
+      .createSignedUrl(path, 60 * 60, msg.file_name ? { download: msg.file_name } : undefined);
+    if (error || !signed) throw new Error(error?.message ?? "SIGN");
+    return { url: signed.signedUrl };
+  });
