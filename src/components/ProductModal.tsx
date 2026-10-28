@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
-import { FadeImage } from "@/components/FadeImage";
+import { FitImage } from "@/components/FadeImage";
 import { useProducts, type Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
 import { useCurrency } from "@/lib/currency";
@@ -129,12 +129,12 @@ export function ProductModal({
               aria-label={t("zoomImage")}
               className="group relative block w-full cursor-zoom-in"
             >
-              <FadeImage
+              <FitImage
                 src={product.images[active]}
                 alt={tl(product.name)}
                 width={1024}
                 height={1024}
-                className="aspect-square w-full rounded-2xl object-cover outline-1 -outline-offset-1 outline-navy/10"
+                className="aspect-square w-full rounded-2xl outline-1 -outline-offset-1 outline-navy/10"
               />
               <span className="absolute bottom-3 end-3 grid size-9 place-items-center rounded-full bg-white/70 text-navy opacity-0 backdrop-blur transition group-hover:opacity-100">
                 <ZoomIn className="size-4" />
@@ -158,13 +158,13 @@ export function ProductModal({
           <div className="mt-3 grid grid-cols-4 gap-3">
             {product.images.map((img, i) => (
               <button key={img} onClick={() => setActive(i)} aria-current={active === i}>
-                <img
+                <FitImage
                   src={img}
                   alt=""
                   loading="lazy"
                   width={512}
                   height={512}
-                  className={`aspect-square w-full rounded-xl object-cover outline-2 -outline-offset-2 transition ${
+                  className={`aspect-square w-full rounded-xl outline-2 -outline-offset-2 transition ${
                     active === i ? "outline-gold" : "outline-navy/10 opacity-60 hover:opacity-100"
                   }`}
                 />
@@ -224,11 +224,11 @@ export function ProductModal({
                                   : "outline-navy/10 group-hover:outline-gold/50"
                               }`}
                             >
-                              <img
+                              <FitImage
                                 src={v.image}
                                 alt=""
                                 loading="lazy"
-                                className="aspect-square w-full object-cover"
+                                className="aspect-square w-full"
                               />
                               {on && (
                                 <span className="absolute top-1 end-1 grid size-6 place-items-center rounded-full bg-gold text-xs font-bold text-navy shadow">
@@ -301,13 +301,13 @@ export function ProductModal({
                     disabled={!onSelect}
                     className="group block w-full text-start"
                   >
-                    <FadeImage
+                    <FitImage
                       src={p.images[0]}
                       alt=""
                       loading="lazy"
                       width={512}
                       height={512}
-                      className="aspect-square w-full rounded-xl object-cover outline-1 -outline-offset-1 outline-navy/10 transition group-hover:outline-gold/60"
+                      className="aspect-square w-full rounded-xl outline-1 -outline-offset-1 outline-navy/10 transition group-hover:outline-gold/60"
                     />
                     <span className="mt-2 block truncate text-sm text-navy group-hover:text-gold-deep">
                       {tl(p.name)}
