@@ -143,9 +143,9 @@ const dict = {
   },
   categoriesRequired: { he: "צריך לבחור לפחות קטגוריה אחת", fr: "Choisissez au moins une catégorie", en: "Choose at least one category" },
   pasteOptionImageHint: {
-    he: "אפשר גם להדביק תמונה (Ctrl+V): לוחצים על שורת הערך ומדביקים. הדבקה בלי לבחור שורה מוסיפה ערך חדש.",
-    fr: "Vous pouvez aussi coller une photo (Ctrl+V) : cliquez sur la ligne de la valeur puis collez. Sans ligne choisie, une nouvelle valeur est ajoutée.",
-    en: "You can also paste a photo (Ctrl+V): click the value's row, then paste. Pasting without a row selected adds a new value.",
+    he: "אפשר גם להדביק תמונה (Ctrl+V): לוחצים על שורת הערך ומדביקים. לחיצה על שם האפשרות והדבקה מוסיפה ערך חדש.",
+    fr: "Vous pouvez aussi coller une photo (Ctrl+V) : cliquez sur la ligne de la valeur puis collez. Coller après avoir cliqué sur le nom de l'option ajoute une valeur.",
+    en: "You can also paste a photo (Ctrl+V): click the value's row, then paste. Pasting after clicking the option name adds a new value.",
   },
   pasteImageHint: {
     he: "אפשר גם להעתיק תמונה ולהדביק אותה כאן עם Ctrl+V",
