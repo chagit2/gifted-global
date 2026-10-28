@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { CreditCard, Plus, ShoppingBag } from "lucide-react";
-import { FadeImage } from "@/components/FadeImage";
+import { FitImage } from "@/components/FadeImage";
 import type { Product } from "@/lib/products";
 import { getCategory } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
@@ -37,13 +37,13 @@ export function ProductCard({
       <button className="relative block w-full rounded-xl" onClick={() => onPreview(product)}>
         <span className="block overflow-hidden rounded-xl outline-1 -outline-offset-1 outline-navy/10">
           <span className="block transition-transform duration-700 ease-out motion-safe:group-hover:scale-105">
-            <FadeImage
+            <FitImage
               src={product.images[0]}
               alt={tl(product.name)}
               loading="lazy"
               width={1024}
               height={1024}
-              className="aspect-square w-full object-cover"
+              className="aspect-square w-full"
             />
           </span>
         </span>
