@@ -353,18 +353,6 @@ const dict = {
     fr: "Nous avons repris les informations de votre dernière commande. Vous pouvez les modifier.",
     en: "We filled in details from your last order. You can change them.",
   },
-  optimizeImages: { he: "כיווץ תמונות קיימות", fr: "Alléger les photos existantes", en: "Shrink existing photos" },
-  optimizing: { he: "מכווץ… {done}/{total}", fr: "Allègement… {done}/{total}", en: "Shrinking… {done}/{total}" },
-  optimizeConfirm: {
-    he: "לכווץ את כל תמונות המוצרים הגדולות? זה עשוי לקחת כמה דקות. אל תסגרו את הדף בזמן הפעולה.",
-    fr: "Alléger toutes les grandes photos ? Cela peut prendre quelques minutes. Ne fermez pas la page.",
-    en: "Shrink all large product photos? This may take a few minutes. Keep the page open.",
-  },
-  optimizeDone: {
-    he: "כווצו {n} תמונות, נחסכו {mb} MB",
-    fr: "{n} photos allégées, {mb} Mo économisés",
-    en: "{n} photos shrunk, {mb} MB saved",
-  },
   idleLoggedOut: {
     he: "התנתקתם אוטומטית אחרי זמן ללא פעילות, לשמירה על הפרטים שלכם. אפשר להתחבר שוב.",
     fr: "Vous avez été déconnecté après une période d'inactivité, pour protéger vos données. Reconnectez-vous.",
