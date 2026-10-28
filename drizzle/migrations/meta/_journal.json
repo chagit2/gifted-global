@@ -57,6 +57,13 @@
       "when": 1792964053714,
       "tag": "0007_create_wa_messages",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793180818936,
+      "tag": "0008_product_options",
+      "breakpoints": true
     }
   ]
 }
