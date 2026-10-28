@@ -5,15 +5,31 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  ImagePlus,
   Languages,
+  Plus,
   Star,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type FormEvent,
+  type SetStateAction,
+} from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { categories, getCategory } from "@/lib/catalog";
 import { formatPrice, LANGS, useI18n, type L, type Lang } from "@/lib/i18n";
-import { PRODUCTS_KEY, toRow, useProducts, type Product } from "@/lib/products";
+import {
+  PRODUCTS_KEY,
+  toRow,
+  useProducts,
+  type Product,
+  type OptionValue,
+  type ProductOption,
+} from "@/lib/products";
 import { translateProductTexts } from "@/lib/translate.functions";
 import { extFor, shrinkImage } from "@/lib/shrinkImage";
 
@@ -35,6 +51,10 @@ const removeStored = async (urls: string[]) => {
 };
 
 const emptyL = (): L => ({ he: "", fr: "", en: "" });
+
+// Photos of a gift's option values (e.g. a silver and a gold set).
+const optionImages = (options: ProductOption[]) =>
+  options.flatMap((o) => o.values.flatMap((v) => (v.image ? [v.image] : [])));
 
 // Hebrew first in the product form: it is the required, primary language.
 const FORM_LANGS = (["he", "fr", "en"] as const).map((code) => LANGS.find((l) => l.code === code)!);
@@ -75,62 +95,7 @@ export function ProductsAdmin() {
     setError(null);
     const { error } = await supabase.from("products").delete().eq("id", p.id);
     if (error) return setError(t("saveError"));
-    await removeStored(p.images);
-    refresh();
-  };
-
-  // One-off tool: shrink photos uploaded before upload-time shrinking existed.
-  // Uploads a smaller copy under a new name (old URLs are cached for a year),
-  // points the product at it, then deletes the original.
-  const [optimizing, setOptimizing] = useState<{ done: number; total: number } | null>(null);
-  const [optimized, setOptimized] = useState<string | null>(null);
-  const optimizeExisting = async () => {
-    if (!window.confirm(t("optimizeConfirm"))) return;
-    setError(null);
-    setOptimized(null);
-    let count = 0;
-    let saved = 0;
-    setOptimizing({ done: 0, total: all.length });
-    for (const [n, p] of all.entries()) {
-      const images: string[] = [];
-      const added: string[] = [];
-      const replaced: string[] = [];
-      for (const url of p.images) {
-        try {
-          if (!storagePath(url)) throw new Error("not uploaded");
-          const blob = await (await fetch(url)).blob();
-          if (blob.size < 400_000) throw new Error("small already");
-          const small = await shrinkImage(blob);
-          if (small.size > blob.size * 0.8) throw new Error("no real gain");
-          const path = `${crypto.randomUUID()}.${extFor(small.type)}`;
-          const { error } = await supabase.storage
-            .from(BUCKET)
-            .upload(path, small, { contentType: small.type, upsert: false });
-          if (error) throw error;
-          images.push(IMAGE_ROUTE + path);
-          added.push(IMAGE_ROUTE + path);
-          replaced.push(url);
-          saved += blob.size - small.size;
-        } catch {
-          images.push(url);
-        }
-      }
-      if (added.length) {
-        const { error } = await supabase.from("products").update({ images }).eq("id", p.id);
-        if (error) await removeStored(added);
-        else {
-          await removeStored(replaced);
-          count += added.length;
-        }
-      }
-      setOptimizing({ done: n + 1, total: all.length });
-    }
-    setOptimizing(null);
-    setOptimized(
-      t("optimizeDone")
-        .replace("{n}", String(count))
-        .replace("{mb}", (saved / 1_000_000).toFixed(1)),
-    );
+    await removeStored([...p.images, ...optionImages(p.options)]);
     refresh();
   };
 
@@ -173,18 +138,6 @@ export function ProductsAdmin() {
         </select>
         <div className="flex flex-wrap items-center gap-2">
           <button
-            type="button"
-            onClick={optimizeExisting}
-            disabled={optimizing !== null}
-            className="rounded-full border border-navy/15 px-4 py-2 text-xs text-navy transition hover:border-gold/50 hover:text-gold-deep disabled:opacity-60"
-          >
-            {optimizing
-              ? t("optimizing")
-                  .replace("{done}", String(optimizing.done))
-                  .replace("{total}", String(optimizing.total))
-              : t("optimizeImages")}
-          </button>
-          <button
             onClick={() => setEditing("new")}
             className="rounded-full bg-gold px-5 py-2 text-sm font-semibold text-navy transition hover:bg-gold-2"
           >
@@ -193,7 +146,6 @@ export function ProductsAdmin() {
         </div>
       </div>
       {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
-      {optimized && <p className="mt-3 text-sm text-emerald-700">{optimized}</p>}
 
       <ul className="mt-6 space-y-3">
         {isError ? (
@@ -290,6 +242,7 @@ function ProductForm({
   const [active, setActive] = useState(product?.active ?? true);
   const [inStock, setInStock] = useState(product?.inStock ?? true);
   const [images, setImages] = useState<string[]>(product?.images ?? []);
+  const [options, setOptions] = useState<ProductOption[]>(product?.options ?? []);
   // Photos uploaded in this form session, removed again if the form is cancelled.
   const [uploaded, setUploaded] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -331,30 +284,46 @@ function ProductForm({
     }
   };
 
+  // Uploads one photo; returns its URL, or null (with an error shown).
+  const uploadFile = async (original: File) => {
+    const file = await shrinkImage(original);
+    // Pasted screenshots are often all named "image.png"; prefer the MIME type.
+    const ext = file.type
+      ? extFor(file.type)
+      : original.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, file, { contentType: file.type, upsert: false });
+    if (error) {
+      setError(t("uploadError"));
+      return null;
+    }
+    const url = IMAGE_ROUTE + path;
+    setUploaded((prev) => [...prev, url]);
+    return url;
+  };
+
   const upload = async (files: File[]) => {
     if (!files.length) return;
     setUploading(true);
     setError(null);
     const urls: string[] = [];
     for (const original of files) {
-      const file = await shrinkImage(original);
-      // Pasted screenshots are often all named "image.png"; prefer the MIME type.
-      const ext = file.type
-        ? extFor(file.type)
-        : original.name.split(".").pop()?.toLowerCase() || "jpg";
-      const path = `${crypto.randomUUID()}.${ext}`;
-      const { error } = await supabase.storage
-        .from(BUCKET)
-        .upload(path, file, { contentType: file.type, upsert: false });
-      if (error) {
-        setError(t("uploadError"));
-        continue;
-      }
-      urls.push(IMAGE_ROUTE + path);
+      const url = await uploadFile(original);
+      if (url) urls.push(url);
     }
     setImages((prev) => [...prev, ...urls]);
-    setUploaded((prev) => [...prev, ...urls]);
     setUploading(false);
+  };
+
+  // Photo for one option value (the customer clicks the photo to choose).
+  const uploadOptionImage = async (file: File) => {
+    setUploading(true);
+    setError(null);
+    const url = await uploadFile(file);
+    setUploading(false);
+    return url;
   };
 
   // Ctrl+V / Cmd+V anywhere while the form is open adds pasted images.
@@ -406,27 +375,51 @@ function ProductForm({
     if (cats.length === 0) return setError(t("categoriesRequired"));
     if (review.fr === "pending" || review.en === "pending")
       return setError(t("translateApproveFirst"));
+    // Empty value rows (no label, no photo) are dropped; a missing French or
+    // English label shows the Hebrew one.
+    const withHe = (l: L): L => ({
+      he: l.he.trim(),
+      fr: l.fr.trim() || l.he.trim(),
+      en: l.en.trim() || l.he.trim(),
+    });
+    const cleanOptions = options.map((o) => ({
+      name: withHe(o.name),
+      values: o.values
+        .filter((v) => v.he.trim() || v.image)
+        .map((v) => ({ ...withHe(v), ...(v.image && { image: v.image }) })),
+    }));
+    if (cleanOptions.some((o) => !o.name.he || o.values.length === 0))
+      return setError(t("optionIncomplete"));
     setBusy(true);
     setError(null);
-    const row = toRow({
-      // Keep the menu's category order so the primary one is predictable.
-      categories: categories.map((c) => c.slug).filter((slug) => cats.includes(slug)),
-      name,
-      subtitle,
-      description,
-      price: Number(price),
-      images,
-      active,
-      inStock,
-      sort: product?.sort ?? nextSort,
-    });
+    const row = toRow(
+      {
+        // Keep the menu's category order so the primary one is predictable.
+        categories: categories.map((c) => c.slug).filter((slug) => cats.includes(slug)),
+        name,
+        subtitle,
+        description,
+        price: Number(price),
+        images,
+        active,
+        inStock,
+        options: cleanOptions,
+        sort: product?.sort ?? nextSort,
+      },
+      cleanOptions.length > 0 || (product?.options.length ?? 0) > 0,
+    );
     const { error } = product
       ? await supabase.from("products").update(row).eq("id", product.id)
       : await supabase.from("products").insert(row);
     setBusy(false);
     if (error) return setError(t("saveError"));
     // Photos taken off the product are no longer needed in storage.
-    await removeStored((product?.images ?? []).filter((u) => !images.includes(u)));
+    const kept = new Set([...images, ...optionImages(cleanOptions)]);
+    await removeStored(
+      [...(product?.images ?? []), ...optionImages(product?.options ?? [])].filter(
+        (u) => !kept.has(u),
+      ),
+    );
     onDone(true);
   };
 
@@ -589,6 +582,13 @@ function ProductForm({
         ))}
       </div>
 
+      <OptionsEditor
+        options={options}
+        onChange={setOptions}
+        uploadImage={uploadOptionImage}
+        uploading={uploading}
+      />
+
       <div>
         <p className={label}>{t("images")}</p>
         <p className="mt-0.5 text-[11px] text-navy/70">{t("imagesOrderHint")}</p>
@@ -694,5 +694,171 @@ function ProductForm({
         </button>
       </div>
     </form>
+  );
+}
+
+// Choices the customer makes on this gift, e.g. "Colour: silver / gold".
+// Each value has a photo the customer clicks and/or a label (Hebrew, with
+// optional French and English).
+function OptionsEditor({
+  options,
+  onChange,
+  uploadImage,
+  uploading,
+}: {
+  options: ProductOption[];
+  onChange: Dispatch<SetStateAction<ProductOption[]>>;
+  uploadImage: (file: File) => Promise<string | null>;
+  uploading: boolean;
+}) {
+  const { t } = useI18n();
+  // Functional updates: photo uploads finish after other edits may have happened.
+  const setOption = (i: number, f: (o: ProductOption) => ProductOption) =>
+    onChange((prev) => prev.map((x, k) => (k === i ? f(x) : x)));
+  const setValue = (i: number, j: number, f: (v: OptionValue) => OptionValue) =>
+    setOption(i, (o) => ({ ...o, values: o.values.map((x, k) => (k === j ? f(x) : x)) }));
+
+  // Several photos at once: one new value per photo.
+  const addPhotoValues = async (i: number, files: File[]) => {
+    for (const file of files) {
+      const url = await uploadImage(file);
+      if (url) setOption(i, (o) => ({ ...o, values: [...o.values, { ...emptyL(), image: url }] }));
+    }
+  };
+
+  // Three side-by-side inputs (he / fr / en) for one label.
+  const labelInputs = (value: L, set: (v: L) => void, placeholder: string) =>
+    FORM_LANGS.map((l) => (
+      <input
+        key={l.code}
+        value={value[l.code]}
+        onChange={(e) => set({ ...value, [l.code]: e.target.value })}
+        dir={l.code === "he" ? "rtl" : "ltr"}
+        maxLength={80}
+        placeholder={l.code === "he" ? placeholder : l.label}
+        aria-label={`${placeholder} (${l.label})`}
+        className={`${field} mt-0`}
+      />
+    ));
+
+  return (
+    <fieldset className="rounded-xl border border-navy/10 p-4">
+      <legend className="px-1 text-xs text-gold-deep">{t("productOptions")}</legend>
+      <p className="text-[11px] text-navy/70">{t("productOptionsHint")}</p>
+      <div className="mt-3 space-y-4">
+        {options.map((o, i) => (
+          <div key={i} className="space-y-2 rounded-lg border border-navy/10 bg-white/60 p-3">
+            <div className="flex items-center gap-2">
+              <div className="grid flex-1 gap-2 sm:grid-cols-3">
+                {labelInputs(
+                  o.name,
+                  (name) => setOption(i, (x) => ({ ...x, name })),
+                  t("optionName"),
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => onChange((prev) => prev.filter((_, k) => k !== i))}
+                aria-label={t("removeOption")}
+                title={t("removeOption")}
+                className="grid size-8 shrink-0 place-items-center rounded-full text-navy/70 hover:text-red-600"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+            <p className={label}>{t("optionValues")}</p>
+            {o.values.map((v, j) => (
+              <div key={j} className="flex items-center gap-2 ps-4">
+                {v.image ? (
+                  <div className="group relative size-16 shrink-0 overflow-hidden rounded-lg border border-navy/10">
+                    <img src={v.image} alt="" className="size-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setValue(i, j, ({ image: _, ...rest }) => rest)}
+                      aria-label={t("removeOptionImage")}
+                      title={t("removeOptionImage")}
+                      className="absolute top-0.5 end-0.5 grid size-5 place-items-center rounded-full bg-white/95 text-navy shadow hover:text-red-600"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <label
+                    title={t("optionImage")}
+                    className="grid size-16 shrink-0 cursor-pointer place-items-center rounded-lg border border-dashed border-navy/20 text-center text-[10px] leading-tight text-navy/65 hover:border-gold/50 hover:text-gold-deep"
+                  >
+                    <ImagePlus className="size-5" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      disabled={uploading}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        e.target.value = "";
+                        if (!file) return;
+                        const url = await uploadImage(file);
+                        if (url) setValue(i, j, (x) => ({ ...x, image: url }));
+                      }}
+                      className="sr-only"
+                    />
+                  </label>
+                )}
+                <div className="grid flex-1 gap-2 sm:grid-cols-3">
+                  {labelInputs(
+                    v,
+                    (nv) => setValue(i, j, (x) => ({ ...x, ...nv })),
+                    v.image ? t("optionLabelOptional") : `${t("optionValues")} ${j + 1}`,
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setOption(i, (x) => ({ ...x, values: x.values.filter((_, k) => k !== j) }))
+                  }
+                  aria-label={t("delete")}
+                  title={t("delete")}
+                  className="grid size-8 shrink-0 place-items-center rounded-full text-navy/70 hover:text-red-600"
+                >
+                  <X className="size-3.5" />
+                </button>
+              </div>
+            ))}
+            <div className="flex flex-wrap items-center gap-4 ps-4">
+              <button
+                type="button"
+                onClick={() => setOption(i, (x) => ({ ...x, values: [...x.values, emptyL()] }))}
+                className="inline-flex items-center gap-1 text-xs text-gold-deep hover:underline"
+              >
+                <Plus className="size-3.5" />
+                {t("addValue")}
+              </button>
+              <label className="inline-flex cursor-pointer items-center gap-1 text-xs text-gold-deep hover:underline">
+                <ImagePlus className="size-3.5" />
+                {uploading ? t("uploading") : t("addPhotoValues")}
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  disabled={uploading}
+                  onChange={(e) => {
+                    addPhotoValues(i, Array.from(e.target.files ?? []));
+                    e.target.value = "";
+                  }}
+                  className="sr-only"
+                />
+              </label>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange((prev) => [...prev, { name: emptyL(), values: [] }])}
+        className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-gold/40 px-3 py-1.5 text-xs text-gold-deep transition hover:bg-gold/10"
+      >
+        <Plus className="size-3.5" />
+        {t("addOption")}
+      </button>
+    </fieldset>
   );
 }

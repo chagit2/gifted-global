@@ -43,6 +43,7 @@ export type Database = {
       }
       order_items: {
         Row: {
+          choice: Json
           id: string
           letter: string
           order_id: string
@@ -52,6 +53,7 @@ export type Database = {
           unit_price: number
         }
         Insert: {
+          choice?: Json
           id?: string
           letter?: string
           order_id: string
@@ -61,6 +63,7 @@ export type Database = {
           unit_price?: number
         }
         Update: {
+          choice?: Json
           id?: string
           letter?: string
           order_id?: string
@@ -172,6 +175,7 @@ export type Database = {
           name_en: string
           name_fr: string
           name_he: string
+          options: Json
           price: number
           sort: number
           subtitle_en: string
@@ -192,6 +196,7 @@ export type Database = {
           name_en?: string
           name_fr?: string
           name_he?: string
+          options?: Json
           price: number
           sort?: number
           subtitle_en?: string
@@ -212,6 +217,7 @@ export type Database = {
           name_en?: string
           name_fr?: string
           name_he?: string
+          options?: Json
           price?: number
           sort?: number
           subtitle_en?: string

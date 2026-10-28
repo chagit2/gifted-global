@@ -24,6 +24,9 @@ export function ProductModal({
   const { live } = useProducts();
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState(false);
+  // One chosen value per option (null until the customer picks one).
+  const [choice, setChoice] = useState<(number | null)[]>([]);
+  const [missing, setMissing] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,6 +34,12 @@ export function ProductModal({
     setZoom(false);
     scroller.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [product?.id]);
+
+  // An option with a single value is chosen for the customer.
+  useEffect(() => {
+    setChoice(product ? product.options.map((o) => (o.values.length === 1 ? 0 : null)) : []);
+    setMissing(false);
+  }, [product]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -73,6 +82,17 @@ export function ProductModal({
   }, [isOpen]);
 
   if (!product) return null;
+
+  // Adds the gift with its chosen options, or points at the ones not chosen yet.
+  const addChosen = () => {
+    if (choice.some((c) => c === null)) {
+      setMissing(true);
+      return false;
+    }
+    add(product, choice as number[]);
+    onClose();
+    return true;
+  };
 
   const count = product.images.length;
   const step = (delta: number) => setActive((i) => (i + delta + count) % count);
@@ -169,28 +189,103 @@ export function ProductModal({
               {t("outOfStock")}
             </p>
           ) : (
-            <div className="mt-6 flex items-center gap-3">
-              <button
-                onClick={() => {
-                  add(product);
-                  onClose();
-                  setDrawerOpen(true);
-                }}
-                className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy hover:bg-gold-2 transition"
-              >
-                + {t("addToCart")}
-              </button>
-              <button
-                onClick={() => {
-                  add(product);
-                  onClose();
-                  navigate({ to: "/checkout" });
-                }}
-                className="rounded-full bg-navy px-6 py-3 text-sm text-pearl transition hover:bg-navy-3"
-              >
-                {t("buyNow")}
-              </button>
-            </div>
+            <>
+              {product.options.map((o, i) => (
+                <fieldset key={i} className="mt-6">
+                  <legend
+                    className={`text-sm font-semibold ${missing && choice[i] === null ? "text-red-600" : "text-navy"}`}
+                  >
+                    {t("chooseOption").replace("{name}", tl(o.name))}
+                  </legend>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {o.values.map((v, j) => {
+                      const on = choice[i] === j;
+                      const pick = () => {
+                        setChoice((prev) => prev.map((c, k) => (k === i ? j : c)));
+                        setMissing(false);
+                      };
+                      // A value with a photo is chosen by clicking the photo.
+                      if (v.image)
+                        return (
+                          <button
+                            key={j}
+                            type="button"
+                            role="radio"
+                            aria-checked={on}
+                            aria-label={tl(v) || `${tl(o.name)} ${j + 1}`}
+                            title={tl(v) || undefined}
+                            onClick={pick}
+                            className="group flex w-24 flex-col text-center"
+                          >
+                            <span
+                              className={`relative block overflow-hidden rounded-xl outline-2 -outline-offset-2 transition ${
+                                on
+                                  ? "outline-gold ring-2 ring-gold/40"
+                                  : "outline-navy/10 group-hover:outline-gold/50"
+                              }`}
+                            >
+                              <img
+                                src={v.image}
+                                alt=""
+                                loading="lazy"
+                                className="aspect-square w-full object-cover"
+                              />
+                              {on && (
+                                <span className="absolute top-1 end-1 grid size-6 place-items-center rounded-full bg-gold text-xs font-bold text-navy shadow">
+                                  ✓
+                                </span>
+                              )}
+                            </span>
+                            {tl(v) && (
+                              <span
+                                className={`mt-1 block truncate text-xs ${on ? "font-semibold text-gold-deep" : "text-navy/75"}`}
+                              >
+                                {tl(v)}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      return (
+                        <button
+                          key={j}
+                          type="button"
+                          role="radio"
+                          aria-checked={on}
+                          onClick={pick}
+                          className={`rounded-full border px-4 py-2 text-sm transition ${
+                            on
+                              ? "border-gold bg-gold/20 font-semibold text-gold-deep"
+                              : "border-navy/15 text-navy/75 hover:border-gold/50 hover:text-navy"
+                          }`}
+                        >
+                          {on ? "✓ " : ""}
+                          {tl(v)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              ))}
+              {missing && <p className="mt-3 text-sm text-red-600">{t("chooseOptionFirst")}</p>}
+              <div className="mt-6 flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    if (addChosen()) setDrawerOpen(true);
+                  }}
+                  className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy hover:bg-gold-2 transition"
+                >
+                  + {t("addToCart")}
+                </button>
+                <button
+                  onClick={() => {
+                    if (addChosen()) navigate({ to: "/checkout" });
+                  }}
+                  className="rounded-full bg-navy px-6 py-3 text-sm text-pearl transition hover:bg-navy-3"
+                >
+                  {t("buyNow")}
+                </button>
+              </div>
+            </>
           )}
         </div>
 
