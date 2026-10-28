@@ -326,10 +326,33 @@ function ProductForm({
     return url;
   };
 
-  // Ctrl+V / Cmd+V anywhere while the form is open adds pasted images.
+  // Pasted photos go to the option value (or option) that has focus: the
+  // photo of that value, or new photo values of that option.
+  const pasteToOption = async (target: HTMLElement, files: File[]) => {
+    const i = Number(target.dataset["option"]);
+    const j = target.dataset["value"] === undefined ? null : Number(target.dataset["value"]);
+    for (const [n, file] of files.entries()) {
+      const url = await uploadOptionImage(file);
+      if (!url) continue;
+      setOptions((prev) =>
+        prev.map((o, k) =>
+          k !== i
+            ? o
+            : j !== null && n === 0
+              ? { ...o, values: o.values.map((v, m) => (m === j ? { ...v, image: url } : v)) }
+              : { ...o, values: [...o.values, { ...emptyL(), image: url }] },
+        ),
+      );
+    }
+  };
+
+  // Ctrl+V / Cmd+V anywhere while the form is open adds pasted images: to the
+  // option being edited, else to the gift's photos.
   // Text pastes (into the name or description fields) are left alone.
   const uploadRef = useRef(upload);
   uploadRef.current = upload;
+  const pasteOptionRef = useRef(pasteToOption);
+  pasteOptionRef.current = pasteToOption;
   useEffect(() => {
     const onPaste = (e: ClipboardEvent) => {
       const files = Array.from(e.clipboardData?.files ?? []).filter((f) =>
@@ -337,7 +360,11 @@ function ProductForm({
       );
       if (!files.length) return;
       e.preventDefault();
-      uploadRef.current(files);
+      const option = (document.activeElement as HTMLElement | null)?.closest<HTMLElement>(
+        "[data-option]",
+      );
+      if (option) pasteOptionRef.current(option, files);
+      else uploadRef.current(files);
     };
     window.addEventListener("paste", onPaste);
     return () => window.removeEventListener("paste", onPaste);
@@ -747,7 +774,13 @@ function OptionsEditor({
       <p className="text-[11px] text-navy/70">{t("productOptionsHint")}</p>
       <div className="mt-3 space-y-4">
         {options.map((o, i) => (
-          <div key={i} className="space-y-2 rounded-lg border border-navy/10 bg-white/60 p-3">
+          // Focusable (click anywhere in it) so Ctrl+V pastes photos into it.
+          <div
+            key={i}
+            data-option={i}
+            tabIndex={-1}
+            className="space-y-2 rounded-lg border border-navy/10 bg-white/60 p-3 outline-none focus-within:border-gold/60"
+          >
             <div className="flex items-center gap-2">
               <div className="grid flex-1 gap-2 sm:grid-cols-3">
                 {labelInputs(
@@ -767,8 +800,15 @@ function OptionsEditor({
               </button>
             </div>
             <p className={label}>{t("optionValues")}</p>
+            <p className="text-[11px] text-navy/70">{t("pasteOptionImageHint")}</p>
             {o.values.map((v, j) => (
-              <div key={j} className="flex items-center gap-2 ps-4">
+              <div
+                key={j}
+                data-option={i}
+                data-value={j}
+                tabIndex={-1}
+                className="flex items-center gap-2 rounded-lg ps-4 outline-none focus-within:bg-gold/10"
+              >
                 {v.image ? (
                   <div className="group relative size-16 shrink-0 overflow-hidden rounded-lg border border-navy/10">
                     <img src={v.image} alt="" className="size-full object-cover" />
