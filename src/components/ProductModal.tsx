@@ -200,16 +200,58 @@ export function ProductModal({
                   <div className="mt-2 flex flex-wrap gap-2">
                     {o.values.map((v, j) => {
                       const on = choice[i] === j;
+                      const pick = () => {
+                        setChoice((prev) => prev.map((c, k) => (k === i ? j : c)));
+                        setMissing(false);
+                      };
+                      // A value with a photo is chosen by clicking the photo.
+                      if (v.image)
+                        return (
+                          <button
+                            key={j}
+                            type="button"
+                            role="radio"
+                            aria-checked={on}
+                            aria-label={tl(v) || `${tl(o.name)} ${j + 1}`}
+                            title={tl(v) || undefined}
+                            onClick={pick}
+                            className="group flex w-24 flex-col text-center"
+                          >
+                            <span
+                              className={`relative block overflow-hidden rounded-xl outline-2 -outline-offset-2 transition ${
+                                on
+                                  ? "outline-gold ring-2 ring-gold/40"
+                                  : "outline-navy/10 group-hover:outline-gold/50"
+                              }`}
+                            >
+                              <img
+                                src={v.image}
+                                alt=""
+                                loading="lazy"
+                                className="aspect-square w-full object-cover"
+                              />
+                              {on && (
+                                <span className="absolute top-1 end-1 grid size-6 place-items-center rounded-full bg-gold text-xs font-bold text-navy shadow">
+                                  ✓
+                                </span>
+                              )}
+                            </span>
+                            {tl(v) && (
+                              <span
+                                className={`mt-1 block truncate text-xs ${on ? "font-semibold text-gold-deep" : "text-navy/75"}`}
+                              >
+                                {tl(v)}
+                              </span>
+                            )}
+                          </button>
+                        );
                       return (
                         <button
                           key={j}
                           type="button"
                           role="radio"
                           aria-checked={on}
-                          onClick={() => {
-                            setChoice((prev) => prev.map((c, k) => (k === i ? j : c)));
-                            setMissing(false);
-                          }}
+                          onClick={pick}
                           className={`rounded-full border px-4 py-2 text-sm transition ${
                             on
                               ? "border-gold bg-gold/20 font-semibold text-gold-deep"

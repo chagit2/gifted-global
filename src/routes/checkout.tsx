@@ -5,7 +5,8 @@ import { Gift, Lock, MapPin, Truck } from "lucide-react";
 import { Confetti } from "@/components/Confetti";
 import { lineKey, useCart } from "@/lib/cart";
 import { LetterField } from "@/components/Letter";
-import { choiceLabels, choiceText, useProducts } from "@/lib/products";
+import { choiceLabels, useProducts } from "@/lib/products";
+import { ChoiceView } from "@/components/ChoiceView";
 import { useCurrency } from "@/lib/currency";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
@@ -377,12 +378,11 @@ function CheckoutPage() {
               {lines.map((l) => {
                 const p = getProduct(l.productId);
                 if (!p) return null;
-                const choice = choiceText(choiceLabels(p, l.choice), tl);
                 return (
                   <div key={lineKey(l)} className="rounded-xl border border-navy/10 p-3">
                     <p className="text-sm text-navy">
                       {tl(p.name)}
-                      {choice && <span className="text-navy/70"> · {choice}</span>}
+                      <ChoiceView choice={choiceLabels(p, l.choice)} className="ms-2 text-xs text-navy/70" />
                       {l.qty > 1 && <span className="text-navy/70"> × {l.qty}</span>}
                     </p>
                     {l.letters.map((letter, i) => (
@@ -451,10 +451,12 @@ function CheckoutPage() {
               if (!p) return null;
               return (
                 <li key={lineKey(l)} className="flex justify-between gap-3 text-navy/75">
-                  <span>
-                    {tl(p.name)}
-                    {l.choice.length > 0 && ` · ${choiceText(choiceLabels(p, l.choice), tl)}`} × {l.qty}
-                  </span>
+                  <div>
+                    <p>
+                      {tl(p.name)} × {l.qty}
+                    </p>
+                    <ChoiceView choice={choiceLabels(p, l.choice)} className="mt-1 text-xs" />
+                  </div>
                   <span className="whitespace-nowrap text-gold-deep">
                     {money(p.price * l.qty)}
                   </span>

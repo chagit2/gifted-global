@@ -5,7 +5,8 @@ import { EmptyCart } from "@/components/EmptyCart";
 import { lineKey, useCart } from "@/lib/cart";
 import { useCurrency } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
-import { choiceLabels, choiceText, useProducts } from "@/lib/products";
+import { choiceLabels, useProducts } from "@/lib/products";
+import { ChoiceView } from "@/components/ChoiceView";
 
 // Slide-in cart opened by "add to cart": the shopper sees what is in the bag
 // and can keep browsing without leaving the page.
@@ -92,7 +93,6 @@ export function CartDrawer() {
                 const p = getProduct(line.productId);
                 if (!p) return null;
                 const key = lineKey(line);
-                const choice = choiceText(choiceLabels(p, line.choice), tl);
                 return (
                   <li key={key} className="relative -mx-2 flex gap-3 rounded-xl p-2">
                     {justAdded?.id === key && (
@@ -109,7 +109,7 @@ export function CartDrawer() {
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm text-navy">{tl(p.name)}</p>
-                      {choice && <p className="truncate text-xs text-navy/70">{choice}</p>}
+                      <ChoiceView choice={choiceLabels(p, line.choice)} className="text-xs text-navy/70" />
                       <p className="text-xs text-gold-deep">{money(p.price * line.qty)}</p>
                       <div className="mt-2 flex items-center gap-3">
                         <div className="inline-flex items-center rounded-full border border-navy/15">

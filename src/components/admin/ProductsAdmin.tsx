@@ -5,16 +5,31 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  ImagePlus,
   Languages,
   Plus,
   Star,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type FormEvent,
+  type SetStateAction,
+} from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { categories, getCategory } from "@/lib/catalog";
 import { formatPrice, LANGS, useI18n, type L, type Lang } from "@/lib/i18n";
-import { PRODUCTS_KEY, toRow, useProducts, type Product, type ProductOption } from "@/lib/products";
+import {
+  PRODUCTS_KEY,
+  toRow,
+  useProducts,
+  type Product,
+  type OptionValue,
+  type ProductOption,
+} from "@/lib/products";
 import { translateProductTexts } from "@/lib/translate.functions";
 import { extFor, shrinkImage } from "@/lib/shrinkImage";
 
@@ -36,6 +51,10 @@ const removeStored = async (urls: string[]) => {
 };
 
 const emptyL = (): L => ({ he: "", fr: "", en: "" });
+
+// Photos of a gift's option values (e.g. a silver and a gold set).
+const optionImages = (options: ProductOption[]) =>
+  options.flatMap((o) => o.values.flatMap((v) => (v.image ? [v.image] : [])));
 
 // Hebrew first in the product form: it is the required, primary language.
 const FORM_LANGS = (["he", "fr", "en"] as const).map((code) => LANGS.find((l) => l.code === code)!);
@@ -76,7 +95,7 @@ export function ProductsAdmin() {
     setError(null);
     const { error } = await supabase.from("products").delete().eq("id", p.id);
     if (error) return setError(t("saveError"));
-    await removeStored(p.images);
+    await removeStored([...p.images, ...optionImages(p.options)]);
     refresh();
   };
 
@@ -333,30 +352,46 @@ function ProductForm({
     }
   };
 
+  // Uploads one photo; returns its URL, or null (with an error shown).
+  const uploadFile = async (original: File) => {
+    const file = await shrinkImage(original);
+    // Pasted screenshots are often all named "image.png"; prefer the MIME type.
+    const ext = file.type
+      ? extFor(file.type)
+      : original.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, file, { contentType: file.type, upsert: false });
+    if (error) {
+      setError(t("uploadError"));
+      return null;
+    }
+    const url = IMAGE_ROUTE + path;
+    setUploaded((prev) => [...prev, url]);
+    return url;
+  };
+
   const upload = async (files: File[]) => {
     if (!files.length) return;
     setUploading(true);
     setError(null);
     const urls: string[] = [];
     for (const original of files) {
-      const file = await shrinkImage(original);
-      // Pasted screenshots are often all named "image.png"; prefer the MIME type.
-      const ext = file.type
-        ? extFor(file.type)
-        : original.name.split(".").pop()?.toLowerCase() || "jpg";
-      const path = `${crypto.randomUUID()}.${ext}`;
-      const { error } = await supabase.storage
-        .from(BUCKET)
-        .upload(path, file, { contentType: file.type, upsert: false });
-      if (error) {
-        setError(t("uploadError"));
-        continue;
-      }
-      urls.push(IMAGE_ROUTE + path);
+      const url = await uploadFile(original);
+      if (url) urls.push(url);
     }
     setImages((prev) => [...prev, ...urls]);
-    setUploaded((prev) => [...prev, ...urls]);
     setUploading(false);
+  };
+
+  // Photo for one option value (the customer clicks the photo to choose).
+  const uploadOptionImage = async (file: File) => {
+    setUploading(true);
+    setError(null);
+    const url = await uploadFile(file);
+    setUploading(false);
+    return url;
   };
 
   // Ctrl+V / Cmd+V anywhere while the form is open adds pasted images.
@@ -408,8 +443,8 @@ function ProductForm({
     if (cats.length === 0) return setError(t("categoriesRequired"));
     if (review.fr === "pending" || review.en === "pending")
       return setError(t("translateApproveFirst"));
-    // Empty value rows are dropped; a missing French or English label shows
-    // the Hebrew one.
+    // Empty value rows (no label, no photo) are dropped; a missing French or
+    // English label shows the Hebrew one.
     const withHe = (l: L): L => ({
       he: l.he.trim(),
       fr: l.fr.trim() || l.he.trim(),
@@ -417,7 +452,9 @@ function ProductForm({
     });
     const cleanOptions = options.map((o) => ({
       name: withHe(o.name),
-      values: o.values.filter((v) => v.he.trim()).map(withHe),
+      values: o.values
+        .filter((v) => v.he.trim() || v.image)
+        .map((v) => ({ ...withHe(v), ...(v.image && { image: v.image }) })),
     }));
     if (cleanOptions.some((o) => !o.name.he || o.values.length === 0))
       return setError(t("optionIncomplete"));
@@ -445,7 +482,12 @@ function ProductForm({
     setBusy(false);
     if (error) return setError(t("saveError"));
     // Photos taken off the product are no longer needed in storage.
-    await removeStored((product?.images ?? []).filter((u) => !images.includes(u)));
+    const kept = new Set([...images, ...optionImages(cleanOptions)]);
+    await removeStored(
+      [...(product?.images ?? []), ...optionImages(product?.options ?? [])].filter(
+        (u) => !kept.has(u),
+      ),
+    );
     onDone(true);
   };
 
@@ -608,7 +650,12 @@ function ProductForm({
         ))}
       </div>
 
-      <OptionsEditor options={options} onChange={setOptions} />
+      <OptionsEditor
+        options={options}
+        onChange={setOptions}
+        uploadImage={uploadOptionImage}
+        uploading={uploading}
+      />
 
       <div>
         <p className={label}>{t("images")}</p>
@@ -719,17 +766,33 @@ function ProductForm({
 }
 
 // Choices the customer makes on this gift, e.g. "Colour: silver / gold".
-// Each name and value has a Hebrew field and optional French and English ones.
+// Each value has a photo the customer clicks and/or a label (Hebrew, with
+// optional French and English).
 function OptionsEditor({
   options,
   onChange,
+  uploadImage,
+  uploading,
 }: {
   options: ProductOption[];
-  onChange: (o: ProductOption[]) => void;
+  onChange: Dispatch<SetStateAction<ProductOption[]>>;
+  uploadImage: (file: File) => Promise<string | null>;
+  uploading: boolean;
 }) {
   const { t } = useI18n();
-  const setOption = (i: number, o: ProductOption) =>
-    onChange(options.map((x, k) => (k === i ? o : x)));
+  // Functional updates: photo uploads finish after other edits may have happened.
+  const setOption = (i: number, f: (o: ProductOption) => ProductOption) =>
+    onChange((prev) => prev.map((x, k) => (k === i ? f(x) : x)));
+  const setValue = (i: number, j: number, f: (v: OptionValue) => OptionValue) =>
+    setOption(i, (o) => ({ ...o, values: o.values.map((x, k) => (k === j ? f(x) : x)) }));
+
+  // Several photos at once: one new value per photo.
+  const addPhotoValues = async (i: number, files: File[]) => {
+    for (const file of files) {
+      const url = await uploadImage(file);
+      if (url) setOption(i, (o) => ({ ...o, values: [...o.values, { ...emptyL(), image: url }] }));
+    }
+  };
 
   // Three side-by-side inputs (he / fr / en) for one label.
   const labelInputs = (value: L, set: (v: L) => void, placeholder: string) =>
@@ -755,11 +818,15 @@ function OptionsEditor({
           <div key={i} className="space-y-2 rounded-lg border border-navy/10 bg-white/60 p-3">
             <div className="flex items-center gap-2">
               <div className="grid flex-1 gap-2 sm:grid-cols-3">
-                {labelInputs(o.name, (name) => setOption(i, { ...o, name }), t("optionName"))}
+                {labelInputs(
+                  o.name,
+                  (name) => setOption(i, (x) => ({ ...x, name })),
+                  t("optionName"),
+                )}
               </div>
               <button
                 type="button"
-                onClick={() => onChange(options.filter((_, k) => k !== i))}
+                onClick={() => onChange((prev) => prev.filter((_, k) => k !== i))}
                 aria-label={t("removeOption")}
                 title={t("removeOption")}
                 className="grid size-8 shrink-0 place-items-center rounded-full text-navy/70 hover:text-red-600"
@@ -770,17 +837,52 @@ function OptionsEditor({
             <p className={label}>{t("optionValues")}</p>
             {o.values.map((v, j) => (
               <div key={j} className="flex items-center gap-2 ps-4">
+                {v.image ? (
+                  <div className="group relative size-16 shrink-0 overflow-hidden rounded-lg border border-navy/10">
+                    <img src={v.image} alt="" className="size-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setValue(i, j, ({ image: _, ...rest }) => rest)}
+                      aria-label={t("removeOptionImage")}
+                      title={t("removeOptionImage")}
+                      className="absolute top-0.5 end-0.5 grid size-5 place-items-center rounded-full bg-white/95 text-navy shadow hover:text-red-600"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <label
+                    title={t("optionImage")}
+                    className="grid size-16 shrink-0 cursor-pointer place-items-center rounded-lg border border-dashed border-navy/20 text-center text-[10px] leading-tight text-navy/65 hover:border-gold/50 hover:text-gold-deep"
+                  >
+                    <ImagePlus className="size-5" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      disabled={uploading}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        e.target.value = "";
+                        if (!file) return;
+                        const url = await uploadImage(file);
+                        if (url) setValue(i, j, (x) => ({ ...x, image: url }));
+                      }}
+                      className="sr-only"
+                    />
+                  </label>
+                )}
                 <div className="grid flex-1 gap-2 sm:grid-cols-3">
                   {labelInputs(
                     v,
-                    (nv) =>
-                      setOption(i, { ...o, values: o.values.map((x, k) => (k === j ? nv : x)) }),
-                    `${t("optionValues")} ${j + 1}`,
+                    (nv) => setValue(i, j, (x) => ({ ...x, ...nv })),
+                    v.image ? t("optionLabelOptional") : `${t("optionValues")} ${j + 1}`,
                   )}
                 </div>
                 <button
                   type="button"
-                  onClick={() => setOption(i, { ...o, values: o.values.filter((_, k) => k !== j) })}
+                  onClick={() =>
+                    setOption(i, (x) => ({ ...x, values: x.values.filter((_, k) => k !== j) }))
+                  }
                   aria-label={t("delete")}
                   title={t("delete")}
                   className="grid size-8 shrink-0 place-items-center rounded-full text-navy/70 hover:text-red-600"
@@ -789,20 +891,37 @@ function OptionsEditor({
                 </button>
               </div>
             ))}
-            <button
-              type="button"
-              onClick={() => setOption(i, { ...o, values: [...o.values, emptyL()] })}
-              className="ms-4 inline-flex items-center gap-1 text-xs text-gold-deep hover:underline"
-            >
-              <Plus className="size-3.5" />
-              {t("addValue")}
-            </button>
+            <div className="flex flex-wrap items-center gap-4 ps-4">
+              <button
+                type="button"
+                onClick={() => setOption(i, (x) => ({ ...x, values: [...x.values, emptyL()] }))}
+                className="inline-flex items-center gap-1 text-xs text-gold-deep hover:underline"
+              >
+                <Plus className="size-3.5" />
+                {t("addValue")}
+              </button>
+              <label className="inline-flex cursor-pointer items-center gap-1 text-xs text-gold-deep hover:underline">
+                <ImagePlus className="size-3.5" />
+                {uploading ? t("uploading") : t("addPhotoValues")}
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  disabled={uploading}
+                  onChange={(e) => {
+                    addPhotoValues(i, Array.from(e.target.files ?? []));
+                    e.target.value = "";
+                  }}
+                  className="sr-only"
+                />
+              </label>
+            </div>
           </div>
         ))}
       </div>
       <button
         type="button"
-        onClick={() => onChange([...options, { name: emptyL(), values: [emptyL(), emptyL()] }])}
+        onClick={() => onChange((prev) => [...prev, { name: emptyL(), values: [] }])}
         className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-gold/40 px-3 py-1.5 text-xs text-gold-deep transition hover:bg-gold/10"
       >
         <Plus className="size-3.5" />

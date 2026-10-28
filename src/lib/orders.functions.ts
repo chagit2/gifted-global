@@ -96,7 +96,10 @@ export const placeOrder = createServerFn({ method: "POST" })
         throw new Error("OPTION_REQUIRED");
       return options.map((o, k) => ({ name: o.name, value: o.values[i.choice[k]!]! }));
     });
-    const choiceHe = (c: Choice) => c.map((x) => `${x.name.he}: ${x.value.he}`).join(" · ");
+    // For the email; a value chosen by photo alone is named by its number.
+    const choiceHe = (c: Choice, picked: number[]) =>
+      c.map((x, k) => `${x.name.he}: ${x.value.he || `תמונה ${picked[k]! + 1}`}`).join(" · ");
+    const origin = new URL(getRequest()?.url ?? "http://localhost").origin;
     const subtotal = data.items.reduce(
       (sum, i) => sum + Number(catalog.get(i.productId)!.price) * i.qty,
       0,
@@ -193,11 +196,14 @@ export const placeOrder = createServerFn({ method: "POST" })
       shippingFee,
       total,
       lines: data.items.map((i, n) => ({
-        name: [catalog.get(i.productId)!.name_he, choiceHe(choices[n]!)]
+        name: [catalog.get(i.productId)!.name_he, choiceHe(choices[n]!, i.choice)]
           .filter(Boolean)
           .join(" · "),
         letter: i.letter,
         price: Number(catalog.get(i.productId)!.price) * i.qty,
+        images: choices[n]!.flatMap((c) =>
+          c.value.image ? [new URL(c.value.image, origin).href] : [],
+        ),
       })),
     });
 

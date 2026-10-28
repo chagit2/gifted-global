@@ -1,6 +1,7 @@
 import { CalendarClock, Printer } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { choiceText, parseChoice, useProducts } from "@/lib/products";
+import { parseChoice, useProducts, type Choice } from "@/lib/products";
+import { ChoiceView } from "@/components/ChoiceView";
 import { LetterPreview } from "@/components/Letter";
 import { formatMoney } from "@/lib/currency";
 import { formatPrice, useI18n } from "@/lib/i18n";
@@ -44,12 +45,12 @@ export function OrderCard({
   // Each gift copy is its own row; group copies of the same product and choice.
   const groups = new Map<
     string,
-    { name: string; choice: string; letters: string[]; price: number }
+    { name: string; choice: Choice; letters: string[]; price: number }
   >();
   for (const it of order.order_items) {
     const p = getProduct(it.product_id);
-    const choice = choiceText(parseChoice(it.choice), tl);
-    const key = `${it.product_id}|${choice}`;
+    const choice = parseChoice(it.choice);
+    const key = `${it.product_id}|${JSON.stringify(choice)}`;
     const g = groups.get(key) ?? {
       name: p ? tl(p.name) : it.product_name || it.product_id,
       choice,
@@ -102,7 +103,7 @@ export function OrderCard({
             <div className="flex justify-between gap-3 text-sm">
               <span className="text-navy">
                 {g.name}
-                {g.choice && <span className="text-navy/70"> · {g.choice}</span>}
+                <ChoiceView choice={g.choice} className="ms-2 text-xs text-navy/70" />
                 {g.letters.length > 1 && (
                   <span className="text-navy/70"> × {g.letters.length}</span>
                 )}

@@ -4,7 +4,8 @@ import { EmptyCart } from "@/components/EmptyCart";
 import { Ornament } from "@/components/Reveal";
 import { lineKey, useCart } from "@/lib/cart";
 import { LetterField } from "@/components/Letter";
-import { choiceLabels, choiceText, useProducts } from "@/lib/products";
+import { choiceLabels, useProducts } from "@/lib/products";
+import { ChoiceView } from "@/components/ChoiceView";
 import { useCurrency } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
 import { useSettings } from "@/lib/settings";
@@ -48,7 +49,6 @@ function CartPage() {
               const p = getProduct(line.productId);
               if (!p) return null;
               const key = lineKey(line);
-              const choice = choiceText(choiceLabels(p, line.choice), tl);
               return (
                 <div
                   key={key}
@@ -68,7 +68,10 @@ function CartPage() {
                         <div>
                           <h2 className="font-heb text-lg text-navy">{tl(p.name)}</h2>
                           <p className="mt-1 text-xs text-navy/70">{tl(p.subtitle)}</p>
-                          {choice && <p className="mt-1 text-xs font-semibold text-navy">{choice}</p>}
+                          <ChoiceView
+                            choice={choiceLabels(p, line.choice)}
+                            className="mt-1 text-xs font-semibold text-navy"
+                          />
                           {!p.inStock && <p className="mt-1 text-xs text-red-600">{t("outOfStock")}</p>}
                         </div>
                         <span className="font-semibold text-gold-deep">
