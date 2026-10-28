@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { couponDiscount, minDeliveryDate, ORDER_STATUSES, SHIPPING_FEE } from "./orders";
+import { parseOptions, type Choice } from "./products";
 
 const schema = z.object({
   senderName: z.string().min(1).max(120),
@@ -26,6 +27,8 @@ const schema = z.object({
     .array(
       z.object({
         productId: z.string().min(1).max(120),
+        // One value index per gift option (e.g. silver or gold).
+        choice: z.array(z.number().int().min(0).max(99)).max(20).default([]),
         qty: z.number().int().min(1).max(99),
         letter: z.string().max(500).default(""),
       }),
@@ -74,13 +77,26 @@ export const placeOrder = createServerFn({ method: "POST" })
     const ids = [...new Set(data.items.map((i) => i.productId))];
     const { data: products, error: productsError } = await supabaseAdmin
       .from("products")
-      .select("id, name_he, price, active, in_stock")
+      .select("*")
       .in("id", ids);
     if (productsError) throw new Error(productsError.message);
     const catalog = new Map(
       (products ?? []).filter((p) => p.active && p.in_stock).map((p) => [p.id, p]),
     );
     if (ids.some((id) => !catalog.has(id))) throw new Error("PRODUCT_UNAVAILABLE");
+
+    // Every option of a gift must have a valid choice; the labels are copied
+    // onto the order.
+    const choices = data.items.map((i): Choice => {
+      const options = parseOptions(catalog.get(i.productId)!.options);
+      if (
+        i.choice.length !== options.length ||
+        i.choice.some((v, k) => v >= options[k]!.values.length)
+      )
+        throw new Error("OPTION_REQUIRED");
+      return options.map((o, k) => ({ name: o.name, value: o.values[i.choice[k]!]! }));
+    });
+    const choiceHe = (c: Choice) => c.map((x) => `${x.name.he}: ${x.value.he}`).join(" · ");
     const subtotal = data.items.reduce(
       (sum, i) => sum + Number(catalog.get(i.productId)!.price) * i.qty,
       0,
@@ -145,9 +161,14 @@ export const placeOrder = createServerFn({ method: "POST" })
 
     if (error || !order) throw new Error(error?.message ?? "Order failed");
 
+    // Only sent when some gift has a choice, so orders keep working on a
+    // database where db/product-options.sql hasn't run yet. (All rows get the
+    // field then: a row without it would be inserted as null.)
+    const withChoice = choices.some((c) => c.length > 0);
     const { error: itemsError } = await supabaseAdmin.from("order_items").insert(
-      data.items.map((i) => ({
+      data.items.map((i, n) => ({
         order_id: order.id,
+        ...(withChoice && { choice: choices[n] }),
         product_id: i.productId,
         product_name: catalog.get(i.productId)!.name_he,
         qty: i.qty,
@@ -171,8 +192,10 @@ export const placeOrder = createServerFn({ method: "POST" })
       discount,
       shippingFee,
       total,
-      lines: data.items.map((i) => ({
-        name: catalog.get(i.productId)!.name_he,
+      lines: data.items.map((i, n) => ({
+        name: [catalog.get(i.productId)!.name_he, choiceHe(choices[n]!)]
+          .filter(Boolean)
+          .join(" · "),
         letter: i.letter,
         price: Number(catalog.get(i.productId)!.price) * i.qty,
       })),

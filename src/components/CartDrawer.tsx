@@ -2,10 +2,10 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Minus, PenLine, Plus, ShoppingBag, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { EmptyCart } from "@/components/EmptyCart";
-import { useCart } from "@/lib/cart";
+import { lineKey, useCart } from "@/lib/cart";
 import { useCurrency } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
-import { useProducts } from "@/lib/products";
+import { choiceLabels, choiceText, useProducts } from "@/lib/products";
 
 // Slide-in cart opened by "add to cart": the shopper sees what is in the bag
 // and can keep browsing without leaving the page.
@@ -21,12 +21,12 @@ export function CartDrawer() {
   const prevQty = useRef<Map<string, number> | null>(null);
   const [justAdded, setJustAdded] = useState<{ id: string; n: number } | null>(null);
   useEffect(() => {
-    const next = new Map(lines.map((l) => [l.productId, l.qty]));
+    const next = new Map(lines.map((l) => [lineKey(l), l.qty]));
     const prev = prevQty.current;
     prevQty.current = next;
     if (!prev) return; // first read of the saved cart
-    const grown = lines.find((l) => l.qty > (prev.get(l.productId) ?? 0));
-    if (grown) setJustAdded((j) => ({ id: grown.productId, n: (j?.n ?? 0) + 1 }));
+    const grown = lines.find((l) => l.qty > (prev.get(lineKey(l)) ?? 0));
+    if (grown) setJustAdded((j) => ({ id: lineKey(grown), n: (j?.n ?? 0) + 1 }));
   }, [lines]);
 
   // Navigating anywhere closes the panel.
@@ -91,9 +91,11 @@ export function CartDrawer() {
               {lines.map((line) => {
                 const p = getProduct(line.productId);
                 if (!p) return null;
+                const key = lineKey(line);
+                const choice = choiceText(choiceLabels(p, line.choice), tl);
                 return (
-                  <li key={line.productId} className="relative -mx-2 flex gap-3 rounded-xl p-2">
-                    {justAdded?.id === line.productId && (
+                  <li key={key} className="relative -mx-2 flex gap-3 rounded-xl p-2">
+                    {justAdded?.id === key && (
                       <span
                         key={justAdded.n}
                         aria-hidden
@@ -107,12 +109,13 @@ export function CartDrawer() {
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm text-navy">{tl(p.name)}</p>
+                      {choice && <p className="truncate text-xs text-navy/70">{choice}</p>}
                       <p className="text-xs text-gold-deep">{money(p.price * line.qty)}</p>
                       <div className="mt-2 flex items-center gap-3">
                         <div className="inline-flex items-center rounded-full border border-navy/15">
                           <button
                             type="button"
-                            onClick={() => setQty(line.productId, line.qty - 1)}
+                            onClick={() => setQty(key, line.qty - 1)}
                             aria-label={t("qtyDown")}
                             className="grid size-9 place-items-center rounded-full text-navy/75 transition hover:bg-navy/5 hover:text-gold-deep active:scale-90"
                           >
@@ -121,7 +124,7 @@ export function CartDrawer() {
                           <span className="w-6 text-center text-xs text-navy">{line.qty}</span>
                           <button
                             type="button"
-                            onClick={() => setQty(line.productId, line.qty + 1)}
+                            onClick={() => setQty(key, line.qty + 1)}
                             aria-label={t("qtyUp")}
                             className="grid size-9 place-items-center rounded-full text-navy/75 transition hover:bg-navy/5 hover:text-gold-deep active:scale-90"
                           >
@@ -130,7 +133,7 @@ export function CartDrawer() {
                         </div>
                         <button
                           type="button"
-                          onClick={() => remove(line.productId)}
+                          onClick={() => remove(key)}
                           className="min-h-9 px-1 text-xs text-navy/70 underline-offset-4 hover:text-red-600 hover:underline"
                         >
                           {t("remove")}

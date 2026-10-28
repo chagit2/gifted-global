@@ -68,6 +68,8 @@ export function ProductCard({
             <button
               type="button"
               onClick={() => {
+                // Gifts with options (e.g. silver or gold) are chosen in the popup.
+                if (product.options.length) return onPreview(product);
                 add(product);
                 setDrawerOpen(true);
               }}
@@ -84,6 +86,7 @@ export function ProductCard({
             <button
               type="button"
               onClick={() => {
+                if (product.options.length) return onPreview(product);
                 add(product);
                 navigate({ to: "/checkout" });
               }}

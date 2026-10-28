@@ -71,9 +71,17 @@ export type OrderRow = {
   // Payment currency; total_in_currency exists once db/currency.sql has run.
   currency?: string;
   total_in_currency?: number | null;
-  order_items: { id: string; product_id: string; product_name: string; qty: number; unit_price: number; letter: string }[];
+  order_items: {
+    id: string;
+    product_id: string;
+    product_name: string;
+    qty: number;
+    unit_price: number;
+    letter: string;
+    // Chosen options; missing until db/product-options.sql has run.
+    choice?: unknown;
+  }[];
 };
 
-// "*" so columns added later (e.g. total_in_currency) come along when present.
-export const ORDER_SELECT =
-  "*, order_items(id, product_id, product_name, qty, unit_price, letter)";
+// "*" so columns added later (e.g. total_in_currency, choice) come along when present.
+export const ORDER_SELECT = "*, order_items(*)";

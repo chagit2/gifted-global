@@ -1,8 +1,14 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { useProducts, type Product } from "./products";
+import { useProducts, validChoice, type Product } from "./products";
 
 // One personal letter per gift copy: letters.length always equals qty.
-export type CartLine = { productId: string; qty: number; letters: string[] };
+// `choice` holds one value index per gift option (e.g. silver or gold); the
+// same gift with different choices gets separate lines.
+export type CartLine = { productId: string; choice: number[]; qty: number; letters: string[] };
+
+// Identifies a line: the gift plus what was chosen for it.
+export const lineKey = (l: { productId: string; choice: number[] }) =>
+  l.choice.length ? `${l.productId}|${l.choice.join(",")}` : l.productId;
 
 const resize = (letters: string[], qty: number) =>
   letters.length >= qty ? letters.slice(0, qty) : [...letters, ...Array(qty - letters.length).fill("")];
@@ -10,18 +16,20 @@ const resize = (letters: string[], qty: number) =>
 // Carts saved before per-copy letters had a single `letter` field.
 const normalize = (l: CartLine & { letter?: string }): CartLine => ({
   productId: l.productId,
+  choice: Array.isArray(l.choice) ? l.choice : [],
   qty: l.qty,
   letters: resize(Array.isArray(l.letters) ? l.letters : [l.letter ?? ""], l.qty),
 });
 
 type CartCtx = {
   lines: CartLine[];
-  add: (p: Product, letter?: string) => void;
+  add: (p: Product, choice?: number[], letter?: string) => void;
   // Adds several gifts at once, one letter per copy ("order again").
-  addMany: (items: { productId: string; letters: string[] }[]) => void;
-  remove: (productId: string) => void;
-  setQty: (productId: string, qty: number) => void;
-  setLetter: (productId: string, index: number, letter: string) => void;
+  addMany: (items: { productId: string; choice: number[]; letters: string[] }[]) => void;
+  // These take the line's key (see lineKey).
+  remove: (key: string) => void;
+  setQty: (key: string, qty: number) => void;
+  setLetter: (key: string, index: number, letter: string) => void;
   clear: () => void;
   // Side panel that slides in after "add to cart".
   drawerOpen: boolean;
@@ -61,10 +69,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Drop gifts that are no longer on the site (deleted, hidden or renamed ids),
   // so an "empty" cart can't still carry hidden lines and a shipping charge.
+  // Also drops lines whose choice no longer fits the gift's options.
   useEffect(() => {
     if (!loaded || productsLoading || productsError || live.length === 0) return;
     setLines((prev) => {
-      const kept = prev.filter((l) => getProduct(l.productId));
+      const kept = prev.filter((l) => {
+        const p = getProduct(l.productId);
+        return p && validChoice(p, l.choice);
+      });
       return kept.length === prev.length ? prev : kept;
     });
   }, [loaded, productsLoading, productsError, live, getProduct]);
@@ -77,21 +89,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
       drawerOpen,
       setDrawerOpen,
       count: lines.reduce((s, l) => s + l.qty, 0),
-      add: (p, letter = "") =>
+      add: (p, choice = [], letter = "") =>
         setLines((prev) => {
-          const found = prev.find((l) => l.productId === p.id);
+          const key = lineKey({ productId: p.id, choice });
+          const found = prev.find((l) => lineKey(l) === key);
           if (found)
             return prev.map((l) =>
-              l.productId === p.id ? { ...l, qty: l.qty + 1, letters: [...l.letters, letter] } : l,
+              lineKey(l) === key ? { ...l, qty: l.qty + 1, letters: [...l.letters, letter] } : l,
             );
-          return [...prev, { productId: p.id, qty: 1, letters: [letter] }];
+          return [...prev, { productId: p.id, choice, qty: 1, letters: [letter] }];
         }),
       addMany: (items) =>
         setLines((prev) => {
           const next = [...prev];
           for (const it of items) {
-            const i = next.findIndex((l) => l.productId === it.productId);
-            if (i === -1) next.push({ productId: it.productId, qty: it.letters.length, letters: it.letters });
+            const i = next.findIndex((l) => lineKey(l) === lineKey(it));
+            if (i === -1)
+              next.push({ productId: it.productId, choice: it.choice, qty: it.letters.length, letters: it.letters });
             else {
               const l = next[i]!;
               next[i] = { ...l, qty: l.qty + it.letters.length, letters: [...l.letters, ...it.letters] };
@@ -99,17 +113,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
           }
           return next;
         }),
-      remove: (id) => setLines((prev) => prev.filter((l) => l.productId !== id)),
-      setQty: (id, qty) =>
+      remove: (key) => setLines((prev) => prev.filter((l) => lineKey(l) !== key)),
+      setQty: (key, qty) =>
         setLines((prev) =>
           qty <= 0
-            ? prev.filter((l) => l.productId !== id)
-            : prev.map((l) => (l.productId === id ? { ...l, qty, letters: resize(l.letters, qty) } : l)),
+            ? prev.filter((l) => lineKey(l) !== key)
+            : prev.map((l) => (lineKey(l) === key ? { ...l, qty, letters: resize(l.letters, qty) } : l)),
         ),
-      setLetter: (id, index, letter) =>
+      setLetter: (key, index, letter) =>
         setLines((prev) =>
           prev.map((l) =>
-            l.productId === id ? { ...l, letters: l.letters.map((x, i) => (i === index ? letter : x)) } : l,
+            lineKey(l) === key ? { ...l, letters: l.letters.map((x, i) => (i === index ? letter : x)) } : l,
           ),
         ),
       clear: () => setLines([]),

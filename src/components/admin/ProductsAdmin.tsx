@@ -6,6 +6,7 @@ import {
   ChevronRight,
   ChevronUp,
   Languages,
+  Plus,
   Star,
   X,
 } from "lucide-react";
@@ -13,7 +14,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { categories, getCategory } from "@/lib/catalog";
 import { formatPrice, LANGS, useI18n, type L, type Lang } from "@/lib/i18n";
-import { PRODUCTS_KEY, toRow, useProducts, type Product } from "@/lib/products";
+import { PRODUCTS_KEY, toRow, useProducts, type Product, type ProductOption } from "@/lib/products";
 import { translateProductTexts } from "@/lib/translate.functions";
 import { extFor, shrinkImage } from "@/lib/shrinkImage";
 
@@ -290,6 +291,7 @@ function ProductForm({
   const [active, setActive] = useState(product?.active ?? true);
   const [inStock, setInStock] = useState(product?.inStock ?? true);
   const [images, setImages] = useState<string[]>(product?.images ?? []);
+  const [options, setOptions] = useState<ProductOption[]>(product?.options ?? []);
   // Photos uploaded in this form session, removed again if the form is cancelled.
   const [uploaded, setUploaded] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -406,20 +408,37 @@ function ProductForm({
     if (cats.length === 0) return setError(t("categoriesRequired"));
     if (review.fr === "pending" || review.en === "pending")
       return setError(t("translateApproveFirst"));
+    // Empty value rows are dropped; a missing French or English label shows
+    // the Hebrew one.
+    const withHe = (l: L): L => ({
+      he: l.he.trim(),
+      fr: l.fr.trim() || l.he.trim(),
+      en: l.en.trim() || l.he.trim(),
+    });
+    const cleanOptions = options.map((o) => ({
+      name: withHe(o.name),
+      values: o.values.filter((v) => v.he.trim()).map(withHe),
+    }));
+    if (cleanOptions.some((o) => !o.name.he || o.values.length === 0))
+      return setError(t("optionIncomplete"));
     setBusy(true);
     setError(null);
-    const row = toRow({
-      // Keep the menu's category order so the primary one is predictable.
-      categories: categories.map((c) => c.slug).filter((slug) => cats.includes(slug)),
-      name,
-      subtitle,
-      description,
-      price: Number(price),
-      images,
-      active,
-      inStock,
-      sort: product?.sort ?? nextSort,
-    });
+    const row = toRow(
+      {
+        // Keep the menu's category order so the primary one is predictable.
+        categories: categories.map((c) => c.slug).filter((slug) => cats.includes(slug)),
+        name,
+        subtitle,
+        description,
+        price: Number(price),
+        images,
+        active,
+        inStock,
+        options: cleanOptions,
+        sort: product?.sort ?? nextSort,
+      },
+      cleanOptions.length > 0 || (product?.options.length ?? 0) > 0,
+    );
     const { error } = product
       ? await supabase.from("products").update(row).eq("id", product.id)
       : await supabase.from("products").insert(row);
@@ -589,6 +608,8 @@ function ProductForm({
         ))}
       </div>
 
+      <OptionsEditor options={options} onChange={setOptions} />
+
       <div>
         <p className={label}>{t("images")}</p>
         <p className="mt-0.5 text-[11px] text-navy/70">{t("imagesOrderHint")}</p>
@@ -694,5 +715,99 @@ function ProductForm({
         </button>
       </div>
     </form>
+  );
+}
+
+// Choices the customer makes on this gift, e.g. "Colour: silver / gold".
+// Each name and value has a Hebrew field and optional French and English ones.
+function OptionsEditor({
+  options,
+  onChange,
+}: {
+  options: ProductOption[];
+  onChange: (o: ProductOption[]) => void;
+}) {
+  const { t } = useI18n();
+  const setOption = (i: number, o: ProductOption) =>
+    onChange(options.map((x, k) => (k === i ? o : x)));
+
+  // Three side-by-side inputs (he / fr / en) for one label.
+  const labelInputs = (value: L, set: (v: L) => void, placeholder: string) =>
+    FORM_LANGS.map((l) => (
+      <input
+        key={l.code}
+        value={value[l.code]}
+        onChange={(e) => set({ ...value, [l.code]: e.target.value })}
+        dir={l.code === "he" ? "rtl" : "ltr"}
+        maxLength={80}
+        placeholder={l.code === "he" ? placeholder : l.label}
+        aria-label={`${placeholder} (${l.label})`}
+        className={`${field} mt-0`}
+      />
+    ));
+
+  return (
+    <fieldset className="rounded-xl border border-navy/10 p-4">
+      <legend className="px-1 text-xs text-gold-deep">{t("productOptions")}</legend>
+      <p className="text-[11px] text-navy/70">{t("productOptionsHint")}</p>
+      <div className="mt-3 space-y-4">
+        {options.map((o, i) => (
+          <div key={i} className="space-y-2 rounded-lg border border-navy/10 bg-white/60 p-3">
+            <div className="flex items-center gap-2">
+              <div className="grid flex-1 gap-2 sm:grid-cols-3">
+                {labelInputs(o.name, (name) => setOption(i, { ...o, name }), t("optionName"))}
+              </div>
+              <button
+                type="button"
+                onClick={() => onChange(options.filter((_, k) => k !== i))}
+                aria-label={t("removeOption")}
+                title={t("removeOption")}
+                className="grid size-8 shrink-0 place-items-center rounded-full text-navy/70 hover:text-red-600"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+            <p className={label}>{t("optionValues")}</p>
+            {o.values.map((v, j) => (
+              <div key={j} className="flex items-center gap-2 ps-4">
+                <div className="grid flex-1 gap-2 sm:grid-cols-3">
+                  {labelInputs(
+                    v,
+                    (nv) =>
+                      setOption(i, { ...o, values: o.values.map((x, k) => (k === j ? nv : x)) }),
+                    `${t("optionValues")} ${j + 1}`,
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOption(i, { ...o, values: o.values.filter((_, k) => k !== j) })}
+                  aria-label={t("delete")}
+                  title={t("delete")}
+                  className="grid size-8 shrink-0 place-items-center rounded-full text-navy/70 hover:text-red-600"
+                >
+                  <X className="size-3.5" />
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setOption(i, { ...o, values: [...o.values, emptyL()] })}
+              className="ms-4 inline-flex items-center gap-1 text-xs text-gold-deep hover:underline"
+            >
+              <Plus className="size-3.5" />
+              {t("addValue")}
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange([...options, { name: emptyL(), values: [emptyL(), emptyL()] }])}
+        className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-gold/40 px-3 py-1.5 text-xs text-gold-deep transition hover:bg-gold/10"
+      >
+        <Plus className="size-3.5" />
+        {t("addOption")}
+      </button>
+    </fieldset>
   );
 }

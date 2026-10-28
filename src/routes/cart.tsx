@@ -2,9 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin, Minus, Plus } from "lucide-react";
 import { EmptyCart } from "@/components/EmptyCart";
 import { Ornament } from "@/components/Reveal";
-import { useCart } from "@/lib/cart";
+import { lineKey, useCart } from "@/lib/cart";
 import { LetterField } from "@/components/Letter";
-import { useProducts } from "@/lib/products";
+import { choiceLabels, choiceText, useProducts } from "@/lib/products";
 import { useCurrency } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
 import { useSettings } from "@/lib/settings";
@@ -47,9 +47,11 @@ function CartPage() {
             {lines.map((line) => {
               const p = getProduct(line.productId);
               if (!p) return null;
+              const key = lineKey(line);
+              const choice = choiceText(choiceLabels(p, line.choice), tl);
               return (
                 <div
-                  key={line.productId}
+                  key={key}
                   className="rounded-2xl border border-navy/10 bg-white/70 p-4 backdrop-blur-xl transition hover:border-gold/40 hover:shadow-lg hover:shadow-navy/5"
                 >
                   <div className="flex gap-4">
@@ -66,6 +68,7 @@ function CartPage() {
                         <div>
                           <h2 className="font-heb text-lg text-navy">{tl(p.name)}</h2>
                           <p className="mt-1 text-xs text-navy/70">{tl(p.subtitle)}</p>
+                          {choice && <p className="mt-1 text-xs font-semibold text-navy">{choice}</p>}
                           {!p.inStock && <p className="mt-1 text-xs text-red-600">{t("outOfStock")}</p>}
                         </div>
                         <span className="font-semibold text-gold-deep">
@@ -78,7 +81,7 @@ function CartPage() {
                           <button
                             aria-label={t("qtyDown")}
                             className="grid size-10 place-items-center rounded-full transition hover:bg-navy/5 hover:text-gold-deep active:scale-90"
-                            onClick={() => setQty(line.productId, line.qty - 1)}
+                            onClick={() => setQty(key, line.qty - 1)}
                           >
                             <Minus className="size-3.5" />
                           </button>
@@ -86,13 +89,13 @@ function CartPage() {
                           <button
                             aria-label={t("qtyUp")}
                             className="grid size-10 place-items-center rounded-full transition hover:bg-navy/5 hover:text-gold-deep active:scale-90"
-                            onClick={() => setQty(line.productId, line.qty + 1)}
+                            onClick={() => setQty(key, line.qty + 1)}
                           >
                             <Plus className="size-3.5" />
                           </button>
                         </div>
                         <button
-                          onClick={() => remove(line.productId)}
+                          onClick={() => remove(key)}
                           className="min-h-10 px-1 text-navy/70 underline-offset-4 hover:text-gold-deep hover:underline"
                         >
                           {t("remove")}
@@ -108,7 +111,7 @@ function CartPage() {
                         </p>
                         <LetterField
                           value={letter}
-                          onChange={(v) => setLetter(line.productId, i, v)}
+                          onChange={(v) => setLetter(key, i, v)}
                           categories={p.categories}
                           className="mt-2"
                         />
