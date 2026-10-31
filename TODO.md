@@ -40,7 +40,7 @@
 - [x] ב־Meta for Developers: יצירת אפליקציה עם WhatsApp
 - [ ] הוספת המספר, אימות בקוד SMS, ושם תצוגה לעסק
   - נחסם ב־31.10 בשגיאה #2494070 ("doesn't meet WhatsApp's policy requirements"). אין הגבלות על החשבונות, כנראה כי החשבונות חדשים
-  - לפני ניסיון חוזר: אימות דו־שלבי בפייסבוק (Accounts Center ← Password and security), לחכות 2–3 ימים, לנסות מרשת ביתית בלי Zscaler
+  - לפני ניסיון חוזר: ~~אימות דו־שלבי בפייסבוק~~ (בוצע 31.10), לחכות 2–3 ימים, לנסות מרשת ביתית בלי Zscaler
   - אם עדיין נחסם: לשאול ב־Ask a question ב־business-support-home עם מספר השגיאה, או Report error to Meta
   - האפליקציה נקראת MyChat; כתובת האתר שהוזנה: https://matanot4u.lovable.app/
 - [ ] יצירת מפתח גישה קבוע (System User token)
