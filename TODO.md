@@ -39,6 +39,10 @@
 - [ ] מספר טלפון ייעודי לוואטסאפ של האתר (מספר שלא מחובר כרגע לוואטסאפ רגיל באפליקציה)
 - [x] ב־Meta for Developers: יצירת אפליקציה עם WhatsApp
 - [ ] הוספת המספר, אימות בקוד SMS, ושם תצוגה לעסק
+  - נחסם ב־31.10 בשגיאה #2494070 ("doesn't meet WhatsApp's policy requirements"). אין הגבלות על החשבונות, כנראה כי החשבונות חדשים
+  - לפני ניסיון חוזר: אימות דו־שלבי בפייסבוק (Accounts Center ← Password and security), לחכות 2–3 ימים, לנסות מרשת ביתית בלי Zscaler
+  - אם עדיין נחסם: לשאול ב־Ask a question ב־business-support-home עם מספר השגיאה, או Report error to Meta
+  - האפליקציה נקראת MyChat; כתובת האתר שהוזנה: https://matanot4u.lovable.app/
 - [ ] יצירת מפתח גישה קבוע (System User token)
 - [ ] להוסיף ב־Lovable את ה־Secrets: `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_VERIFY_TOKEN` (מילה סודית שבוחרים), `WHATSAPP_APP_SECRET`
 - [ ] להריץ ב־Lovable את `db/whatsapp.sql`
@@ -46,7 +50,7 @@
 - [ ] לעדכן את מספר הוואטסאפ החדש בניהול ← הגדרות ← פרטי התקשרות
 
 ## אבטחת חשבון העסק ב־Meta (לא דחוף, לחזור בהזדמנות)
-- [ ] אימות דו־שלבי: Security Center ← Two-Factor Authentication ← Everyone (אפשר עם קוד ב־SMS, לא צריך סמארטפון)
+- [ ] **(עכשיו חשוב, עוזר לשגיאת הוואטסאפ)** אימות דו־שלבי: Security Center ← Two-Factor Authentication ← Everyone (אפשר עם קוד ב־SMS, לא צריך סמארטפון)
 - [ ] להוסיף מנהל נוסף שסומכים עליו (Add another admin), למקרה שננעלים מחוץ לחשבון
 - [ ] לא ללחוץ על Take action ליד "user without passkey" (זה מסיר אותך מהחשבון)
 - [ ] דומיינים מהימנים: רק כשיהיו פרסומות ממומנות ודומיין קבוע
