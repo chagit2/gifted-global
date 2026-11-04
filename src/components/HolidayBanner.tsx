@@ -107,8 +107,9 @@ function Countdown({ to }: { to: Date }) {
     [Math.floor(left / 60000) % 60, t("cdMinutes")],
     [Math.floor(left / 1000) % 60, t("cdSeconds")],
   ] as const;
+  // Clock order (days on the left) in every language, Hebrew included.
   return (
-    <div className="flex items-start justify-center gap-2 sm:gap-3">
+    <div dir="ltr" className="flex items-start justify-center gap-2 sm:gap-3">
       <span className="sr-only">
         {t("cdDaysLeft").replace("{n}", String(parts[0][0]))}
       </span>

@@ -2,7 +2,8 @@
 // Needs two secrets: RESEND_API_KEY and ORDER_NOTIFY_EMAIL. Without them nothing
 // is sent; a failed email never fails the order.
 
-type Line = { name: string; letter: string; price: number };
+// `images`: photos of the options the customer chose (absolute URLs).
+type Line = { name: string; letter: string; price: number; images?: string[] };
 
 export type OrderEmail = {
   id: string;
@@ -36,6 +37,9 @@ export async function notifyNewOrder(o: OrderEmail) {
     .map(
       (l) =>
         `<li style="margin-bottom:8px"><b>${esc(l.name)}</b> · ${ils(l.price)}` +
+        (l.images ?? [])
+          .map((src) => `<img src="${esc(src)}" alt="" width="48" height="48" style="margin:4px 4px 0 0;border-radius:6px;object-fit:cover">`)
+          .join("") +
         (l.letter ? `<div style="white-space:pre-wrap;color:#444;margin-top:4px">${esc(l.letter)}</div>` : "") +
         `</li>`,
     )

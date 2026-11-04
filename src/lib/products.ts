@@ -4,6 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import type { L } from "./i18n";
 
+// One value of an option: a label, a photo the customer clicks, or both.
+// The label may be empty when there is a photo.
+export type OptionValue = L & { image?: string };
+
+// A choice the customer makes before ordering, e.g. colour: silver / gold.
+export type ProductOption = { name: L; values: OptionValue[] };
+
+// What was chosen for one copy, as stored on the order (labels and photos, not
+// indexes, so the order still reads correctly after the gift's options are edited).
+export type Choice = { name: L; value: OptionValue }[];
+
 export type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 
 export type Product = {
@@ -20,8 +31,65 @@ export type Product = {
   active: boolean;
   // Out-of-stock gifts stay on the site but can't be ordered.
   inStock: boolean;
+  options: ProductOption[];
   sort: number;
 };
+
+const isL = (v: unknown): v is L =>
+  !!v &&
+  typeof v === "object" &&
+  ["he", "fr", "en"].every((k) => typeof (v as L)[k as keyof L] === "string");
+
+// Options as saved in the database; anything malformed is dropped.
+export const parseOptions = (raw: unknown): ProductOption[] =>
+  Array.isArray(raw)
+    ? raw
+        .filter((o) => o && isL(o.name) && Array.isArray(o.values))
+        .map((o) => ({
+          name: o.name as L,
+          values: (o.values as unknown[]).filter(isL).map((v): OptionValue => ({
+            he: v.he,
+            fr: v.fr,
+            en: v.en,
+            ...(typeof (v as OptionValue).image === "string" && {
+              image: (v as OptionValue).image,
+            }),
+          })),
+        }))
+        .filter((o) => o.values.length > 0)
+    : [];
+
+export const parseChoice = (raw: unknown): Choice =>
+  Array.isArray(raw) ? raw.filter((c) => c && isL(c.name) && isL(c.value)) : [];
+
+// A cart choice (one value index per option) is valid when every option has one.
+export const validChoice = (p: Product, choice: number[]) =>
+  choice.length === p.options.length &&
+  choice.every((v, i) => Number.isInteger(v) && v >= 0 && v < p.options[i]!.values.length);
+
+export const choiceLabels = (p: Product, choice: number[]): Choice =>
+  validChoice(p, choice)
+    ? p.options.map((o, i) => ({ name: o.name, value: o.values[choice[i]!]! }))
+    : [];
+
+// Turns a stored choice back into value indexes for the gift as it is now,
+// matching the Hebrew labels and photos; null if the gift's options no longer fit it.
+export const matchChoice = (p: Product, choice: Choice): number[] | null => {
+  if (choice.length !== p.options.length) return null;
+  const picked = p.options.map((o, i) =>
+    o.name.he === choice[i]!.name.he
+      ? o.values.findIndex(
+          (v) => v.he === choice[i]!.value.he && (v.image ?? "") === (choice[i]!.value.image ?? ""),
+        )
+      : -1,
+  );
+  return picked.every((v) => v >= 0) ? picked : null;
+};
+
+// "Colour: gold · Size: large" in the given language. A value chosen by its
+// photo alone has no words; ChoiceView shows the photo next to the text.
+export const choiceText = (choice: Choice, tl: (l: L) => string) =>
+  choice.map((c) => [tl(c.name), tl(c.value)].filter(Boolean).join(": ")).join(" · ");
 
 export const fromRow = (r: ProductRow): Product => ({
   id: r.id,
@@ -35,10 +103,14 @@ export const fromRow = (r: ProductRow): Product => ({
   images: r.images ?? [],
   active: r.active,
   inStock: r.in_stock ?? true,
+  // Missing until db/product-options.sql has run.
+  options: parseOptions(r.options),
   sort: r.sort,
 });
 
-export const toRow = (p: Omit<Product, "id" | "category">) => ({
+// `withOptions` is off for gifts without options so saving keeps working on a
+// database where db/product-options.sql hasn't run yet.
+export const toRow = (p: Omit<Product, "id" | "category">, withOptions = p.options.length > 0) => ({
   category: p.categories[0]!,
   categories: p.categories,
   name_he: p.name.he,
@@ -55,6 +127,7 @@ export const toRow = (p: Omit<Product, "id" | "category">) => ({
   active: p.active,
   in_stock: p.inStock,
   sort: p.sort,
+  ...(withOptions && { options: p.options }),
 });
 
 export const PRODUCTS_KEY = ["products"] as const;

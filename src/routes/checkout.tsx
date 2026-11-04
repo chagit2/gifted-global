@@ -3,9 +3,10 @@ import { EmptyCart } from "@/components/EmptyCart";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Gift, Lock, MapPin, Truck } from "lucide-react";
 import { Confetti } from "@/components/Confetti";
-import { useCart } from "@/lib/cart";
+import { lineKey, useCart } from "@/lib/cart";
 import { LetterField } from "@/components/Letter";
-import { useProducts } from "@/lib/products";
+import { choiceLabels, useProducts } from "@/lib/products";
+import { ChoiceView } from "@/components/ChoiceView";
 import { useCurrency } from "@/lib/currency";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
@@ -142,6 +143,7 @@ function CheckoutPage() {
           items: lines.flatMap((l) =>
             l.letters.map((letter) => ({
               productId: l.productId,
+              choice: l.choice,
               qty: 1,
               letter,
             })),
@@ -155,7 +157,7 @@ function CheckoutPage() {
       const msg = err instanceof Error ? err.message : "";
       setError(
         t(
-          msg.includes("PRODUCT_UNAVAILABLE")
+          msg.includes("PRODUCT_UNAVAILABLE") || msg.includes("OPTION_REQUIRED")
             ? "productUnavailable"
             : msg.includes("DELIVERY_TOO_SOON")
               ? "deliveryTooSoon"
@@ -377,9 +379,10 @@ function CheckoutPage() {
                 const p = getProduct(l.productId);
                 if (!p) return null;
                 return (
-                  <div key={l.productId} className="rounded-xl border border-navy/10 p-3">
+                  <div key={lineKey(l)} className="rounded-xl border border-navy/10 p-3">
                     <p className="text-sm text-navy">
                       {tl(p.name)}
+                      <ChoiceView choice={choiceLabels(p, l.choice)} className="ms-2 text-xs text-navy/70" />
                       {l.qty > 1 && <span className="text-navy/70"> × {l.qty}</span>}
                     </p>
                     {l.letters.map((letter, i) => (
@@ -391,7 +394,7 @@ function CheckoutPage() {
                         )}
                         <LetterField
                           value={letter}
-                          onChange={(v) => setLetter(l.productId, i, v)}
+                          onChange={(v) => setLetter(lineKey(l), i, v)}
                           categories={p.categories}
                           className="mt-1"
                         />
@@ -447,10 +450,13 @@ function CheckoutPage() {
               const p = getProduct(l.productId);
               if (!p) return null;
               return (
-                <li key={l.productId} className="flex justify-between gap-3 text-navy/75">
-                  <span>
-                    {tl(p.name)} × {l.qty}
-                  </span>
+                <li key={lineKey(l)} className="flex justify-between gap-3 text-navy/75">
+                  <div>
+                    <p>
+                      {tl(p.name)} × {l.qty}
+                    </p>
+                    <ChoiceView choice={choiceLabels(p, l.choice)} className="mt-1 text-xs" />
+                  </div>
                   <span className="whitespace-nowrap text-gold-deep">
                     {money(p.price * l.qty)}
                   </span>

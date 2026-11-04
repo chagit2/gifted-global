@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
-import { FadeImage } from "@/components/FadeImage";
+import { FitImage } from "@/components/FadeImage";
 import { useProducts, type Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
 import { useCurrency } from "@/lib/currency";
@@ -24,6 +24,9 @@ export function ProductModal({
   const { live } = useProducts();
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState(false);
+  // One chosen value per option (null until the customer picks one).
+  const [choice, setChoice] = useState<(number | null)[]>([]);
+  const [missing, setMissing] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,6 +34,12 @@ export function ProductModal({
     setZoom(false);
     scroller.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [product?.id]);
+
+  // An option with a single value is chosen for the customer.
+  useEffect(() => {
+    setChoice(product ? product.options.map((o) => (o.values.length === 1 ? 0 : null)) : []);
+    setMissing(false);
+  }, [product]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -74,6 +83,17 @@ export function ProductModal({
 
   if (!product) return null;
 
+  // Adds the gift with its chosen options, or points at the ones not chosen yet.
+  const addChosen = () => {
+    if (choice.some((c) => c === null)) {
+      setMissing(true);
+      return false;
+    }
+    add(product, choice as number[]);
+    onClose();
+    return true;
+  };
+
   const count = product.images.length;
   const step = (delta: number) => setActive((i) => (i + delta + count) % count);
   // In RTL the "next" arrow sits on the left and points left.
@@ -109,12 +129,12 @@ export function ProductModal({
               aria-label={t("zoomImage")}
               className="group relative block w-full cursor-zoom-in"
             >
-              <FadeImage
+              <FitImage
                 src={product.images[active]}
                 alt={tl(product.name)}
                 width={1024}
                 height={1024}
-                className="aspect-square w-full rounded-2xl object-cover outline-1 -outline-offset-1 outline-navy/10"
+                className="aspect-square w-full rounded-2xl outline-1 -outline-offset-1 outline-navy/10"
               />
               <span className="absolute bottom-3 end-3 grid size-9 place-items-center rounded-full bg-white/70 text-navy opacity-0 backdrop-blur transition group-hover:opacity-100">
                 <ZoomIn className="size-4" />
@@ -138,13 +158,13 @@ export function ProductModal({
           <div className="mt-3 grid grid-cols-4 gap-3">
             {product.images.map((img, i) => (
               <button key={img} onClick={() => setActive(i)} aria-current={active === i}>
-                <img
+                <FitImage
                   src={img}
                   alt=""
                   loading="lazy"
                   width={512}
                   height={512}
-                  className={`aspect-square w-full rounded-xl object-cover outline-2 -outline-offset-2 transition ${
+                  className={`aspect-square w-full rounded-xl outline-2 -outline-offset-2 transition ${
                     active === i ? "outline-gold" : "outline-navy/10 opacity-60 hover:opacity-100"
                   }`}
                 />
@@ -169,28 +189,103 @@ export function ProductModal({
               {t("outOfStock")}
             </p>
           ) : (
-            <div className="mt-6 flex items-center gap-3">
-              <button
-                onClick={() => {
-                  add(product);
-                  onClose();
-                  setDrawerOpen(true);
-                }}
-                className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy hover:bg-gold-2 transition"
-              >
-                + {t("addToCart")}
-              </button>
-              <button
-                onClick={() => {
-                  add(product);
-                  onClose();
-                  navigate({ to: "/checkout" });
-                }}
-                className="rounded-full bg-navy px-6 py-3 text-sm text-pearl transition hover:bg-navy-3"
-              >
-                {t("buyNow")}
-              </button>
-            </div>
+            <>
+              {product.options.map((o, i) => (
+                <fieldset key={i} className="mt-6">
+                  <legend
+                    className={`text-sm font-semibold ${missing && choice[i] === null ? "text-red-600" : "text-navy"}`}
+                  >
+                    {t("chooseOption").replace("{name}", tl(o.name))}
+                  </legend>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {o.values.map((v, j) => {
+                      const on = choice[i] === j;
+                      const pick = () => {
+                        setChoice((prev) => prev.map((c, k) => (k === i ? j : c)));
+                        setMissing(false);
+                      };
+                      // A value with a photo is chosen by clicking the photo.
+                      if (v.image)
+                        return (
+                          <button
+                            key={j}
+                            type="button"
+                            role="radio"
+                            aria-checked={on}
+                            aria-label={tl(v) || `${tl(o.name)} ${j + 1}`}
+                            title={tl(v) || undefined}
+                            onClick={pick}
+                            className="group flex w-24 flex-col text-center"
+                          >
+                            <span
+                              className={`relative block overflow-hidden rounded-xl outline-2 -outline-offset-2 transition ${
+                                on
+                                  ? "outline-gold ring-2 ring-gold/40"
+                                  : "outline-navy/10 group-hover:outline-gold/50"
+                              }`}
+                            >
+                              <FitImage
+                                src={v.image}
+                                alt=""
+                                loading="lazy"
+                                className="aspect-square w-full"
+                              />
+                              {on && (
+                                <span className="absolute top-1 end-1 grid size-6 place-items-center rounded-full bg-gold text-xs font-bold text-navy shadow">
+                                  ✓
+                                </span>
+                              )}
+                            </span>
+                            {tl(v) && (
+                              <span
+                                className={`mt-1 block truncate text-xs ${on ? "font-semibold text-gold-deep" : "text-navy/75"}`}
+                              >
+                                {tl(v)}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      return (
+                        <button
+                          key={j}
+                          type="button"
+                          role="radio"
+                          aria-checked={on}
+                          onClick={pick}
+                          className={`rounded-full border px-4 py-2 text-sm transition ${
+                            on
+                              ? "border-gold bg-gold/20 font-semibold text-gold-deep"
+                              : "border-navy/15 text-navy/75 hover:border-gold/50 hover:text-navy"
+                          }`}
+                        >
+                          {on ? "✓ " : ""}
+                          {tl(v)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              ))}
+              {missing && <p className="mt-3 text-sm text-red-600">{t("chooseOptionFirst")}</p>}
+              <div className="mt-6 flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    if (addChosen()) setDrawerOpen(true);
+                  }}
+                  className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-navy hover:bg-gold-2 transition"
+                >
+                  + {t("addToCart")}
+                </button>
+                <button
+                  onClick={() => {
+                    if (addChosen()) navigate({ to: "/checkout" });
+                  }}
+                  className="rounded-full bg-navy px-6 py-3 text-sm text-pearl transition hover:bg-navy-3"
+                >
+                  {t("buyNow")}
+                </button>
+              </div>
+            </>
           )}
         </div>
 
@@ -206,13 +301,13 @@ export function ProductModal({
                     disabled={!onSelect}
                     className="group block w-full text-start"
                   >
-                    <FadeImage
+                    <FitImage
                       src={p.images[0]}
                       alt=""
                       loading="lazy"
                       width={512}
                       height={512}
-                      className="aspect-square w-full rounded-xl object-cover outline-1 -outline-offset-1 outline-navy/10 transition group-hover:outline-gold/60"
+                      className="aspect-square w-full rounded-xl outline-1 -outline-offset-1 outline-navy/10 transition group-hover:outline-gold/60"
                     />
                     <span className="mt-2 block truncate text-sm text-navy group-hover:text-gold-deep">
                       {tl(p.name)}

@@ -5,10 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { OrderCard } from "@/components/OrderCard";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
-import { useCart } from "@/lib/cart";
+import { lineKey, useCart } from "@/lib/cart";
 import { ORDER_SELECT, type OrderRow } from "@/lib/orders";
 import { savePrefill, splitStreet } from "@/lib/prefill";
-import { useProducts } from "@/lib/products";
+import { matchChoice, parseChoice, useProducts } from "@/lib/products";
 
 export const Route = createFileRoute("/account")({
   head: () => ({ meta: [{ title: "אזור אישי · מתנות" }, { name: "robots", content: "noindex" }] }),
@@ -95,20 +95,24 @@ function OrderAgain({ order }: { order: OrderRow }) {
   const [note, setNote] = useState<string | null>(null);
 
   const again = () => {
-    const byProduct = new Map<string, string[]>();
+    const byLine = new Map<string, { productId: string; choice: number[]; letters: string[] }>();
     let skipped = 0;
     for (const it of order.order_items) {
       const p = getProduct(it.product_id);
-      if (!p || !p.inStock) {
+      // The same options are picked again by their Hebrew labels; a gift whose
+      // options have changed since can't be reordered as it was.
+      const choice = p ? matchChoice(p, parseChoice(it.choice)) : null;
+      if (!p || !p.inStock || !choice) {
         skipped += it.qty;
         continue;
       }
-      const letters = byProduct.get(it.product_id) ?? [];
-      for (let i = 0; i < it.qty; i++) letters.push(it.letter);
-      byProduct.set(it.product_id, letters);
+      const key = lineKey({ productId: p.id, choice });
+      const line = byLine.get(key) ?? { productId: p.id, choice, letters: [] };
+      for (let i = 0; i < it.qty; i++) line.letters.push(it.letter);
+      byLine.set(key, line);
     }
-    if (byProduct.size === 0) return setNote(t("orderAgainNone"));
-    addMany([...byProduct].map(([productId, letters]) => ({ productId, letters })));
+    if (byLine.size === 0) return setNote(t("orderAgainNone"));
+    addMany([...byLine.values()]);
     savePrefill({
       recipientName: order.recipient_name,
       recipientPhone: order.recipient_phone,
