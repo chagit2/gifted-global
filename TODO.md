@@ -42,6 +42,7 @@
   - נחסם ב־31.10 בשגיאה #2494070 ("doesn't meet WhatsApp's policy requirements"). אין הגבלות על החשבונות, כנראה כי החשבונות חדשים
   - לפני ניסיון חוזר: ~~אימות דו־שלבי בפייסבוק~~ (בוצע 31.10), לחכות 2–3 ימים, לנסות מרשת ביתית בלי Zscaler
   - אם עדיין נחסם: לשאול ב־Ask a question ב־business-support-home עם מספר השגיאה, או Report error to Meta
+  - 07.11: ניסיון שני נחסם באותה שגיאה; נשלח Report error to Meta. הבא: להשלים את כל השדות ב־Business info, לשאול את התמיכה של Meta (עם ה־Session ID), ואם לא נפתר: חיבור דרך ספק מתווך (BSP) כמו Twilio (דורש שינוי קוד)
   - האפליקציה נקראת MyChat; כתובת האתר שהוזנה: https://matanot4u.lovable.app/
 - [ ] יצירת מפתח גישה קבוע (System User token)
 - [ ] להוסיף ב־Lovable את ה־Secrets: `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_VERIFY_TOKEN` (מילה סודית שבוחרים), `WHATSAPP_APP_SECRET`
