@@ -1,6 +1,7 @@
 import { CalendarClock, Printer } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { parseChoice, useProducts, type Choice } from "@/lib/products";
+import { BOX_ID, BOX_NAME, parseContents, type BoxContent } from "@/lib/box";
 import { ChoiceView } from "@/components/ChoiceView";
 import { LetterPreview } from "@/components/Letter";
 import { formatMoney } from "@/lib/currency";
@@ -45,15 +46,19 @@ export function OrderCard({
   // Each gift copy is its own row; group copies of the same product and choice.
   const groups = new Map<
     string,
-    { name: string; choice: Choice; letters: string[]; price: number }
+    { name: string; choice: Choice; contents: BoxContent[]; letters: string[]; price: number }
   >();
   for (const it of order.order_items) {
     const p = getProduct(it.product_id);
     const choice = parseChoice(it.choice);
-    const key = `${it.product_id}|${JSON.stringify(choice)}`;
+    // A designed box keeps the names of its items as they were when ordered.
+    const contents = it.product_id === BOX_ID ? parseContents(it.contents) : [];
+    const key = `${it.product_id}|${JSON.stringify(choice)}|${JSON.stringify(contents)}`;
     const g = groups.get(key) ?? {
-      name: p ? tl(p.name) : it.product_name || it.product_id,
+      name:
+        it.product_id === BOX_ID ? tl(BOX_NAME) : p ? tl(p.name) : it.product_name || it.product_id,
       choice,
+      contents,
       letters: [],
       price: 0,
     };
@@ -110,6 +115,17 @@ export function OrderCard({
               </span>
               <span className="whitespace-nowrap text-gold-deep">{formatPrice(g.price, lang)}</span>
             </div>
+            {g.contents.length > 0 && (
+              <ul className="mt-1 space-y-0.5 rounded-lg border border-gold/20 bg-gold/5 px-3 py-2 text-xs text-navy/80">
+                {g.contents.map((c, i) => (
+                  <li key={i} className="flex flex-wrap items-center gap-x-1.5">
+                    <span className="font-semibold tabular-nums text-gold-deep">{c.qty} ×</span>
+                    {tl(c.name)}
+                    <ChoiceView choice={c.choice} className="text-navy/65" />
+                  </li>
+                ))}
+              </ul>
+            )}
             {g.letters.some(Boolean) && (
               <ul className="mt-1 space-y-1">
                 {g.letters.map((letter, i) =>

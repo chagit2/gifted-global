@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Sparkles } from "lucide-react";
-import { useState } from "react";
+import { Gift, Puzzle, Sparkles } from "lucide-react";
+import { useState, type ReactNode } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductModal } from "@/components/ProductModal";
 import { useProducts, type Product } from "@/lib/products";
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { t } = useI18n();
   const [preview, setPreview] = useState<Product | null>(null);
-  const { live: gifts, isLoading, isError } = useProducts();
+  const { live: gifts, items, isLoading, isError } = useProducts();
 
   return (
     <main className="relative overflow-hidden">
@@ -43,6 +43,28 @@ function Index() {
       <PerksTicker />
 
       <section className="relative mx-auto max-w-7xl px-6 pt-12 pb-20">
+        {/* Two ways to send a gift: a ready-made box, or one designed item by item. */}
+        {items.length > 0 && (
+          <Reveal className="mb-10 grid gap-5 sm:grid-cols-2">
+            <EntryCard
+              to="/gifts"
+              icon={<Gift className="size-7" />}
+              title={t("entryReadyTitle")}
+              text={t("entryReadyText")}
+              cta={t("entryReadyCta")}
+              images={gifts.slice(0, 3).map((p) => p.images[0]!)}
+            />
+            <EntryCard
+              to="/build"
+              icon={<Puzzle className="size-7" />}
+              title={t("entryBuildTitle")}
+              text={t("entryBuildText")}
+              cta={t("entryBuildCta")}
+              images={items.slice(0, 3).map((p) => p.images[0]!)}
+              accent
+            />
+          </Reveal>
+        )}
         <Reveal className="mb-14">
           <Link
             to="/find"
@@ -87,5 +109,65 @@ function Index() {
 
       <ProductModal product={preview} onClose={() => setPreview(null)} onSelect={setPreview} />
     </main>
+  );
+}
+
+function EntryCard({
+  to,
+  icon,
+  title,
+  text,
+  cta,
+  images,
+  accent,
+}: {
+  to: "/gifts" | "/build";
+  icon: ReactNode;
+  title: string;
+  text: string;
+  cta: string;
+  images: string[];
+  accent?: boolean;
+}) {
+  return (
+    <Link
+      to={to}
+      className={`group flex h-full flex-col rounded-2xl border p-6 shadow-lg transition duration-300 hover:shadow-2xl motion-safe:hover:-translate-y-1 ${
+        accent
+          ? "border-gold/60 bg-navy text-pearl shadow-navy/20 hover:border-gold"
+          : "border-navy/10 bg-white/85 text-navy shadow-navy/5 hover:border-gold/60"
+      }`}
+    >
+      <div className="flex items-center gap-4">
+        <span
+          className={`grid size-14 shrink-0 place-items-center rounded-full ${
+            accent ? "bg-gold text-navy" : "bg-navy text-gold-2"
+          }`}
+        >
+          {icon}
+        </span>
+        <h2 className="font-heb text-2xl font-bold">{title}</h2>
+      </div>
+      <p className={`mt-3 text-sm leading-relaxed ${accent ? "text-pearl/85" : "text-navy/75"}`}>{text}</p>
+      {images.length > 0 && (
+        <div aria-hidden className="mt-4 flex -space-x-3 rtl:space-x-reverse">
+          {images.map((src, i) => (
+            <img
+              key={i}
+              src={src}
+              alt=""
+              className={`size-14 rounded-full object-cover ring-2 ${accent ? "ring-navy" : "ring-white"}`}
+            />
+          ))}
+        </div>
+      )}
+      <span
+        className={`mt-auto inline-flex min-h-11 w-fit items-center rounded-full px-5 text-sm font-semibold transition group-active:scale-95 ${
+          accent ? "mt-5 bg-gold text-navy group-hover:bg-gold-2" : "mt-5 bg-navy text-pearl group-hover:bg-navy-3"
+        }`}
+      >
+        {cta}
+      </span>
+    </Link>
   );
 }

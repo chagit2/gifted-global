@@ -2,19 +2,19 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Minus, PenLine, Plus, ShoppingBag, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { EmptyCart } from "@/components/EmptyCart";
-import { lineKey, useCart } from "@/lib/cart";
+import { lineKey, useCart, useLineViews } from "@/lib/cart";
 import { useCurrency } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
-import { choiceLabels, useProducts } from "@/lib/products";
 import { ChoiceView } from "@/components/ChoiceView";
+import { BoxContents, LineThumb } from "@/components/BoxParts";
 
 // Slide-in cart opened by "add to cart": the shopper sees what is in the bag
 // and can keep browsing without leaving the page.
 export function CartDrawer() {
-  const { t, tl, lang } = useI18n();
+  const { t, tl } = useI18n();
   const { money } = useCurrency();
   const { lines, total, setQty, remove, drawerOpen: open, setDrawerOpen } = useCart();
-  const { getProduct } = useProducts();
+  const views = useLineViews();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const close = () => setDrawerOpen(false);
 
@@ -89,10 +89,8 @@ export function CartDrawer() {
         ) : (
           <>
             <ul className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
-              {lines.map((line) => {
-                const p = getProduct(line.productId);
-                if (!p) return null;
-                const key = lineKey(line);
+              {views.map((view) => {
+                const { line, key } = view;
                 return (
                   <li key={key} className="relative -mx-2 flex gap-3 rounded-xl p-2">
                     {justAdded?.id === key && (
@@ -102,15 +100,12 @@ export function CartDrawer() {
                         className="pointer-events-none absolute inset-0 rounded-xl animate-flash"
                       />
                     )}
-                    <img
-                      src={p.images[0]}
-                      alt=""
-                      className="size-16 shrink-0 rounded-lg object-cover"
-                    />
+                    <LineThumb view={view} className="size-16 rounded-lg" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm text-navy">{tl(p.name)}</p>
-                      <ChoiceView choice={choiceLabels(p, line.choice)} className="text-xs text-navy/70" />
-                      <p className="text-xs text-gold-deep">{money(p.price * line.qty)}</p>
+                      <p className="truncate text-sm text-navy">{tl(view.name)}</p>
+                      <ChoiceView choice={view.choice} className="text-xs text-navy/70" />
+                      <BoxContents view={view} className="text-xs text-navy/70" />
+                      <p className="text-xs text-gold-deep">{money(view.unitPrice * line.qty)}</p>
                       <div className="mt-2 flex items-center gap-3">
                         <div className="inline-flex items-center rounded-full border border-navy/15">
                           <button
@@ -138,6 +133,15 @@ export function CartDrawer() {
                         >
                           {t("remove")}
                         </button>
+                        {view.contents && (
+                          <Link
+                            to="/build"
+                            search={{ edit: key }}
+                            className="min-h-9 px-1 py-2 text-xs text-gold-deep underline-offset-4 hover:underline"
+                          >
+                            {t("boxEdit")}
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </li>

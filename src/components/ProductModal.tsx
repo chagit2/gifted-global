@@ -1,6 +1,6 @@
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
+import { ChevronLeft, ChevronRight, Puzzle, ZoomIn } from "lucide-react";
 import { FitImage } from "@/components/FadeImage";
 import { useProducts, type Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
@@ -21,7 +21,7 @@ export function ProductModal({
   const { money } = useCurrency();
   const { add, setDrawerOpen } = useCart();
   const navigate = useNavigate();
-  const { live } = useProducts();
+  const { live, items } = useProducts();
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState(false);
   // One chosen value per option (null until the customer picks one).
@@ -286,6 +286,16 @@ export function ProductModal({
                 </button>
               </div>
             </>
+          )}
+          {items.length > 0 && (
+            <Link
+              to="/build"
+              onClick={onClose}
+              className="mt-6 inline-flex items-center gap-2 text-sm text-gold-deep underline-offset-4 hover:underline"
+            >
+              <Puzzle className="size-4" />
+              {t("crossToBuild")}
+            </Link>
           )}
         </div>
 

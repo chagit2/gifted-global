@@ -80,6 +80,8 @@ export type OrderRow = {
     letter: string;
     // Chosen options; missing until db/product-options.sql has run.
     choice?: unknown;
+    // A designed box's items (see lib/box.ts); missing until db/custom-box.sql has run.
+    contents?: unknown;
   }[];
 };
 

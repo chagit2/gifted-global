@@ -9,6 +9,7 @@ import { lineKey, useCart } from "@/lib/cart";
 import { ORDER_SELECT, type OrderRow } from "@/lib/orders";
 import { savePrefill, splitStreet } from "@/lib/prefill";
 import { matchChoice, parseChoice, useProducts } from "@/lib/products";
+import { BOX_ID, parseContents, type BoxItem } from "@/lib/box";
 
 export const Route = createFileRoute("/account")({
   head: () => ({ meta: [{ title: "אזור אישי · מתנות" }, { name: "robots", content: "noindex" }] }),
@@ -95,9 +96,30 @@ function OrderAgain({ order }: { order: OrderRow }) {
   const [note, setNote] = useState<string | null>(null);
 
   const again = () => {
-    const byLine = new Map<string, { productId: string; choice: number[]; letters: string[] }>();
+    const byLine = new Map<
+      string,
+      { productId: string; choice: number[]; letters: string[]; items?: BoxItem[] }
+    >();
     let skipped = 0;
     for (const it of order.order_items) {
+      // A designed box comes back with the same items, if they are all still on sale.
+      if (it.product_id === BOX_ID) {
+        const items = parseContents(it.contents).map((c) => {
+          const p = getProduct(c.productId);
+          const choice = p && p.kind === "item" && p.inStock ? matchChoice(p, c.choice) : null;
+          return choice ? { productId: c.productId, choice, qty: c.qty } : null;
+        });
+        if (!items.length || items.some((i) => !i)) {
+          skipped += it.qty;
+          continue;
+        }
+        const box = items as BoxItem[];
+        const key = lineKey({ productId: BOX_ID, choice: [], items: box });
+        const line = byLine.get(key) ?? { productId: BOX_ID, choice: [], letters: [], items: box };
+        for (let i = 0; i < it.qty; i++) line.letters.push(it.letter);
+        byLine.set(key, line);
+        continue;
+      }
       const p = getProduct(it.product_id);
       // The same options are picked again by their Hebrew labels; a gift whose
       // options have changed since can't be reordered as it was.

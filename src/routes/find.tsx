@@ -20,7 +20,7 @@ export const Route = createFileRoute("/find")({
   head: () => ({
     meta: [
       { title: "עזרו לי לבחור · מתנות" },
-      { name: "description", content: "שלוש שאלות קצרות, ונמצא לכם את המתנה המתאימה." },
+      { name: "description", content: "שלוש שאלות קצרות, ונמצא לכם את המארז המתאים." },
     ],
   }),
   component: FinderPage,

@@ -16,6 +16,7 @@ export function SettingsAdmin() {
   return (
     <div className="space-y-6">
       <ShippingFee />
+      <BoxMinItems />
       <ContactSettings />
       <LetterBackgrounds />
     </div>
@@ -160,6 +161,67 @@ function ShippingFee() {
           dir="ltr"
           className={field}
         />
+      </label>
+      <button
+        type="submit"
+        disabled={state === "saving" || isLoading}
+        className="mt-4 rounded-full bg-gold px-6 py-2.5 text-sm font-semibold text-navy transition hover:bg-gold-2 disabled:opacity-60"
+      >
+        {t("save")}
+      </button>
+      {state === "saved" && <span className="ms-3 text-xs text-emerald-700">{t("saved")}</span>}
+      {state === "error" && <p className="mt-2 text-xs text-red-600">{t("saveError")}</p>}
+    </form>
+  );
+}
+
+// The least number of items a "design your own box" box may hold.
+function BoxMinItems() {
+  const { t } = useI18n();
+  const { boxMinItems, isLoading } = useSettings();
+  const queryClient = useQueryClient();
+  const [min, setMin] = useState("");
+  const [state, setState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+
+  useEffect(() => {
+    if (!isLoading) setMin(String(boxMinItems));
+  }, [isLoading, boxMinItems]);
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setState("saving");
+    // The column comes with db/custom-box.sql (not in the generated types yet).
+    const { error } = await supabase
+      .from("site_settings")
+      .update({ box_min_items: Number(min) } as never)
+      .eq("id", 1);
+    if (error) return setState("error");
+    await queryClient.invalidateQueries({ queryKey: SETTINGS_KEY });
+    setState("saved");
+  };
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="max-w-sm rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl"
+    >
+      <label className="block">
+        <span className="text-xs text-navy/65">{t("boxMinItemsLabel")}</span>
+        <input
+          type="number"
+          min={1}
+          max={50}
+          step={1}
+          required
+          value={min}
+          onChange={(e) => {
+            setMin(e.target.value);
+            setState("idle");
+          }}
+          dir="ltr"
+          className={field}
+        />
+        <span className="mt-1 block text-[11px] text-navy/60">{t("boxMinItemsHint")}</span>
       </label>
       <button
         type="submit"

@@ -15,7 +15,12 @@ export type ProductOption = { name: L; values: OptionValue[] };
 // indexes, so the order still reads correctly after the gift's options are edited).
 export type Choice = { name: L; value: OptionValue }[];
 
-export type ProductRow = Database["public"]["Tables"]["products"]["Row"];
+// `kind` exists once db/custom-box.sql has run.
+export type ProductRow = Database["public"]["Tables"]["products"]["Row"] & { kind?: string };
+
+// A ready-made box, or a single item that is only sold inside a box the
+// customer designs (see lib/box.ts).
+export type ProductKind = "bundle" | "item";
 
 export type Product = {
   id: string;
@@ -32,10 +37,11 @@ export type Product = {
   // Out-of-stock gifts stay on the site but can't be ordered.
   inStock: boolean;
   options: ProductOption[];
+  kind: ProductKind;
   sort: number;
 };
 
-const isL = (v: unknown): v is L =>
+export const isL = (v: unknown): v is L =>
   !!v &&
   typeof v === "object" &&
   ["he", "fr", "en"].every((k) => typeof (v as L)[k as keyof L] === "string");
@@ -105,8 +111,13 @@ export const fromRow = (r: ProductRow): Product => ({
   inStock: r.in_stock ?? true,
   // Missing until db/product-options.sql has run.
   options: parseOptions(r.options),
+  kind: r.kind === "item" ? "item" : "bundle",
   sort: r.sort,
 });
+
+// Whether the products table has the `kind` column (db/custom-box.sql); until
+// then saving leaves it out, so ready-made boxes can still be edited.
+let hasKind = false;
 
 // `withOptions` is off for gifts without options so saving keeps working on a
 // database where db/product-options.sql hasn't run yet.
@@ -128,6 +139,7 @@ export const toRow = (p: Omit<Product, "id" | "category">, withOptions = p.optio
   in_stock: p.inStock,
   sort: p.sort,
   ...(withOptions && { options: p.options }),
+  ...((hasKind || p.kind === "item") && { kind: p.kind }),
 });
 
 export const PRODUCTS_KEY = ["products"] as const;
@@ -139,20 +151,25 @@ export async function fetchProducts(): Promise<Product[]> {
     .order("sort", { ascending: true })
     .order("created_at", { ascending: true });
   if (error) throw error;
+  if (data.length > 0) hasKind = "kind" in data[0]!;
   return data.map(fromRow);
 }
 
 // All products the viewer may read: active ones for everyone, plus hidden ones
-// for admins. Storefront helpers only ever return active products.
+// for admins. Storefront helpers only ever return active products: `live` and
+// `byCategory` the ready-made boxes, `items` the single items for designing a box.
 export function useProducts() {
   const q = useQuery({ queryKey: PRODUCTS_KEY, queryFn: fetchProducts, staleTime: 5 * 60 * 1000 });
   const helpers = useMemo(() => {
     const all = q.data ?? [];
-    const live = all.filter((p) => p.active);
-    const byId = new Map(live.map((p) => [p.id, p]));
+    const active = all.filter((p) => p.active);
+    const live = active.filter((p) => p.kind === "bundle");
+    const byId = new Map(active.map((p) => [p.id, p]));
     return {
       all,
       live,
+      items: active.filter((p) => p.kind === "item"),
+      hasActive: active.length > 0,
       getProduct: (id: string) => byId.get(id),
       byCategory: (slug: string) => live.filter((p) => p.categories.includes(slug)),
     };

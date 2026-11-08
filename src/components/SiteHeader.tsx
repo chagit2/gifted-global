@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Globe, ShoppingBag, Home, ChevronDown, User } from "lucide-react";
 import { categories } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
+import { useProducts } from "@/lib/products";
 import { LANGS, useI18n } from "@/lib/i18n";
 import { CURRENCIES, useCurrency } from "@/lib/currency";
 import { useAuth } from "@/lib/auth";
@@ -173,6 +174,8 @@ export function SiteHeader() {
   const { count } = useCart();
   const { user } = useAuth();
   const bump = useBumpOnIncrease(count);
+  // The custom box link appears once there are items to choose from.
+  const hasItems = useProducts().items.length > 0;
 
   const holidays = categories.filter((c) => c.group === "holidays").map((c) => ({ slug: c.slug, label: tl(c.label) }));
 
@@ -184,8 +187,13 @@ export function SiteHeader() {
         <Link to="/" aria-label={t("navHome")} className={iconBtn}>
           <Home className="size-5" />
         </Link>
-        <div className="order-last flex w-full items-center justify-center gap-5 sm:order-none sm:w-auto sm:justify-start sm:gap-6">
+        <div className="order-last flex w-full flex-wrap items-center justify-center gap-x-5 gap-y-0 sm:order-none sm:w-auto sm:flex-nowrap sm:justify-start sm:gap-6">
           <Link to="/gifts" className={navLink}>{t("navAllGifts")}</Link>
+          {hasItems && (
+            <Link to="/build" className={navLink}>
+              {t("navBuildBox")}
+            </Link>
+          )}
           <Dropdown label={t("navHolidays")} items={holidays} />
           <Link to="/c/$slug" params={{ slug: "judaica" }} className={navLink}>{t("navJudaica")}</Link>
           <Link to="/c/$slug" params={{ slug: "for-boy" }} className={navLink}>{t("navForBoy")}</Link>
@@ -202,10 +210,10 @@ export function SiteHeader() {
             {user && <span className="absolute -top-0.5 -end-0.5 size-2.5 rounded-full bg-gold" />}
           </Link>
           <Link to="/cart" aria-label={t("cart")} className={`relative ${iconBtn}`}>
-            <ShoppingBag key={bump} className={`size-5 ${bump ? "animate-bump" : ""}`} />
+            <ShoppingBag key={`bump-${bump}`} className={`size-5 ${bump ? "animate-bump" : ""}`} />
             {count > 0 && (
               <span
-                key={count}
+                key={`count-${count}`}
                 className={`absolute -top-1 -end-1 grid size-5 place-items-center rounded-full bg-gold text-[10px] font-bold text-navy ring-2 ring-navy ${bump ? "animate-pop" : ""}`}
               >
                 {count}

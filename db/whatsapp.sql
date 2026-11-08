@@ -13,6 +13,17 @@ create table if not exists public.wa_messages (
   created_at timestamptz not null default now(),
   read_at timestamptz                  -- when the shop owner opened an incoming message
 );
+-- Photos, voice notes, videos and files: WhatsApp's media id and details;
+-- the file itself is copied to the private wa-media bucket the first time
+-- it is opened in the admin area (media_path).
+alter table public.wa_messages add column if not exists media_type text not null default '';
+alter table public.wa_messages add column if not exists media_id text not null default '';
+alter table public.wa_messages add column if not exists mime_type text not null default '';
+alter table public.wa_messages add column if not exists file_name text not null default '';
+alter table public.wa_messages add column if not exists media_path text not null default '';
+insert into storage.buckets (id, name, public) values ('wa-media', 'wa-media', false)
+  on conflict (id) do nothing;
+
 create index if not exists wa_messages_wa_id_created on public.wa_messages (wa_id, created_at);
 
 alter table public.wa_messages enable row level security;

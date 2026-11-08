@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SHIPPING_FEE } from "./orders";
+import { DEFAULT_BOX_MIN_ITEMS } from "./box";
 
 // Contact details (db/contact.sql); empty until filled in the admin area.
 export type Contact = { email: string; phone: string; accessibilityCoordinator: string };
@@ -35,6 +36,8 @@ export function useSettings() {
         shippingFee: data ? Number(data.shipping_fee) : SHIPPING_FEE,
         letterBackgrounds: data?.letter_backgrounds ?? [],
         contact: readContact(data),
+        // Missing until db/custom-box.sql has run.
+        boxMinItems: Number((data as { box_min_items?: number } | null)?.box_min_items) || DEFAULT_BOX_MIN_ITEMS,
       };
     },
     staleTime: 5 * 60 * 1000,
@@ -43,6 +46,7 @@ export function useSettings() {
     shippingFee: q.data?.shippingFee ?? SHIPPING_FEE,
     letterBackgrounds: q.data?.letterBackgrounds ?? [],
     contact: q.data?.contact ?? EMPTY_CONTACT,
+    boxMinItems: q.data?.boxMinItems ?? DEFAULT_BOX_MIN_ITEMS,
     isLoading: q.isLoading,
   };
 }

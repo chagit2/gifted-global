@@ -61,10 +61,41 @@ type Incoming = {
   text?: { body?: string };
   button?: { text?: string };
   interactive?: { button_reply?: { title?: string }; list_reply?: { title?: string } };
-  image?: { caption?: string };
-  video?: { caption?: string };
-  document?: { caption?: string; filename?: string };
+  image?: Media & { caption?: string };
+  video?: Media & { caption?: string };
+  audio?: Media;
+  voice?: Media;
+  sticker?: Media;
+  document?: Media & { caption?: string; filename?: string };
 };
+type Media = { id?: string; mime_type?: string };
+
+// The attachment of a photo / voice / video / file / sticker message.
+export function messageMedia(m: Incoming) {
+  const kind = (["image", "video", "audio", "voice", "sticker", "document"] as const).find(
+    (k) => k === m.type,
+  );
+  const media = kind ? m[kind] : undefined;
+  if (!kind || !media?.id) return { media_type: "", media_id: "", mime_type: "", file_name: "" };
+  return {
+    media_type: kind === "voice" ? "audio" : kind,
+    media_id: media.id,
+    mime_type: media.mime_type ?? "",
+    file_name: kind === "document" ? (m.document?.filename ?? "") : "",
+  };
+}
+
+// Fetches an attachment from WhatsApp (its links need the token and expire
+// within minutes, so the file is downloaded and kept in our own storage).
+export async function downloadMedia(mediaId: string) {
+  const auth = { Authorization: `Bearer ${process.env["WHATSAPP_TOKEN"]}` };
+  const meta = await fetch(`https://graph.facebook.com/${API_VERSION}/${mediaId}`, { headers: auth });
+  const info = (await meta.json().catch(() => ({}))) as { url?: string; mime_type?: string };
+  if (!meta.ok || !info.url) throw new Error(`WHATSAPP_MEDIA: ${meta.status}`);
+  const file = await fetch(info.url, { headers: auth });
+  if (!file.ok) throw new Error(`WHATSAPP_MEDIA_FILE: ${file.status}`);
+  return { blob: await file.blob(), mime: info.mime_type ?? file.headers.get("content-type") ?? "" };
+}
 
 // Readable text for any kind of incoming message.
 export function messageText(m: Incoming) {

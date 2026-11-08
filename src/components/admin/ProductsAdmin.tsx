@@ -5,9 +5,11 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  Gift,
   ImagePlus,
   Languages,
   Plus,
+  Puzzle,
   Star,
   X,
 } from "lucide-react";
@@ -27,6 +29,7 @@ import {
   toRow,
   useProducts,
   type Product,
+  type ProductKind,
   type OptionValue,
   type ProductOption,
 } from "@/lib/products";
@@ -64,11 +67,15 @@ export function ProductsAdmin() {
   const { all, isLoading, isError } = useProducts();
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState("");
+  // Ready-made boxes, single items for designing a box, or both.
+  const [kindFilter, setKindFilter] = useState<ProductKind | "">("");
   const topRef = useRef<HTMLDivElement>(null);
   const [editing, setEditing] = useState<Product | "new" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const shown = filter ? all.filter((p) => p.categories.includes(filter)) : all;
+  const shown = all.filter(
+    (p) => (!filter || p.categories.includes(filter)) && (!kindFilter || p.kind === kindFilter),
+  );
   const refresh = () => queryClient.invalidateQueries({ queryKey: PRODUCTS_KEY });
   const [moving, setMoving] = useState(false);
 
@@ -104,6 +111,7 @@ export function ProductsAdmin() {
       <ProductForm
         product={editing === "new" ? null : editing}
         defaultCategory={filter || categories[0]!.slug}
+        defaultKind={kindFilter || "bundle"}
         nextSort={Math.max(0, ...all.map((p) => p.sort)) + 1}
         onDone={(changed) => {
           setEditing(null);
@@ -115,6 +123,28 @@ export function ProductsAdmin() {
 
   return (
     <div ref={topRef} className="scroll-mt-24">
+      <div role="tablist" aria-label={t("kindLabel")} className="mb-4 inline-flex rounded-full border border-navy/15 bg-white/70 p-1">
+        {(
+          [
+            ["", t("kindAll"), all.length],
+            ["bundle", t("kindBundles"), all.filter((p) => p.kind === "bundle").length],
+            ["item", t("kindItems"), all.filter((p) => p.kind === "item").length],
+          ] as const
+        ).map(([k, text, n]) => (
+          <button
+            key={k}
+            type="button"
+            role="tab"
+            aria-selected={kindFilter === k}
+            onClick={() => setKindFilter(k)}
+            className={`rounded-full px-4 py-1.5 text-sm transition ${
+              kindFilter === k ? "bg-navy text-pearl" : "text-navy/75 hover:text-gold-deep"
+            }`}
+          >
+            {text} ({n})
+          </button>
+        ))}
+      </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <select
           value={filter}
@@ -182,6 +212,13 @@ export function ProductsAdmin() {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm text-navy">
                   {tl(p.name) || p.name.he}
+                  <span
+                    className={`ms-2 rounded-full border px-2 py-0.5 text-[10px] ${
+                      p.kind === "item" ? "border-gold/50 text-gold-deep" : "border-navy/15 text-navy/70"
+                    }`}
+                  >
+                    {t(p.kind === "item" ? "kindItemBadge" : "kindBundleBadge")}
+                  </span>
                   {!p.active && (
                     <span className="ms-2 rounded-full border border-navy/15 px-2 py-0.5 text-[10px] text-navy/70">
                       {t("hiddenBadge")}
@@ -223,15 +260,18 @@ export function ProductsAdmin() {
 function ProductForm({
   product,
   defaultCategory,
+  defaultKind,
   nextSort,
   onDone,
 }: {
   product: Product | null;
   defaultCategory: string;
+  defaultKind: ProductKind;
   nextSort: number;
   onDone: (changed: boolean) => void;
 }) {
   const { t, tl, dir } = useI18n();
+  const [kind, setKind] = useState<ProductKind>(product?.kind ?? defaultKind);
   const [cats, setCats] = useState<string[]>(product?.categories ?? [defaultCategory]);
   const toggleCat = (slug: string) =>
     setCats((prev) => (prev.includes(slug) ? prev.filter((c) => c !== slug) : [...prev, slug]));
@@ -431,13 +471,14 @@ function ProductForm({
         active,
         inStock,
         options: cleanOptions,
+        kind,
         sort: product?.sort ?? nextSort,
       },
       cleanOptions.length > 0 || (product?.options.length ?? 0) > 0,
     );
     const { error } = product
-      ? await supabase.from("products").update(row).eq("id", product.id)
-      : await supabase.from("products").insert(row);
+      ? await supabase.from("products").update(row as never).eq("id", product.id)
+      : await supabase.from("products").insert(row as never);
     setBusy(false);
     if (error) return setError(t("saveError"));
     // Photos taken off the product are no longer needed in storage.
@@ -484,7 +525,38 @@ function ProductForm({
       </h2>
 
       <fieldset>
-        <legend className={label}>{t("categoriesLabel")}</legend>
+        <legend className={label}>{t("kindQuestion")}</legend>
+        <div role="radiogroup" className="mt-2 grid gap-3 sm:grid-cols-2">
+          {(
+            [
+              ["bundle", Gift, "kindBundle", "kindBundleHint"],
+              ["item", Puzzle, "kindItem", "kindItemHint"],
+            ] as const
+          ).map(([k, Icon, title, hint]) => (
+            <button
+              key={k}
+              type="button"
+              role="radio"
+              aria-checked={kind === k}
+              onClick={() => setKind(k)}
+              className={`flex items-start gap-3 rounded-xl border p-4 text-start transition ${
+                kind === k
+                  ? "border-gold bg-gold/15 shadow-md shadow-gold/10"
+                  : "border-navy/15 hover:border-gold/50"
+              }`}
+            >
+              <Icon className={`mt-0.5 size-5 shrink-0 ${kind === k ? "text-gold-deep" : "text-navy/60"}`} />
+              <span>
+                <span className="block text-sm font-semibold text-navy">{t(title)}</span>
+                <span className="mt-0.5 block text-xs text-navy/70">{t(hint)}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className={label}>{t(kind === "item" ? "itemCategoriesLabel" : "categoriesLabel")}</legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {categories.map((c) => {
             const on = cats.includes(c.slug);

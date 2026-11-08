@@ -2,10 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin, Minus, Plus } from "lucide-react";
 import { EmptyCart } from "@/components/EmptyCart";
 import { Ornament } from "@/components/Reveal";
-import { lineKey, useCart } from "@/lib/cart";
+import { useCart, useLineViews } from "@/lib/cart";
+import { boxCount } from "@/lib/box";
 import { LetterField } from "@/components/Letter";
-import { choiceLabels, useProducts } from "@/lib/products";
 import { ChoiceView } from "@/components/ChoiceView";
+import { BoxContents, LineThumb } from "@/components/BoxParts";
 import { useCurrency } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
 import { useSettings } from "@/lib/settings";
@@ -14,9 +15,9 @@ export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
       { title: "סל הקניות · מתנות" },
-      { name: "description", content: "הסל שלכם: מתנות, מכתבים אישיים וסכום לתשלום." },
+      { name: "description", content: "הסל שלכם: מארזים, מכתבים אישיים וסכום לתשלום." },
       { property: "og:title", content: "סל הקניות · מתנות" },
-      { property: "og:description", content: "הסל שלכם: מתנות, מכתבים אישיים וסכום לתשלום." },
+      { property: "og:description", content: "הסל שלכם: מארזים, מכתבים אישיים וסכום לתשלום." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -25,11 +26,11 @@ export const Route = createFileRoute("/cart")({
 });
 
 function CartPage() {
-  const { t, tl, lang } = useI18n();
+  const { t, tl } = useI18n();
   const { money } = useCurrency();
   const { lines, total, remove, setQty, setLetter } = useCart();
-  const { getProduct } = useProducts();
-  const { shippingFee: fee } = useSettings();
+  const views = useLineViews();
+  const { shippingFee: fee, boxMinItems } = useSettings();
   // Shipping is charged only when there is at least one gift.
   const shippingFee = lines.length > 0 ? fee : 0;
 
@@ -45,37 +46,31 @@ function CartPage() {
       ) : (
         <>
           <div className="mt-8 space-y-4">
-            {lines.map((line) => {
-              const p = getProduct(line.productId);
-              if (!p) return null;
-              const key = lineKey(line);
+            {views.map((view) => {
+              const { line, key } = view;
               return (
                 <div
                   key={key}
                   className="rounded-2xl border border-navy/10 bg-white/70 p-4 backdrop-blur-xl transition hover:border-gold/40 hover:shadow-lg hover:shadow-navy/5"
                 >
                   <div className="flex gap-4">
-                    <img
-                      src={p.images[0]}
-                      alt={tl(p.name)}
-                      loading="lazy"
-                      width={1024}
-                      height={1024}
-                      className="size-24 rounded-xl object-cover"
-                    />
+                    <LineThumb view={view} className="size-24 rounded-xl" />
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <h2 className="font-heb text-lg text-navy">{tl(p.name)}</h2>
-                          <p className="mt-1 text-xs text-navy/70">{tl(p.subtitle)}</p>
-                          <ChoiceView
-                            choice={choiceLabels(p, line.choice)}
-                            className="mt-1 text-xs font-semibold text-navy"
-                          />
-                          {!p.inStock && <p className="mt-1 text-xs text-red-600">{t("outOfStock")}</p>}
+                          <h2 className="font-heb text-lg text-navy">{tl(view.name)}</h2>
+                          {view.subtitle && <p className="mt-1 text-xs text-navy/70">{tl(view.subtitle)}</p>}
+                          <ChoiceView choice={view.choice} className="mt-1 text-xs font-semibold text-navy" />
+                          <BoxContents view={view} className="mt-1 text-xs text-navy/75" />
+                          {!view.inStock && <p className="mt-1 text-xs text-red-600">{t("outOfStock")}</p>}
+                          {line.items && boxCount(line.items) < boxMinItems && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {t("buildMinNote").replace("{n}", String(boxMinItems))}
+                            </p>
+                          )}
                         </div>
                         <span className="font-semibold text-gold-deep">
-                          {money(p.price * line.qty)}
+                          {money(view.unitPrice * line.qty)}
                         </span>
                       </div>
                       <div className="mt-3 flex items-center gap-3 text-xs text-navy/75">
@@ -103,6 +98,15 @@ function CartPage() {
                         >
                           {t("remove")}
                         </button>
+                        {view.contents && (
+                          <Link
+                            to="/build"
+                            search={{ edit: key }}
+                            className="min-h-10 px-1 py-3 text-gold-deep underline-offset-4 hover:underline"
+                          >
+                            {t("boxEdit")}
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -115,7 +119,7 @@ function CartPage() {
                         <LetterField
                           value={letter}
                           onChange={(v) => setLetter(key, i, v)}
-                          categories={p.categories}
+                          categories={view.categories}
                           className="mt-2"
                         />
                       </div>

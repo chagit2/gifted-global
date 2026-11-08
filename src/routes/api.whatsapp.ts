@@ -19,7 +19,7 @@ export const Route = createFileRoute("/api/whatsapp")({
           : new Response("Forbidden", { status: 403 });
       },
       POST: async ({ request }) => {
-        const { validSignature, messageText } = await import("@/lib/whatsapp.server");
+        const { validSignature, messageText, messageMedia } = await import("@/lib/whatsapp.server");
         const raw = await request.text();
         if (!(await validSignature(raw, request.headers.get("x-hub-signature-256"))))
           return new Response("Bad signature", { status: 401 });
@@ -45,6 +45,7 @@ export const Route = createFileRoute("/api/whatsapp")({
               contact_name: names.get(m.from) ?? "",
               direction: "in",
               body: messageText(m),
+              ...messageMedia(m),
               wa_message_id: m.id,
               created_at: m.timestamp
                 ? new Date(Number(m.timestamp) * 1000).toISOString()

@@ -1,10 +1,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { ArrowRight, Check, CheckCheck, MessageCircle, Send } from "lucide-react";
+import { ArrowRight, Check, CheckCheck, FileText, MessageCircle, Send } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
-import { sendWhatsAppReply, whatsappStatus } from "@/lib/whatsapp.functions";
+import { getWhatsAppMedia, sendWhatsAppReply, whatsappStatus } from "@/lib/whatsapp.functions";
 
 // Messages live in wa_messages (db/whatsapp.sql), not yet in the generated types.
 const db = supabase as unknown as SupabaseClient;
@@ -18,6 +18,9 @@ export type WaMessage = {
   status: string;
   created_at: string;
   read_at: string | null;
+  // Attachment details (photo, voice note, video, file, sticker), when any.
+  media_type?: string;
+  file_name?: string;
 };
 
 export const WA_KEY = ["wa_messages"] as const;
@@ -216,7 +219,16 @@ export function WhatsAppAdmin() {
                           : "rounded-es-sm bg-white text-navy"
                       }`}
                     >
-                      <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                      {m.media_type ? (
+                        <>
+                          <MediaPreview message={m} />
+                          {caption(m.body) && (
+                            <p className="mt-1 whitespace-pre-wrap break-words">{caption(m.body)}</p>
+                          )}
+                        </>
+                      ) : (
+                        <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                      )}
                       <p
                         className={`mt-1 flex items-center justify-end gap-1 text-[10px] ${
                           m.direction === "out" ? "text-pearl/70" : "text-navy/60"
@@ -282,4 +294,58 @@ export function WhatsAppAdmin() {
       </div>
     </div>
   );
+}
+
+// Media messages are stored as "📷 תמונה: caption"; the bubble shows the
+// attachment itself and only the caption as text.
+const caption = (body: string) => {
+  const i = body.indexOf(": ");
+  return i === -1 ? "" : body.slice(i + 2);
+};
+
+// The photo, player or file link of a message. The file is fetched from
+// WhatsApp the first time it is shown.
+function MediaPreview({ message }: { message: WaMessage }) {
+  const { t } = useI18n();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["wa_media", message.id],
+    queryFn: () => getWhatsAppMedia({ data: { id: message.id } }),
+    staleTime: 50 * 60 * 1000,
+    retry: 1,
+  });
+
+  if (isLoading)
+    return <div className="h-32 w-48 max-w-full rounded-lg animate-shimmer" aria-label={t("loading")} />;
+  if (isError || !data)
+    return <p className="text-xs opacity-80">{message.body} · {t("waMediaError")}</p>;
+
+  switch (message.media_type) {
+    case "image":
+    case "sticker":
+      return (
+        <a href={data.url} target="_blank" rel="noopener" title={t("waOpenFull")}>
+          <img
+            src={data.url}
+            alt={caption(message.body) || t("waImage")}
+            className={`max-h-72 rounded-lg object-contain ${message.media_type === "sticker" ? "w-32" : "w-full"}`}
+          />
+        </a>
+      );
+    case "audio":
+      return <audio controls preload="metadata" src={data.url} className="w-64 max-w-full" aria-label={t("waVoice")} />;
+    case "video":
+      return <video controls preload="metadata" src={data.url} className="max-h-72 w-full rounded-lg" />;
+    default:
+      return (
+        <a
+          href={data.url}
+          target="_blank"
+          rel="noopener"
+          className="flex items-center gap-2 rounded-lg border border-current/20 px-3 py-2 underline-offset-4 hover:underline"
+        >
+          <FileText className="size-5 shrink-0" />
+          <span className="truncate">{message.file_name || t("waFile")}</span>
+        </a>
+      );
+  }
 }

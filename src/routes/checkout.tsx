@@ -3,10 +3,10 @@ import { EmptyCart } from "@/components/EmptyCart";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Gift, Lock, MapPin, Truck } from "lucide-react";
 import { Confetti } from "@/components/Confetti";
-import { lineKey, useCart } from "@/lib/cart";
+import { useCart, useLineViews } from "@/lib/cart";
 import { LetterField } from "@/components/Letter";
-import { choiceLabels, useProducts } from "@/lib/products";
 import { ChoiceView } from "@/components/ChoiceView";
+import { BoxContents } from "@/components/BoxParts";
 import { useCurrency } from "@/lib/currency";
 import { formatPrice, useI18n } from "@/lib/i18n";
 import { placeOrder } from "@/lib/orders.functions";
@@ -20,7 +20,7 @@ import { checkCoupon } from "@/lib/orders.functions";
 export const Route = createFileRoute("/checkout")({
   head: () => {
     const title = "תשלום · מתנות";
-    const description = "פרטי השולח, כתובת המשלוח ומכתב אישי לכל מתנה — ואנחנו שולחים.";
+    const description = "פרטי השולח, כתובת המשלוח ומכתב אישי לכל מארז — ואנחנו שולחים.";
     return {
       meta: [
         { title },
@@ -51,7 +51,7 @@ function CheckoutPage() {
   const { lines, total, setLetter, clear } = useCart();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { getProduct } = useProducts();
+  const views = useLineViews();
   const [busy, setBusy] = useState(false);
   // Number of gifts in the placed order; null until the order is sent.
   const [done, setDone] = useState<number | null>(null);
@@ -146,6 +146,7 @@ function CheckoutPage() {
               choice: l.choice,
               qty: 1,
               letter,
+              ...(l.items && { contents: l.items }),
             })),
           ),
         },
@@ -161,6 +162,8 @@ function CheckoutPage() {
             ? "productUnavailable"
             : msg.includes("DELIVERY_TOO_SOON")
               ? "deliveryTooSoon"
+              : msg.includes("BOX_TOO_SMALL")
+                ? "boxTooSmall"
               : msg.includes("INVALID_COUPON")
                 ? "couponInvalid"
                 : msg.includes("RATES_UNAVAILABLE")
@@ -375,16 +378,16 @@ function CheckoutPage() {
             <h2 className="font-heb text-lg text-navy">{t("lettersTitle")}</h2>
             <p className="mt-1 text-xs text-navy/70">{t("letterNote")}</p>
             <div className="mt-4 space-y-4">
-              {lines.map((l) => {
-                const p = getProduct(l.productId);
-                if (!p) return null;
+              {views.map((view) => {
+                const { line: l, key } = view;
                 return (
-                  <div key={lineKey(l)} className="rounded-xl border border-navy/10 p-3">
+                  <div key={key} className="rounded-xl border border-navy/10 p-3">
                     <p className="text-sm text-navy">
-                      {tl(p.name)}
-                      <ChoiceView choice={choiceLabels(p, l.choice)} className="ms-2 text-xs text-navy/70" />
+                      {tl(view.name)}
+                      <ChoiceView choice={view.choice} className="ms-2 text-xs text-navy/70" />
                       {l.qty > 1 && <span className="text-navy/70"> × {l.qty}</span>}
                     </p>
+                    <BoxContents view={view} className="mt-1 text-xs text-navy/70" />
                     {l.letters.map((letter, i) => (
                       <div key={i} className="mt-2">
                         {l.qty > 1 && (
@@ -394,8 +397,8 @@ function CheckoutPage() {
                         )}
                         <LetterField
                           value={letter}
-                          onChange={(v) => setLetter(lineKey(l), i, v)}
-                          categories={p.categories}
+                          onChange={(v) => setLetter(key, i, v)}
+                          categories={view.categories}
                           className="mt-1"
                         />
                       </div>
@@ -446,19 +449,19 @@ function CheckoutPage() {
         <aside className="h-fit rounded-2xl border border-navy/10 bg-white/70 p-6 backdrop-blur-xl lg:sticky lg:top-24">
           <h2 className="font-heb text-lg text-navy">{t("cart")}</h2>
           <ul className="mt-4 space-y-3 text-sm">
-            {lines.map((l) => {
-              const p = getProduct(l.productId);
-              if (!p) return null;
+            {views.map((view) => {
+              const { line: l, key } = view;
               return (
-                <li key={lineKey(l)} className="flex justify-between gap-3 text-navy/75">
+                <li key={key} className="flex justify-between gap-3 text-navy/75">
                   <div>
                     <p>
-                      {tl(p.name)} × {l.qty}
+                      {tl(view.name)} × {l.qty}
                     </p>
-                    <ChoiceView choice={choiceLabels(p, l.choice)} className="mt-1 text-xs" />
+                    <ChoiceView choice={view.choice} className="mt-1 text-xs" />
+                    <BoxContents view={view} className="mt-1 text-xs" />
                   </div>
                   <span className="whitespace-nowrap text-gold-deep">
-                    {money(p.price * l.qty)}
+                    {money(view.unitPrice * l.qty)}
                   </span>
                 </li>
               );
