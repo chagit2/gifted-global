@@ -44,6 +44,7 @@ export type Database = {
       order_items: {
         Row: {
           choice: Json
+          contents: Json
           id: string
           letter: string
           order_id: string
@@ -54,6 +55,7 @@ export type Database = {
         }
         Insert: {
           choice?: Json
+          contents?: Json
           id?: string
           letter?: string
           order_id: string
@@ -64,6 +66,7 @@ export type Database = {
         }
         Update: {
           choice?: Json
+          contents?: Json
           id?: string
           letter?: string
           order_id?: string
@@ -172,6 +175,7 @@ export type Database = {
           id: string
           images: string[]
           in_stock: boolean
+          kind: string
           name_en: string
           name_fr: string
           name_he: string
@@ -193,6 +197,7 @@ export type Database = {
           id?: string
           images?: string[]
           in_stock?: boolean
+          kind?: string
           name_en?: string
           name_fr?: string
           name_he?: string
@@ -214,6 +219,7 @@ export type Database = {
           id?: string
           images?: string[]
           in_stock?: boolean
+          kind?: string
           name_en?: string
           name_fr?: string
           name_he?: string
@@ -229,6 +235,7 @@ export type Database = {
       site_settings: {
         Row: {
           accessibility_coordinator: string
+          box_min_items: number
           contact_email: string
           contact_phone: string
           id: number
@@ -237,6 +244,7 @@ export type Database = {
         }
         Insert: {
           accessibility_coordinator?: string
+          box_min_items?: number
           contact_email?: string
           contact_phone?: string
           id?: number
@@ -245,6 +253,7 @@ export type Database = {
         }
         Update: {
           accessibility_coordinator?: string
+          box_min_items?: number
           contact_email?: string
           contact_phone?: string
           id?: number
