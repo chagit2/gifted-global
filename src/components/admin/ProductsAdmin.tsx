@@ -73,9 +73,65 @@ export function ProductsAdmin() {
   const [editing, setEditing] = useState<Product | "new" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [hiddenOnly, setHiddenOnly] = useState(false);
   const shown = all.filter(
-    (p) => (!filter || p.categories.includes(filter)) && (!kindFilter || p.kind === kindFilter),
+    (p) =>
+      (!filter || p.categories.includes(filter)) &&
+      (!kindFilter || p.kind === kindFilter) &&
+      (!hiddenOnly || !p.active),
   );
+  // Ticked products, for showing, hiding or deleting many at once.
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const picked = shown.filter((p) => selected.has(p.id));
+  const toggleOne = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const allPicked = shown.length > 0 && picked.length === shown.length;
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  const setVisible = async (visible: boolean) => {
+    // A product without a price is never put on the site.
+    const ok = visible ? picked.filter((p) => p.price > 0) : picked;
+    const skipped = picked.length - ok.length;
+    setBulkBusy(true);
+    setError(null);
+    const { error } = await supabase
+      .from("products")
+      .update({ active: visible })
+      .in(
+        "id",
+        ok.map((p) => p.id),
+      );
+    setBulkBusy(false);
+    if (error) return setError(t("saveError"));
+    setNotice(skipped ? t("bulkSkippedNoPrice").replace("{n}", String(skipped)) : null);
+    setSelected(new Set());
+    refresh();
+  };
+
+  const deletePicked = async () => {
+    if (!window.confirm(t("bulkConfirmDelete").replace("{n}", String(picked.length)))) return;
+    setBulkBusy(true);
+    setError(null);
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .in(
+        "id",
+        picked.map((p) => p.id),
+      );
+    if (!error) await removeStored(picked.flatMap((p) => [...p.images, ...optionImages(p.options)]));
+    setBulkBusy(false);
+    if (error) return setError(t("saveError"));
+    setSelected(new Set());
+    setNotice(null);
+    refresh();
+  };
   const refresh = () => queryClient.invalidateQueries({ queryKey: PRODUCTS_KEY });
   const [moving, setMoving] = useState(false);
 
@@ -176,6 +232,57 @@ export function ProductsAdmin() {
         </div>
       </div>
       {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+      {notice && <p className="mt-3 text-sm text-gold-deep">{notice}</p>}
+
+      <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-navy/10 bg-white/60 px-3 py-2 text-sm">
+        <label className="inline-flex min-h-9 items-center gap-2 text-navy">
+          <input
+            type="checkbox"
+            checked={allPicked}
+            onChange={() => setSelected(allPicked ? new Set() : new Set(shown.map((p) => p.id)))}
+            className="size-4 accent-gold"
+          />
+          {t("bulkSelectAll")}
+        </label>
+        <label className="inline-flex min-h-9 items-center gap-2 text-navy/80">
+          <input
+            type="checkbox"
+            checked={hiddenOnly}
+            onChange={(e) => setHiddenOnly(e.target.checked)}
+            className="size-4 accent-gold"
+          />
+          {t("bulkHiddenOnly")}
+        </label>
+        {picked.length > 0 && (
+          <div className="ms-auto flex flex-wrap items-center gap-2">
+            <span className="text-navy/70">{t("bulkSelected").replace("{n}", String(picked.length))}</span>
+            <button
+              type="button"
+              disabled={bulkBusy}
+              onClick={() => setVisible(true)}
+              className="rounded-full border border-emerald-400/60 px-3 py-1.5 text-emerald-700 transition hover:bg-emerald-50 disabled:opacity-50"
+            >
+              {t("bulkShow")}
+            </button>
+            <button
+              type="button"
+              disabled={bulkBusy}
+              onClick={() => setVisible(false)}
+              className="rounded-full border border-navy/20 px-3 py-1.5 text-navy transition hover:bg-navy/5 disabled:opacity-50"
+            >
+              {t("bulkHide")}
+            </button>
+            <button
+              type="button"
+              disabled={bulkBusy}
+              onClick={deletePicked}
+              className="rounded-full border border-red-300 px-3 py-1.5 text-red-700 transition hover:bg-red-50 disabled:opacity-50"
+            >
+              {t("bulkDelete")}
+            </button>
+          </div>
+        )}
+      </div>
 
       <ul className="mt-6 space-y-3">
         {isError ? (
@@ -186,8 +293,17 @@ export function ProductsAdmin() {
           shown.map((p, i) => (
             <li
               key={p.id}
-              className="flex items-center gap-4 rounded-2xl border border-navy/10 bg-white/70 p-3 backdrop-blur-xl"
+              className={`flex items-center gap-4 rounded-2xl border bg-white/70 p-3 backdrop-blur-xl ${
+                selected.has(p.id) ? "border-gold" : "border-navy/10"
+              }`}
             >
+              <input
+                type="checkbox"
+                checked={selected.has(p.id)}
+                onChange={() => toggleOne(p.id)}
+                aria-label={tl(p.name) || p.name.he}
+                className="size-4 shrink-0 accent-gold"
+              />
               <div className="flex flex-col">
                 <button
                   aria-label={t("moveUp")}
@@ -222,6 +338,11 @@ export function ProductsAdmin() {
                   {!p.active && (
                     <span className="ms-2 rounded-full border border-navy/15 px-2 py-0.5 text-[10px] text-navy/70">
                       {t("hiddenBadge")}
+                    </span>
+                  )}
+                  {p.price <= 0 && (
+                    <span className="ms-2 rounded-full border border-red-300/60 px-2 py-0.5 text-[10px] text-red-700">
+                      {t("noPriceBadge")}
                     </span>
                   )}
                   {!p.inStock && (
@@ -440,6 +561,7 @@ function ProductForm({
     if (!name.he.trim()) return setError(t("hebrewRequired"));
     if (images.length === 0) return setError(t("imagesRequired"));
     if (cats.length === 0) return setError(t("categoriesRequired"));
+    if (active && !(Number(price) > 0)) return setError(t("priceRequiredVisible"));
     if (review.fr === "pending" || review.en === "pending")
       return setError(t("translateApproveFirst"));
     // Empty value rows (no label, no photo) are dropped; a missing French or
