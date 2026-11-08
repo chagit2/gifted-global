@@ -38,8 +38,8 @@ export const Route = createFileRoute("/gifts")({
   },
   head: () => ({
     meta: [
-      { title: "כל המתנות · מתנות" },
-      { name: "description", content: "כל המתנות באתר, עם חיפוש וסינון לפי אירוע, מחיר ועוד." },
+      { title: "כל המארזים · מתנות" },
+      { name: "description", content: "כל המארזים באתר, עם חיפוש וסינון לפי אירוע, מחיר ועוד." },
     ],
   }),
   component: GiftsPage,

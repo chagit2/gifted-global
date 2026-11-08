@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccessibilityRouteImport } from './routes/accessibility'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as BuildRouteImport } from './routes/build'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -52,6 +53,11 @@ const AccountRoute = AccountRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildRoute = BuildRouteImport.update({
+  id: '/build',
+  path: '/build',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartRoute = CartRouteImport.update({
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/accessibility': typeof AccessibilityRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/build': typeof BuildRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByTo {
   '/accessibility': typeof AccessibilityRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/build': typeof BuildRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/accessibility': typeof AccessibilityRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/build': typeof BuildRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -197,6 +206,7 @@ export interface FileRouteTypes {
     | '/accessibility'
     | '/account'
     | '/admin'
+    | '/build'
     | '/cart'
     | '/checkout'
     | '/contact'
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
     | '/accessibility'
     | '/account'
     | '/admin'
+    | '/build'
     | '/cart'
     | '/checkout'
     | '/contact'
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
     | '/accessibility'
     | '/account'
     | '/admin'
+    | '/build'
     | '/cart'
     | '/checkout'
     | '/contact'
@@ -261,6 +273,7 @@ export interface RootRouteChildren {
   AccessibilityRoute: typeof AccessibilityRoute
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRoute
+  BuildRoute: typeof BuildRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
@@ -312,6 +325,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/build': {
+      id: '/build'
+      path: '/build'
+      fullPath: '/build'
+      preLoaderRoute: typeof BuildRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cart': {
@@ -421,6 +441,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccessibilityRoute: AccessibilityRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRoute,
+  BuildRoute: BuildRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
