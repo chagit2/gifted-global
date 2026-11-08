@@ -696,6 +696,33 @@ const dict = {
     fr: "N'apparaît que dans « Coffret sur mesure » ; le client choisit combien en mettre",
     en: "Only shown on “Custom gift box”, where customers choose how many to put in",
   },
+  bulkSelectAll: { he: "לסמן את כל הרשימה", fr: "Tout sélectionner", en: "Select all" },
+  bulkHiddenOnly: { he: "רק מוסתרים", fr: "Masqués seulement", en: "Hidden only" },
+  bulkSelected: { he: "{n} מסומנים", fr: "{n} sélectionnés", en: "{n} selected" },
+  bulkShow: { he: "להציג באתר", fr: "Afficher", en: "Show on site" },
+  bulkHide: { he: "להסתיר", fr: "Masquer", en: "Hide" },
+  bulkDelete: { he: "למחוק", fr: "Supprimer", en: "Delete" },
+  bulkConfirmDelete: {
+    he: "למחוק {n} מוצרים? אי אפשר לבטל את זה.",
+    fr: "Supprimer {n} produits ? C'est définitif.",
+    en: "Delete {n} products? This can't be undone.",
+  },
+  bulkSkippedNoPrice: {
+    he: "{n} מוצרים בלי מחיר לא הוצגו באתר. קודם קובעים להם מחיר.",
+    fr: "{n} produits sans prix n'ont pas été affichés. Fixez d'abord un prix.",
+    en: "{n} products without a price weren't shown. Set a price first.",
+  },
+  priceRequiredVisible: {
+    he: "כדי להציג מוצר באתר צריך לקבוע לו מחיר",
+    fr: "Fixez un prix pour afficher le produit",
+    en: "Set a price to show the product on the site",
+  },
+  noPriceBadge: { he: "אין מחיר", fr: "Sans prix", en: "No price" },
+  kindNeedsSql: {
+    he: "כדי לשמור פריט בודד צריך קודם להריץ ב־Lovable את הקובץ db/custom-box.sql",
+    fr: "Pour enregistrer un article seul, exécutez d'abord db/custom-box.sql dans Lovable",
+    en: "To save a single item, first run db/custom-box.sql in Lovable",
+  },
   itemCategoriesLabel: {
     he: "קטגוריות לסינון בדף העיצוב האישי",
     fr: "Catégories pour filtrer la page sur mesure",

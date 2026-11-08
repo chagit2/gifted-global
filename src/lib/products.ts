@@ -162,7 +162,8 @@ export function useProducts() {
   const q = useQuery({ queryKey: PRODUCTS_KEY, queryFn: fetchProducts, staleTime: 5 * 60 * 1000 });
   const helpers = useMemo(() => {
     const all = q.data ?? [];
-    const active = all.filter((p) => p.active);
+    // A product without a price (e.g. just imported) never reaches the storefront.
+    const active = all.filter((p) => p.active && p.price > 0);
     const live = active.filter((p) => p.kind === "bundle");
     const byId = new Map(active.map((p) => [p.id, p]));
     return {
