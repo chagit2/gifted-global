@@ -696,6 +696,11 @@ const dict = {
     fr: "N'apparaît que dans « Coffret sur mesure » ; le client choisit combien en mettre",
     en: "Only shown on “Custom gift box”, where customers choose how many to put in",
   },
+  kindNeedsSql: {
+    he: "כדי לשמור פריט בודד צריך קודם להריץ ב־Lovable את הקובץ db/custom-box.sql",
+    fr: "Pour enregistrer un article seul, exécutez d'abord db/custom-box.sql dans Lovable",
+    en: "To save a single item, first run db/custom-box.sql in Lovable",
+  },
   itemCategoriesLabel: {
     he: "קטגוריות לסינון בדף העיצוב האישי",
     fr: "Catégories pour filtrer la page sur mesure",

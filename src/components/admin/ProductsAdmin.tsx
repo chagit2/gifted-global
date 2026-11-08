@@ -480,7 +480,9 @@ function ProductForm({
       ? await supabase.from("products").update(row as never).eq("id", product.id)
       : await supabase.from("products").insert(row as never);
     setBusy(false);
-    if (error) return setError(t("saveError"));
+    // A single item can't be saved until db/custom-box.sql has added the column.
+    if (error)
+      return setError(t(kind === "item" && error.message.includes("kind") ? "kindNeedsSql" : "saveError"));
     // Photos taken off the product are no longer needed in storage.
     const kept = new Set([...images, ...optionImages(cleanOptions)]);
     await removeStored(
