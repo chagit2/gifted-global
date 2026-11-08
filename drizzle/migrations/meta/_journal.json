@@ -64,6 +64,13 @@
       "when": 1793180818936,
       "tag": "0008_product_options",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794124975405,
+      "tag": "0009_refresh_whatsapp_messages_access",
+      "breakpoints": true
     }
   ]
 }
