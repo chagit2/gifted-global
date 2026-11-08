@@ -10,3 +10,5 @@
 - [x] Site catalog reads products from the database (order prices computed on the server)
 - [x] Recipient name/phone fields in checkout
 - [ ] Real credit-card charging (no payment provider connected yet)
+- [x] Re-run db/whatsapp.sql (migration 0010)
+- [ ] Run db/custom-box.sql — blocked: the file is not present in the project or uploads
