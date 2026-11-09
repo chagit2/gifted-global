@@ -4,8 +4,8 @@
 -- after login): in the admin area set a price, then tick and "show on site"
 -- the ones you want, and delete the rest.
 -- Product ids are "art-<supplier SKU>", so a price list can be applied later.
--- Safe to run more than once: a product already imported only gets its texts
--- updated (price, visibility and photos are left as they are).
+-- ALREADY RUN (Nov 2026): do NOT run it again, it would bring back menorahs
+-- you deleted. For the French/English texts run db/translate-art-hanukkah.sql.
 -- Needs db/custom-box.sql first (the "kind" column).
 
 insert into public.products
