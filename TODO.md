@@ -37,7 +37,8 @@
 - [ ] לקבל מארט יודאיקה אישור בכתב להשתמש בתמונות ובתיאורים שלהם (באתר שלהם כתוב שצריך הסכמה בכתב)
 - [ ] להריץ ב־Lovable את `db/import-art-hanukkah.sql` (137 חנוכיות בעברית, צרפתית ואנגלית, נכנסות מוסתרות ובלי מחיר). צריך קודם את `db/custom-box.sql`
 - [ ] להריץ ב־Lovable את `db/import-art-hanukkah-more.sql` (עוד 53 מוצרי חנוכה: מגשים, בתי חנוכייה, ברכות, סביבונים ועוד)
-- סדר ההרצה ב־Lovable: translate ← import-more ← prices
+- סדר ההרצה ב־Lovable: translate ← import-more ← prices ← art-as-items
+- [ ] להריץ ב־Lovable את `db/art-as-items.sql` (מוצרי ארט הם פריטים בודדים למארז בעיצוב אישי)
 - [ ] להריץ ב־Lovable את `db/translate-art-hanukkah.sql` (צרפתית ואנגלית לחנוכיות שכבר באתר). לא להריץ שוב את `db/import-art-hanukkah.sql`!
 - [ ] להריץ ב־Lovable את `db/prices-art-hanukkah.sql` (מחיר ספק ×2.5, אחרי שני הקבצים הקודמים)
 - [ ] 9 מוצרים בלי מחיר (לא הופיעו בדף של ארט, כנראה אזלו): לקבוע מחיר ידנית או למחוק
