@@ -1,5 +1,5 @@
 -- Shabbat products from the supplier (Art Judaica), 87 products: challah
--- trays, napkin holders and rings, pot trivets and more, in Hebrew, French and
+-- trays, napkin holders and rings, pot trivets, candlestick trays and more, in Hebrew, French and
 -- English, as single items for the custom gift box.
 -- Price: the supplier's price × 2.5, rounded to the shekel.
 -- They come in HIDDEN: in the admin area switch on the ones you want.
@@ -16,7 +16,7 @@ values
    'Sublimez la table de fête avec ce lot de 6 ronds de serviette argentés en forme de grenade. Chaque rond, de 4,5 cm de haut, allie élégance et luxe avec des pierres blanches scintillantes. La grenade, symbole d''abondance et de bénédiction, ajoute une touche festive et unique à chaque repas. Un cadeau parfait et remarquable !',
    'Elevate the holiday table with this set of 6 silver napkin rings shaped like pomegranates. Each ring, 4.5 cm high, combines elegance and luxury with sparkling white stones. The pomegranate, a symbol of abundance and blessing, adds a festive, unique touch to every meal. A perfect, impressive gift!',
    75, array['/products/art/uk80655-1.webp','/products/art/uk80655-2.webp','/products/art/uk80655-3.webp','/products/art/uk80655-4.webp','/products/art/uk80655-5.webp','/products/art/uk80655-6.webp']::text[], false, true, 'item', 1400),  -- 29.99 × 2.5
-  ('art-UK82551', 'shabbat', array['shabbat','judaica']::text[],
+  ('art-UK82551', 'shabbat', array['shabbat','shabbat-candle-trays','judaica']::text[],
    'מגש קריסטל מהודר לפמוטים 34x15 ס"מ', 'Plateau en cristal élégant pour chandeliers, 34×15 cm', 'Elegant crystal candlestick tray, 34×15 cm',
    'טבעי · קריסטל · 34 × 13.5 ס״מ', 'naturel · cristal · 34 × 13,5 cm', 'natural · crystal · 34 × 13.5 cm',
    'מגש קריסטל מהודר לפמוטים, במידות 34x15 ס"מ וגובה של כ-3 ס"מ, המשלב יוקרה ופרקטיות. עיצובו המודרני עם נצנוץ עדין מוסיף טאץ'' אלגנטי לכל חלל ומאפשר הצגה מרשימה של פמוטים, תכשיטים ועוד.',
@@ -163,56 +163,56 @@ values
    'Plateau à challah élégant à finition blanche, avec un délicat cadre doré et une plaque dorée portant l''inscription « Chabbat et Yom Tov ». En matériau incassable adapté à un usage quotidien, il allie beauté et solidité pour la table de Chabbat et de fête. Le complément parfait qui ajoute une touche festive à chaque repas.',
    'An elegant challah tray in a white finish with a delicate gold frame and a gold-plated plaque reading "Shabbat and Yom Tov". Made of an unbreakable material for everyday use, it combines beauty and strength for the Shabbat and holiday table. A perfect addition that gives every meal a festive touch.',
    42, array['/products/art/uk81890-1.webp','/products/art/uk81890-2.webp','/products/art/uk81890-3.webp','/products/art/uk81890-4.webp']::text[], false, true, 'item', 1421),  -- 16.99 × 2.5
-  ('art-UK44319', 'shabbat', array['shabbat','judaica']::text[],
+  ('art-UK44319', 'shabbat', array['shabbat','shabbat-pot-trivets','judaica']::text[],
    'תחתית לסיר זכוכית "שבת ויום טוב" ציפורים עגול', 'Dessous de plat en verre « Chabbat et Yom Tov », oiseaux, rond', 'Glass pot trivet "Shabbat and Yom Tov", birds, round',
    'צבעוני · זכוכית · 19 × 19 ס״מ', 'multicolore · verre · 19 × 19 cm', 'multicolour · glass · 19 × 19 cm',
    'צלחת תחתית מהודרת לסיר "שבת ויום טוב", מעוצבת עם ציורי ציפורי קולורי צבעוניות, פרחי רימונים וענפים על רקע לבן ומסגרת כחולה. הכיתוב הכחול הבולט מוסיף חגיגיות לשולחן השבת. פתרון פרקטי ומעוצב, שמגן על המפה ומעניק אווירה יהודית חמה לכל סעודה.',
    'Dessous de plat élégant « Chabbat et Yom Tov », orné d''oiseaux colorés, de fleurs de grenadier et de branches sur fond blanc avec un cadre bleu. L''inscription bleue bien visible ajoute de la festivité à la table de Chabbat. Une solution pratique et soignée qui protège la nappe et apporte une ambiance juive chaleureuse à chaque repas.',
    'An elegant "Shabbat and Yom Tov" pot trivet, decorated with colourful birds, pomegranate blossoms and branches on a white background with a blue frame. The bold blue lettering adds festivity to the Shabbat table. A practical, stylish solution that protects the tablecloth and brings a warm Jewish atmosphere to every meal.',
    32, array['/products/art/uk44319-1.webp','/products/art/uk44319-2.webp','/products/art/uk44319-3.webp','/products/art/uk44319-4.webp']::text[], false, true, 'item', 1422),  -- 12.99 × 2.5
-  ('art-UK81909', 'shabbat', array['shabbat','judaica']::text[],
+  ('art-UK81909', 'shabbat', array['shabbat','shabbat-pot-trivets','judaica']::text[],
    'תחתית סיר בלתי שביר לבן ורוד זהב שבת ויום טוב 19סמ', 'Dessous de plat incassable blanc, rose et or « Chabbat et Yom Tov », 19 cm', 'Unbreakable pot trivet, white, pink and gold "Shabbat and Yom Tov", 19 cm',
    'צבעוני · זכוכית · 19 × 19 ס״מ', 'multicolore · verre · 19 × 19 cm', 'multicolour · glass · 19 × 19 cm',
    'תחתית סיר עגולה ומרהיבה בעיצוב שיש בגווני לבן, ורוד וזהב, עם הכיתוב "שבת ויום טוב" בולט ומוזהב. עשויה מחומר בלתי שביר ועמיד, מוסיפה נגיעה אלגנטית לשולחן השבת והחג. שילוב מושלם של יופי ופונקציונליות למטבח היהודי המסורתי.',
    'Dessous de plat rond et superbe au design de marbre blanc, rose et or, avec l''inscription « Chabbat et Yom Tov » dorée et bien visible. En matériau incassable et durable, il ajoute une touche élégante à la table de Chabbat et de fête. L''alliance parfaite de la beauté et de la fonctionnalité pour la cuisine juive traditionnelle.',
    'A stunning round pot trivet in a white, pink and gold marble design, with a bold gold "Shabbat and Yom Tov" inscription. Made of an unbreakable, durable material, it adds an elegant touch to the Shabbat and holiday table. A perfect blend of beauty and function for the traditional Jewish kitchen.',
    32, array['/products/art/uk81909-1.webp','/products/art/uk81909-2.webp','/products/art/uk81909-3.webp','/products/art/uk81909-4.webp']::text[], false, true, 'item', 1423),  -- 12.99 × 2.5
-  ('art-UK81921', 'shabbat', array['shabbat','judaica']::text[],
+  ('art-UK81921', 'shabbat', array['shabbat','shabbat-pot-trivets','judaica']::text[],
    'תחתית סיר בלתי שביר לבן זהב כסף שבת ויום טוב 19סמ', 'Dessous de plat incassable blanc, or et argent « Chabbat et Yom Tov », 19 cm', 'Unbreakable pot trivet, white, gold and silver "Shabbat and Yom Tov", 19 cm',
    'צבעוני · זכוכית · 19 × 19 ס״מ', 'multicolore · verre · 19 × 19 cm', 'multicolour · glass · 19 × 19 cm',
    'תחתית סיר עגולה מזכוכית איכותית ובלתי שבירה, בעיצוב שיש לבן מהמם עם עורקי זהב וכסף מרהיבים. הכיתוב "שבת ויום טוב" חקוק באלגנטיות במרכז. פריט פונקציונלי ומעוצב שמוסיף הדר לשולחן החג והשבת, עמיד לאורך שנים ונוח לתחזוקה שוטפת.',
    'Dessous de plat rond en verre de qualité incassable, au superbe design de marbre blanc aux veines or et argent. L''inscription « Chabbat et Yom Tov » est gravée avec élégance au centre. Un objet pratique et soigné qui embellit la table de fête et de Chabbat, durable et facile à entretenir.',
    'A round pot trivet made of quality, unbreakable glass in a stunning white marble design with gold and silver veins. The inscription "Shabbat and Yom Tov" is elegantly engraved at the centre. A functional, stylish piece that adds splendour to the holiday and Shabbat table, durable and easy to care for.',
    32, array['/products/art/uk81921-1.webp','/products/art/uk81921-2.webp','/products/art/uk81921-3.webp','/products/art/uk81921-4.webp']::text[], false, true, 'item', 1424),  -- 12.99 × 2.5
-  ('art-UK80087', 'shabbat', array['shabbat','judaica']::text[],
+  ('art-UK80087', 'shabbat', array['shabbat','shabbat-pot-trivets','judaica']::text[],
    'תחתית לסיר זכוכית בלתי שבירה 19 ס"מ', 'Dessous de plat en verre incassable, 19 cm', 'Unbreakable glass pot trivet, 19 cm',
    'זכוכית · 19 × 19 ס״מ', 'verre · 19 × 19 cm', 'glass · 19 × 19 cm',
    'צלחת זכוכית מהודרת לשולחן השבת והחג, מעוצבת בדוגמת שיש עדינה בגוני סגול, כחול וזהב המקיפה מסגרת לבנה נקייה. במרכזה מתנוססת הכיתוב "שבת ויום טוב" באותיות מטאליות אלגנטיות. עמידה, שימושית ומוסיפה נופך של הדר לכל סעודה משפחתית.',
    'Assiette en verre élégante pour la table de Chabbat et de fête, au délicat motif de marbre violet, bleu et or entourant un cadre blanc épuré. Au centre figure l''inscription « Chabbat et Yom Tov » en lettres métalliques élégantes. Résistante, pratique, elle ajoute une touche de splendeur à chaque repas en famille.',
    'An elegant glass plate for the Shabbat and holiday table, designed in a delicate purple, blue and gold marble pattern surrounding a clean white frame. At its centre is the inscription "Shabbat and Yom Tov" in elegant metallic letters. Durable, practical and adds a touch of splendour to every family meal.',
    32, array['/products/art/uk80087-1.webp','/products/art/uk80087-2.webp','/products/art/uk80087-3.webp','/products/art/uk80087-4.webp']::text[], false, true, 'item', 1425),  -- 12.99 × 2.5
-  ('art-UK81891', 'shabbat', array['shabbat','judaica']::text[],
+  ('art-UK81891', 'shabbat', array['shabbat','shabbat-pot-trivets','judaica']::text[],
    'תחתית סיר בלתי שביר לבן פלקטה זהב שבת ויום טוב 19סמ', 'Dessous de plat incassable blanc avec plaque dorée « Chabbat et Yom Tov », 19 cm', 'Unbreakable white pot trivet with gold "Shabbat and Yom Tov" plaque, 19 cm',
    'זכוכית · 19 × 19 ס״מ', 'verre · 19 × 19 cm', 'glass · 19 × 19 cm',
    'תחתית סיר אלגנטית בגוון לבן, מעוטרת בפס זהב עדין ובכיתוב "שבת ויום טוב" מודפס בזהב מבריק במרכז. עשויה מחומר בלתי שביר ועמיד, מוסיפה נגיעה חגיגית לשולחן השבת והחג, ומגנה על המשטח בעת הגשה. פרקטית, יפה ובלתי ניתנת לפספוס.',
    'Dessous de plat élégant ton blanc, orné d''une délicate bande dorée et de l''inscription « Chabbat et Yom Tov » imprimée en or brillant au centre. En matériau incassable et durable, il ajoute une touche festive à la table de Chabbat et de fête et protège la surface pendant le service. Pratique et beau.',
    'An elegant pot trivet in white, decorated with a delicate gold band and "Shabbat and Yom Tov" printed in shiny gold at the centre. Made of an unbreakable, durable material, it adds a festive touch to the Shabbat and holiday table and protects the surface when serving. Practical and beautiful.',
    32, array['/products/art/uk81891-1.webp','/products/art/uk81891-2.webp','/products/art/uk81891-3.webp','/products/art/uk81891-4.webp']::text[], false, true, 'item', 1426),  -- 12.99 × 2.5
-  ('art-UK40904', 'shabbat', array['shabbat','judaica']::text[],
+  ('art-UK40904', 'shabbat', array['shabbat','shabbat-pot-trivets','judaica']::text[],
    'תחתית לסיר זכוכית "שבת ויום טוב" 19x19 ס"מ', 'Dessous de plat en verre « Chabbat et Yom Tov », 19×19 cm', 'Glass pot trivet "Shabbat and Yom Tov", 19×19 cm',
    'זכוכית · 19 × 19 ס״מ', 'verre · 19 × 19 cm', 'glass · 19 × 19 cm',
    'תחתית זכוכית עגולה ואלגנטית לסיר החמין, מעוצבת בגווני לבן וכסף עם טבעות דקורטיביות וכיתוב "שבת ויום טוב" בעיצוב נקי ומרשים. פתרון מושלם להנחת סירים חמים על השולחן החגיגי, שומר על המפה ומוסיף נופך של כבוד והידור לשולחן השבת.',
    'Dessous de plat en verre rond et élégant pour la marmite du Chabbat, aux tons blanc et argent avec des anneaux décoratifs et l''inscription « Chabbat et Yom Tov » au design épuré et remarquable. La solution parfaite pour poser les plats chauds sur la table de fête, qui protège la nappe et ajoute une touche de dignité à la table de Chabbat.',
    'A round, elegant glass trivet for the Shabbat pot, in white and silver tones with decorative rings and a clean, impressive "Shabbat and Yom Tov" inscription. The perfect solution for placing hot pots on the festive table, protecting the tablecloth and adding a touch of dignity to the Shabbat table.',
    32, array['/products/art/uk40904-1.webp','/products/art/uk40904-2.webp','/products/art/uk40904-3.webp','/products/art/uk40904-4.webp']::text[], false, true, 'item', 1427),  -- 12.99 × 2.5
-  ('art-UK81607', 'shabbat', array['shabbat','judaica']::text[],
+  ('art-UK81607', 'shabbat', array['shabbat','shabbat-pot-trivets','judaica']::text[],
    'תחתית לסיר זכוכית עם הדפסה זהב 19 ס"מ', 'Dessous de plat en verre avec impression dorée, 19 cm', 'Glass pot trivet with gold print, 19 cm',
    'זכוכית · 19 × 19 ס״מ', 'verre · 19 × 19 cm', 'glass · 19 × 19 cm',
    'תחתית זכוכית מהודרת בעיצוב אובלי, בגוון בז'' עדין עם הדפסת "שבת ויום טוב" בזהב מרהיב במרכז. שילוב מושלם של אלגנטיות ופרקטיות לשולחן השבת והחג, מגנה על המפה מפני חום וכתמים. תוספת מכובדת שתעניק לשולחן החגיגי מראה יוקרתי ואווירה חמה ומסורתית.',
    'Dessous de plat en verre élégant au design ovale, ton beige délicat avec l''inscription « Chabbat et Yom Tov » imprimée en or superbe au centre. L''alliance parfaite de l''élégance et de la praticité pour la table de Chabbat et de fête, il protège la nappe de la chaleur et des taches. Un ajout digne qui donne à la table une allure luxueuse et chaleureuse.',
    'An elegant glass trivet in an oval design, in a delicate beige tone with "Shabbat and Yom Tov" printed in stunning gold at the centre. A perfect blend of elegance and practicality for the Shabbat and holiday table, protecting the tablecloth from heat and stains. A dignified addition that gives the festive table a luxurious, warm look.',
    30, array['/products/art/uk81607-1.webp','/products/art/uk81607-2.webp','/products/art/uk81607-3.webp','/products/art/uk81607-4.webp']::text[], false, true, 'item', 1428),  -- 11.99 × 2.5
-  ('art-UK48567', 'shabbat', array['shabbat','judaica']::text[],
+  ('art-UK48567', 'shabbat', array['shabbat','shabbat-pot-trivets','judaica']::text[],
    'תחתית לסיר זכוכית מהודרת "שבת ויום טוב" 19x19 ס"מ', 'Dessous de plat en verre élégant « Chabbat et Yom Tov », 19×19 cm', 'Elegant glass pot trivet "Shabbat and Yom Tov", 19×19 cm',
    'זכוכית · 19 × 19 ס״מ', 'verre · 19 × 19 cm', 'glass · 19 × 19 cm',
    'תחתית זכוכית מהודרת לסיר, בעיצוב עגול ומרהיב עם רקמת "לכבוד שבת ויום טוב" במרכז, מוקפת מסגרת דקורטיבית וטקסטורת נצנצים כסופה. שילוב מושלם של אלגנטיות ופרקטיות, מגן על השולחן ומוסיף הדר לסעודת השבת והחג. מתנה מושלמת לכל בית יהודי.',
