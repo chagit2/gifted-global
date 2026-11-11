@@ -48,8 +48,14 @@ function Dropdown({
   items: MenuItem[];
   className?: string;
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
+  // The parent whose subcategories are unfolded (they start folded).
+  const [unfolded, setUnfolded] = useState<string | null>(null);
   const ref = useClickOutside(() => setOpen(false));
+  useEffect(() => {
+    if (!open) setUnfolded(null);
+  }, [open]);
   // Mouse hover opens the menu; leaving closes it after a short grace period so the
   // pointer can travel to the items. Touch users toggle it with a tap instead.
   const hovering = useRef(false);
@@ -84,10 +90,34 @@ function Dropdown({
           <ul className={`${panel} w-max`}>
             {items.map((i) => (
               <li key={i.slug}>
-                <Link to="/c/$slug" params={{ slug: i.slug }} onClick={() => setOpen(false)} className={itemCls}>
-                  {i.label}
-                </Link>
-                {i.children && i.children.length > 0 && (
+                {i.children && i.children.length > 0 ? (
+                  <div className="flex items-center">
+                    <Link
+                      to="/c/$slug"
+                      params={{ slug: i.slug }}
+                      onClick={() => setOpen(false)}
+                      className={`${itemCls} flex-1`}
+                    >
+                      {i.label}
+                    </Link>
+                    <button
+                      type="button"
+                      aria-expanded={unfolded === i.slug}
+                      aria-label={`${i.label}: ${t("subcategories")}`}
+                      onClick={() => setUnfolded((u) => (u === i.slug ? null : i.slug))}
+                      className="grid size-9 shrink-0 place-items-center rounded-full text-navy/60 transition hover:bg-navy/5 hover:text-gold-deep"
+                    >
+                      <ChevronDown
+                        className={`size-4 transition-transform ${unfolded === i.slug ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                  </div>
+                ) : (
+                  <Link to="/c/$slug" params={{ slug: i.slug }} onClick={() => setOpen(false)} className={itemCls}>
+                    {i.label}
+                  </Link>
+                )}
+                {i.children && i.children.length > 0 && unfolded === i.slug && (
                   <ul className="mb-1 ms-3 border-s border-gold/40 ps-1">
                     {i.children.map((c) => (
                       <li key={c.slug}>

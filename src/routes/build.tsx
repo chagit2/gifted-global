@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FitImage } from "@/components/FadeImage";
+import { ProductModal } from "@/components/ProductModal";
 import { ChoiceView } from "@/components/ChoiceView";
 import { ProductGridSkeleton } from "@/components/ProductGridSkeleton";
 import { Ornament } from "@/components/Reveal";
@@ -62,6 +63,8 @@ function BuildPage() {
   const { lines, addBox, setDrawerOpen } = useCart();
   const [box, setBox] = useState<BoxItem[]>([]);
   const [trayOpen, setTrayOpen] = useState(false);
+  // An item opened in the popup (all its photos and details).
+  const [preview, setPreview] = useState<Product | null>(null);
   const loadedFor = useRef<string | null>(null);
 
   // Start from the box being edited, else from the saved draft.
@@ -240,7 +243,13 @@ function BuildPage() {
             ) : (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {shown.map((p) => (
-                  <ItemCard key={p.id} product={p} qtyOf={qtyOf} onQty={setQty} />
+                  <ItemCard
+                    key={p.id}
+                    product={p}
+                    qtyOf={qtyOf}
+                    onQty={setQty}
+                    onPreview={setPreview}
+                  />
                 ))}
               </div>
             )}
@@ -307,6 +316,12 @@ function BuildPage() {
           </button>
         </div>
       </div>
+      <ProductModal
+        product={preview}
+        onClose={() => setPreview(null)}
+        onSelect={setPreview}
+        onAddToBox={(choice) => preview && setQty(preview.id, choice, qtyOf(preview.id, choice) + 1)}
+      />
     </main>
   );
 }
@@ -317,10 +332,12 @@ function ItemCard({
   product: p,
   qtyOf,
   onQty,
+  onPreview,
 }: {
   product: Product;
   qtyOf: (productId: string, choice: number[]) => number;
   onQty: (productId: string, choice: number[], qty: number) => void;
+  onPreview: (p: Product) => void;
 }) {
   const { t, tl } = useI18n();
   const { money } = useCurrency();
@@ -333,7 +350,12 @@ function ItemCard({
 
   return (
     <article className="flex flex-col rounded-2xl border border-navy/10 bg-white/75 p-3 backdrop-blur-xl transition hover:border-gold/50">
-      <div className="relative">
+      <button
+        type="button"
+        onClick={() => onPreview(p)}
+        aria-label={`${t("itemDetails")}: ${tl(p.name)}`}
+        className="relative block w-full cursor-zoom-in rounded-xl"
+      >
         <FitImage
           src={p.images[0]}
           alt={tl(p.name)}
@@ -348,7 +370,12 @@ function ItemCard({
             {t("inBox").replace("{n}", String(qty))}
           </span>
         )}
-      </div>
+        {p.images.length > 1 && (
+          <span className="absolute bottom-2 start-2 rounded-full bg-white/85 px-2 py-0.5 text-[10px] text-navy shadow">
+            {t("photosCount").replace("{n}", String(p.images.length))}
+          </span>
+        )}
+      </button>
       <h3 className="mt-3 font-heb text-base leading-snug text-navy">{tl(p.name)}</h3>
       {tl(p.subtitle) && <p className="mt-0.5 text-xs text-navy/70">{tl(p.subtitle)}</p>}
       <p className="mt-1 text-sm font-semibold text-gold-deep">{money(p.price)}</p>
