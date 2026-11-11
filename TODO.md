@@ -45,6 +45,7 @@
 - [x] להריץ ב־Lovable את `db/import-art-hanukkah.sql` (בוצע; לא להריץ שוב!)
 - [ ] להריץ ב־Lovable את `db/import-art-hanukkah-more.sql` (עוד 53 מוצרי חנוכה: מגשים, בתי חנוכייה, ברכות, סביבונים ועוד)
 - סדר ההרצה ב־Lovable: translate ← import-more ← prices ← art-as-items
+- [ ] להריץ ב־Lovable את `db/hanukkah-subcategories.sql` (תת־קטגוריות: חנוכיות, שרביט, סדר הדלקה, סביבוני קריסטל, קנקן שמן)
 - [ ] להריץ ב־Lovable את `db/art-as-items.sql` (מוצרי ארט הם פריטים בודדים למארז בעיצוב אישי)
 - [ ] להריץ ב־Lovable את `db/translate-art-hanukkah.sql` (צרפתית ואנגלית לחנוכיות שכבר באתר). לא להריץ שוב את `db/import-art-hanukkah.sql`!
 - [ ] להריץ ב־Lovable את `db/prices-art-hanukkah.sql` (מחיר ספק ×2.5, אחרי שני הקבצים הקודמים)

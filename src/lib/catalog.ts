@@ -11,13 +11,20 @@ import heroGift from "@/assets/hero-gift.jpg";
 export type Category = {
   slug: string;
   label: L;
-  group: "holidays" | "birthday" | "main";
+  // "sub": a subcategory, shown in the menu under its `parent`.
+  group: "holidays" | "birthday" | "main" | "sub";
+  parent?: string;
 };
 
 export const categories: Category[] = [
   { slug: "rosh-hashana", group: "holidays", label: { he: "ראש השנה", fr: "Roch Hachana", en: "Rosh Hashanah" } },
   { slug: "sukkot", group: "holidays", label: { he: "סוכות", fr: "Souccot", en: "Sukkot" } },
   { slug: "hanukkah", group: "holidays", label: { he: "חנוכה", fr: "Hanouka", en: "Hanukkah" } },
+  { slug: "hanukkah-menorahs", group: "sub", parent: "hanukkah", label: { he: "חנוכיות", fr: "Hanoukiot", en: "Menorahs" } },
+  { slug: "hanukkah-shamash", group: "sub", parent: "hanukkah", label: { he: "שרביט להדלקה", fr: "Bâton d'allumage", en: "Lighting wand" } },
+  { slug: "hanukkah-blessing", group: "sub", parent: "hanukkah", label: { he: "סדר הדלקת נרות חנוכה", fr: "Ordre de l'allumage", en: "Candle-lighting blessing" } },
+  { slug: "hanukkah-dreidels", group: "sub", parent: "hanukkah", label: { he: "סביבוני קריסטל", fr: "Toupies en cristal", en: "Crystal dreidels" } },
+  { slug: "hanukkah-oil-jugs", group: "sub", parent: "hanukkah", label: { he: "קנקן למזיגת שמן", fr: "Cruche à huile", en: "Oil jug" } },
   { slug: "tu-bishvat", group: "holidays", label: { he: "ט״ו בשבט", fr: "Tou Bichvat", en: "Tu BiShvat" } },
   { slug: "purim", group: "holidays", label: { he: "פורים", fr: "Pourim", en: "Purim" } },
   { slug: "pesach", group: "holidays", label: { he: "פסח", fr: "Pessah", en: "Passover" } },
