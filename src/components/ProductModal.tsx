@@ -11,11 +11,14 @@ export function ProductModal({
   product,
   onClose,
   onSelect,
+  onAddToBox,
 }: {
   product: Product | null;
   onClose: () => void;
   // Opens another gift in the same popup (the "you may also like" row).
   onSelect?: (p: Product) => void;
+  // On the custom box page: puts a single item (with its chosen options) in the box.
+  onAddToBox?: (choice: number[]) => void;
 }) {
   const { t, tl, lang, dir } = useI18n();
   const { money } = useCurrency();
@@ -55,7 +58,8 @@ export function ProductModal({
   const similar = useMemo(() => {
     if (!product) return [];
     const shared = (p: Product) => p.categories.filter((c) => product.categories.includes(c)).length;
-    return live
+    // Single items suggest other items; ready-made boxes suggest boxes.
+    return (product.kind === "item" ? items : live)
       .filter((p) => p.id !== product.id)
       .map((p) => ({ p, score: shared(p), gap: Math.abs(p.price - product.price) }))
       .sort(
@@ -64,7 +68,7 @@ export function ProductModal({
       )
       .slice(0, 4)
       .map((x) => x.p);
-  }, [live, product]);
+  }, [live, items, product]);
 
   // Freeze the page behind the popup while it is open.
   const isOpen = product !== null;
@@ -108,7 +112,7 @@ export function ProductModal({
       role="dialog"
       aria-modal="true"
       aria-label={tl(product.name)}
-      className="fixed inset-0 z-50 grid place-items-center overflow-y-auto overscroll-contain p-4"
+      className="fixed inset-0 z-[65] grid place-items-center overflow-y-auto overscroll-contain p-4"
       dir={dir}
     >
       <div className="fixed inset-0 bg-navy/40 backdrop-blur-sm" onClick={onClose} />
@@ -267,6 +271,31 @@ export function ProductModal({
                 </fieldset>
               ))}
               {missing && <p className="mt-3 text-sm text-red-600">{t("chooseOptionFirst")}</p>}
+              {product.kind === "item" ? (
+                <div className="mt-6">
+                  {onAddToBox ? (
+                    <button
+                      onClick={() => {
+                        if (choice.some((c) => c === null)) return setMissing(true);
+                        onAddToBox(choice as number[]);
+                        onClose();
+                      }}
+                      className="inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-pearl transition hover:bg-navy-3"
+                    >
+                      + {t("addToBox")}
+                    </button>
+                  ) : (
+                    <Link
+                      to="/build"
+                      onClick={onClose}
+                      className="inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-pearl transition hover:bg-navy-3"
+                    >
+                      <Puzzle className="size-4" />
+                      {t("entryBuildCta")}
+                    </Link>
+                  )}
+                </div>
+              ) : (
               <div className="mt-6 flex items-center gap-3">
                 <button
                   onClick={() => {
@@ -285,9 +314,10 @@ export function ProductModal({
                   {t("buyNow")}
                 </button>
               </div>
+              )}
             </>
           )}
-          {items.length > 0 && (
+          {items.length > 0 && product.kind !== "item" && (
             <Link
               to="/build"
               onClick={onClose}
@@ -301,7 +331,7 @@ export function ProductModal({
 
         {similar.length > 0 && (
           <section className="border-t border-navy/10 pt-6 lg:col-span-2">
-            <h3 className="font-heb text-xl text-navy">{t("youMayLike")}</h3>
+            <h3 className="font-heb text-xl text-navy">{t(product.kind === "item" ? "youMayLikeItems" : "youMayLike")}</h3>
             <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {similar.map((p) => (
                 <li key={p.id}>
