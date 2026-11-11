@@ -30,13 +30,22 @@ const navLink =
 const iconBtn =
   "grid size-10 shrink-0 place-items-center rounded-full border border-gold/30 bg-white/5 text-pearl hover:border-gold/70 hover:bg-white/10 hover:text-gold-2 active:scale-95 transition";
 
+// A menu entry; subcategories are listed indented under their parent. A
+// subcategory holding only single items opens the custom box page filtered to
+// it, since those items are bought inside a box.
+type MenuItem = {
+  slug: string;
+  label: string;
+  children?: { slug: string; label: string; toBuild: boolean }[];
+};
+
 function Dropdown({
   label,
   items,
   className = "",
 }: {
   label: string;
-  items: { slug: string; label: string }[];
+  items: MenuItem[];
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -78,6 +87,33 @@ function Dropdown({
                 <Link to="/c/$slug" params={{ slug: i.slug }} onClick={() => setOpen(false)} className={itemCls}>
                   {i.label}
                 </Link>
+                {i.children && i.children.length > 0 && (
+                  <ul className="mb-1 ms-3 border-s border-gold/40 ps-1">
+                    {i.children.map((c) => (
+                      <li key={c.slug}>
+                        {c.toBuild ? (
+                          <Link
+                            to="/build"
+                            search={{ cat: c.slug }}
+                            onClick={() => setOpen(false)}
+                            className={`${itemCls} py-1.5 text-[13px]`}
+                          >
+                            {c.label}
+                          </Link>
+                        ) : (
+                          <Link
+                            to="/c/$slug"
+                            params={{ slug: c.slug }}
+                            onClick={() => setOpen(false)}
+                            className={`${itemCls} py-1.5 text-[13px]`}
+                          >
+                            {c.label}
+                          </Link>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>
@@ -175,9 +211,22 @@ export function SiteHeader() {
   const { user } = useAuth();
   const bump = useBumpOnIncrease(count);
   // The custom box link appears once there are items to choose from.
-  const hasItems = useProducts().items.length > 0;
+  const { items, byCategory } = useProducts();
+  const hasItems = items.length > 0;
 
-  const holidays = categories.filter((c) => c.group === "holidays").map((c) => ({ slug: c.slug, label: tl(c.label) }));
+  const menuItem = (c: (typeof categories)[number]): MenuItem => ({
+    slug: c.slug,
+    label: tl(c.label),
+    children: categories
+      .filter((s) => s.parent === c.slug)
+      .map((s) => ({
+        slug: s.slug,
+        label: tl(s.label),
+        toBuild: byCategory(s.slug).length === 0 && items.some((p) => p.categories.includes(s.slug)),
+      })),
+  });
+  const holidays = categories.filter((c) => c.group === "holidays").map(menuItem);
+  const shabbat = categories.filter((c) => c.slug === "shabbat").map(menuItem);
 
   return (
     <header className="sticky top-0 z-50 print:hidden border-b-2 border-gold/60 bg-navy shadow-lg shadow-navy/20">
@@ -195,6 +244,7 @@ export function SiteHeader() {
             </Link>
           )}
           <Dropdown label={t("navHolidays")} items={holidays} />
+          <Dropdown label={t("navShabbat")} items={shabbat} />
           <Link to="/c/$slug" params={{ slug: "judaica" }} className={navLink}>{t("navJudaica")}</Link>
           <Link to="/c/$slug" params={{ slug: "for-boy" }} className={navLink}>{t("navForBoy")}</Link>
           <Link to="/c/$slug" params={{ slug: "for-girl" }} className={navLink}>{t("navForGirl")}</Link>
