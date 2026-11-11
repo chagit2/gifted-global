@@ -214,19 +214,19 @@ export function SiteHeader() {
   const { items, byCategory } = useProducts();
   const hasItems = items.length > 0;
 
-  const holidays: MenuItem[] = categories
-    .filter((c) => c.group === "holidays")
-    .map((c) => ({
-      slug: c.slug,
-      label: tl(c.label),
-      children: categories
-        .filter((s) => s.parent === c.slug)
-        .map((s) => ({
-          slug: s.slug,
-          label: tl(s.label),
-          toBuild: byCategory(s.slug).length === 0 && items.some((p) => p.categories.includes(s.slug)),
-        })),
-    }));
+  const menuItem = (c: (typeof categories)[number]): MenuItem => ({
+    slug: c.slug,
+    label: tl(c.label),
+    children: categories
+      .filter((s) => s.parent === c.slug)
+      .map((s) => ({
+        slug: s.slug,
+        label: tl(s.label),
+        toBuild: byCategory(s.slug).length === 0 && items.some((p) => p.categories.includes(s.slug)),
+      })),
+  });
+  const holidays = categories.filter((c) => c.group === "holidays").map(menuItem);
+  const shabbat = categories.filter((c) => c.slug === "shabbat").map(menuItem);
 
   return (
     <header className="sticky top-0 z-50 print:hidden border-b-2 border-gold/60 bg-navy shadow-lg shadow-navy/20">
@@ -244,6 +244,7 @@ export function SiteHeader() {
             </Link>
           )}
           <Dropdown label={t("navHolidays")} items={holidays} />
+          <Dropdown label={t("navShabbat")} items={shabbat} />
           <Link to="/c/$slug" params={{ slug: "judaica" }} className={navLink}>{t("navJudaica")}</Link>
           <Link to="/c/$slug" params={{ slug: "for-boy" }} className={navLink}>{t("navForBoy")}</Link>
           <Link to="/c/$slug" params={{ slug: "for-girl" }} className={navLink}>{t("navForGirl")}</Link>
