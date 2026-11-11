@@ -717,6 +717,7 @@ const dict = {
     fr: "Fixez un prix pour afficher le produit",
     en: "Set a price to show the product on the site",
   },
+  visibleOnSite: { he: "מוצג באתר", fr: "Affiché", en: "On the site" },
   noPriceBadge: { he: "אין מחיר", fr: "Sans prix", en: "No price" },
   kindNeedsSql: {
     he: "כדי לשמור פריט בודד צריך קודם להריץ ב־Lovable את הקובץ db/custom-box.sql",

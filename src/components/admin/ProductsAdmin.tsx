@@ -125,7 +125,8 @@ export function ProductsAdmin() {
         "id",
         picked.map((p) => p.id),
       );
-    if (!error) await removeStored(picked.flatMap((p) => [...p.images, ...optionImages(p.options)]));
+    if (!error)
+      await removeStored(picked.flatMap((p) => [...p.images, ...optionImages(p.options)]));
     setBulkBusy(false);
     if (error) return setError(t("saveError"));
     setSelected(new Set());
@@ -179,7 +180,11 @@ export function ProductsAdmin() {
 
   return (
     <div ref={topRef} className="scroll-mt-24">
-      <div role="tablist" aria-label={t("kindLabel")} className="mb-4 inline-flex rounded-full border border-navy/15 bg-white/70 p-1">
+      <div
+        role="tablist"
+        aria-label={t("kindLabel")}
+        className="mb-4 inline-flex rounded-full border border-navy/15 bg-white/70 p-1"
+      >
         {(
           [
             ["", t("kindAll"), all.length],
@@ -255,7 +260,9 @@ export function ProductsAdmin() {
         </label>
         {picked.length > 0 && (
           <div className="ms-auto flex flex-wrap items-center gap-2">
-            <span className="text-navy/70">{t("bulkSelected").replace("{n}", String(picked.length))}</span>
+            <span className="text-navy/70">
+              {t("bulkSelected").replace("{n}", String(picked.length))}
+            </span>
             <button
               type="button"
               disabled={bulkBusy}
@@ -293,7 +300,7 @@ export function ProductsAdmin() {
           shown.map((p, i) => (
             <li
               key={p.id}
-              className={`flex items-center gap-4 rounded-2xl border bg-white/70 p-3 backdrop-blur-xl ${
+              className={`flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border bg-white/70 p-3 backdrop-blur-xl ${
                 selected.has(p.id) ? "border-gold" : "border-navy/10"
               }`}
             >
@@ -325,26 +332,18 @@ export function ProductsAdmin() {
                 </button>
               </div>
               <img src={p.images[0]} alt="" className="size-16 shrink-0 rounded-xl object-cover" />
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 basis-48">
                 <p className="truncate text-sm text-navy">
                   {tl(p.name) || p.name.he}
                   <span
                     className={`ms-2 rounded-full border px-2 py-0.5 text-[10px] ${
-                      p.kind === "item" ? "border-gold/50 text-gold-deep" : "border-navy/15 text-navy/70"
+                      p.kind === "item"
+                        ? "border-gold/50 text-gold-deep"
+                        : "border-navy/15 text-navy/70"
                     }`}
                   >
                     {t(p.kind === "item" ? "kindItemBadge" : "kindBundleBadge")}
                   </span>
-                  {!p.active && (
-                    <span className="ms-2 rounded-full border border-navy/15 px-2 py-0.5 text-[10px] text-navy/70">
-                      {t("hiddenBadge")}
-                    </span>
-                  )}
-                  {p.price <= 0 && (
-                    <span className="ms-2 rounded-full border border-red-300/60 px-2 py-0.5 text-[10px] text-red-700">
-                      {t("noPriceBadge")}
-                    </span>
-                  )}
                   {!p.inStock && (
                     <span className="ms-2 rounded-full border border-red-300/40 px-2 py-0.5 text-[10px] text-red-700">
                       {t("outOfStock")}
@@ -355,9 +354,10 @@ export function ProductsAdmin() {
                   {p.categories
                     .map((slug) => (getCategory(slug) ? tl(getCategory(slug)!.label) : slug))
                     .join(", ")}{" "}
-                  · <span className="text-gold-deep">{formatPrice(p.price, lang)}</span>
                 </p>
               </div>
+              <QuickPrice product={p} onSaved={refresh} onError={() => setError(t("saveError"))} />
+              <VisibleSwitch product={p} onSaved={refresh} onError={(msg) => setError(msg)} />
               <button
                 onClick={() => setEditing(p)}
                 className="text-sm text-navy/75 hover:text-gold-deep"
@@ -375,6 +375,108 @@ export function ProductsAdmin() {
         )}
       </ul>
     </div>
+  );
+}
+
+// Price edited right in the list: saved on Enter or when leaving the field.
+function QuickPrice({
+  product: p,
+  onSaved,
+  onError,
+}: {
+  product: Product;
+  onSaved: () => void;
+  onError: () => void;
+}) {
+  const { t } = useI18n();
+  const [value, setValue] = useState(p.price > 0 ? String(p.price) : "");
+  const [busy, setBusy] = useState(false);
+  useEffect(() => setValue(p.price > 0 ? String(p.price) : ""), [p.price]);
+
+  const save = async () => {
+    const price = Number(value);
+    if (!value.trim() || !(price >= 0) || price === p.price)
+      return setValue(p.price > 0 ? String(p.price) : "");
+    setBusy(true);
+    const { error } = await supabase.from("products").update({ price }).eq("id", p.id);
+    setBusy(false);
+    if (error) return onError();
+    onSaved();
+  };
+
+  return (
+    <label className="flex shrink-0 items-center gap-1 text-sm text-gold-deep">
+      <span aria-hidden>₪</span>
+      <span className="sr-only">{t("price")}</span>
+      <input
+        type="number"
+        min={0}
+        step="1"
+        inputMode="decimal"
+        value={value}
+        placeholder="0"
+        disabled={busy}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={save}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+        }}
+        dir="ltr"
+        className={`w-20 rounded-lg border bg-white/80 px-2 py-1.5 text-sm text-navy focus:border-gold focus:outline-none ${
+          p.price > 0 ? "border-navy/15" : "border-red-300"
+        }`}
+      />
+    </label>
+  );
+}
+
+// Shows or hides a product on the site in one click.
+function VisibleSwitch({
+  product: p,
+  onSaved,
+  onError,
+}: {
+  product: Product;
+  onSaved: () => void;
+  onError: (msg: string) => void;
+}) {
+  const { t } = useI18n();
+  const [busy, setBusy] = useState(false);
+  const toggle = async () => {
+    // A product without a price is never put on the site.
+    if (!p.active && p.price <= 0) return onError(t("priceRequiredVisible"));
+    setBusy(true);
+    const { error } = await supabase.from("products").update({ active: !p.active }).eq("id", p.id);
+    setBusy(false);
+    if (error) return onError(t("saveError"));
+    onSaved();
+  };
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={p.active}
+      disabled={busy}
+      onClick={toggle}
+      title={t(p.active ? "bulkHide" : "bulkShow")}
+      className={`inline-flex min-h-9 shrink-0 items-center gap-2 rounded-full border px-3 text-xs transition disabled:opacity-50 ${
+        p.active
+          ? "border-emerald-400/60 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+          : "border-navy/15 text-navy/70 hover:border-gold"
+      }`}
+    >
+      <span
+        aria-hidden
+        className={`h-4 w-7 rounded-full p-0.5 transition ${p.active ? "bg-emerald-500" : "bg-navy/20"}`}
+      >
+        <span
+          className={`block size-3 rounded-full bg-white shadow transition ${
+            p.active ? "translate-x-3 rtl:-translate-x-3" : ""
+          }`}
+        />
+      </span>
+      {t(p.active ? "visibleOnSite" : "hiddenBadge")}
+    </button>
   );
 }
 
@@ -599,12 +701,17 @@ function ProductForm({
       cleanOptions.length > 0 || (product?.options.length ?? 0) > 0,
     );
     const { error } = product
-      ? await supabase.from("products").update(row as never).eq("id", product.id)
+      ? await supabase
+          .from("products")
+          .update(row as never)
+          .eq("id", product.id)
       : await supabase.from("products").insert(row as never);
     setBusy(false);
     // A single item can't be saved until db/custom-box.sql has added the column.
     if (error)
-      return setError(t(kind === "item" && error.message.includes("kind") ? "kindNeedsSql" : "saveError"));
+      return setError(
+        t(kind === "item" && error.message.includes("kind") ? "kindNeedsSql" : "saveError"),
+      );
     // Photos taken off the product are no longer needed in storage.
     const kept = new Set([...images, ...optionImages(cleanOptions)]);
     await removeStored(
@@ -669,7 +776,9 @@ function ProductForm({
                   : "border-navy/15 hover:border-gold/50"
               }`}
             >
-              <Icon className={`mt-0.5 size-5 shrink-0 ${kind === k ? "text-gold-deep" : "text-navy/60"}`} />
+              <Icon
+                className={`mt-0.5 size-5 shrink-0 ${kind === k ? "text-gold-deep" : "text-navy/60"}`}
+              />
               <span>
                 <span className="block text-sm font-semibold text-navy">{t(title)}</span>
                 <span className="mt-0.5 block text-xs text-navy/70">{t(hint)}</span>
@@ -680,7 +789,9 @@ function ProductForm({
       </fieldset>
 
       <fieldset>
-        <legend className={label}>{t(kind === "item" ? "itemCategoriesLabel" : "categoriesLabel")}</legend>
+        <legend className={label}>
+          {t(kind === "item" ? "itemCategoriesLabel" : "categoriesLabel")}
+        </legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {categories.map((c) => {
             const on = cats.includes(c.slug);
