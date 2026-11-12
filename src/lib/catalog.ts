@@ -37,6 +37,9 @@ export const categories: Category[] = [
   { slug: "shabbat-candle-trays", group: "sub", parent: "shabbat", label: { he: "מגשים לפמוטים", fr: "Plateaux pour chandeliers", en: "Candlestick trays" } },
   { slug: "shabbat-challah-knives", group: "sub", parent: "shabbat", label: { he: "סכינים לחלות", fr: "Couteaux à challah", en: "Challah knives" } },
   { slug: "shabbat-mayim-achronim", group: "sub", parent: "shabbat", label: { he: "מים אחרונים", fr: "Mayim aharonim", en: "Mayim acharonim" } },
+  { slug: "shabbat-lighters", group: "sub", parent: "shabbat", label: { he: "מצתים", fr: "Briquets", en: "Lighters" } },
+  { slug: "shabbat-match-holders", group: "sub", parent: "shabbat", label: { he: "כלי לגפרורים", fr: "Porte-allumettes", en: "Match holders" } },
+  { slug: "shabbat-salt", group: "sub", parent: "shabbat", label: { he: "מלחיות", fr: "Salières", en: "Salt cellars" } },
   { slug: "housewarming", group: "main", label: { he: "חנוכת הבית", fr: "Crémaillère", en: "Housewarming" } },
   { slug: "housewarming-netilah", group: "sub", parent: "housewarming", label: { he: "נטלות", fr: "Netilot (gobelets d'ablution)", en: "Washing cups" } },
   { slug: "housewarming-towels", group: "sub", parent: "housewarming", label: { he: "מגבות נטילת ידיים", fr: "Serviettes d'ablution", en: "Hand-washing towels" } },
@@ -48,6 +51,7 @@ export const categories: Category[] = [
   { slug: "bar-mitzvah", group: "main", label: { he: "בר מצווה", fr: "Bar Mitsva", en: "Bar Mitzvah" } },
   { slug: "bat-mitzvah", group: "main", label: { he: "בת מצווה", fr: "Bat Mitsva", en: "Bat Mitzvah" } },
   { slug: "judaica", group: "main", label: { he: "יודאיקה", fr: "Judaïca", en: "Judaica" } },
+  { slug: "judaica-tzedakah", group: "sub", parent: "judaica", label: { he: "קופות צדקה", fr: "Boîtes de tsédaka", en: "Tzedakah boxes" } },
   { slug: "for-boy", group: "main", label: { he: "לבן", fr: "Garçon", en: "Boy" } },
   { slug: "for-girl", group: "main", label: { he: "לבת", fr: "Fille", en: "Girl" } },
 ];
