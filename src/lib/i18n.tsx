@@ -15,6 +15,7 @@ const dict = {
 
   navHolidays: { he: "חגים", fr: "Fêtes", en: "Holidays" },
   navShabbat: { he: "שבת", fr: "Chabbat", en: "Shabbat" },
+  navHousewarming: { he: "חנוכת הבית", fr: "Crémaillère", en: "Housewarming" },
   navBirthday: { he: "יומולדת", fr: "Anniversaire", en: "Birthday" },
   navBaby: { he: "לתינוק", fr: "Bébé", en: "Baby" },
   navBar: { he: "בר מצווה", fr: "Bar Mitsva", en: "Bar Mitzvah" },

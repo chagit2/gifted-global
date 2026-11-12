@@ -245,6 +245,7 @@ export function SiteHeader() {
   });
   const holidays = categories.filter((c) => c.group === "holidays").map(menuItem);
   const shabbat = categories.filter((c) => c.slug === "shabbat").map(menuItem);
+  const housewarming = categories.filter((c) => c.slug === "housewarming").map(menuItem);
 
   return (
     <header className="sticky top-0 z-50 print:hidden border-b-2 border-gold/60 bg-navy shadow-lg shadow-navy/20">
@@ -263,6 +264,7 @@ export function SiteHeader() {
           )}
           <Dropdown label={t("navHolidays")} items={holidays} />
           <Dropdown label={t("navShabbat")} items={shabbat} />
+          <Dropdown label={t("navHousewarming")} items={housewarming} />
           <Link to="/c/$slug" params={{ slug: "judaica" }} className={navLink}>{t("navJudaica")}</Link>
           <Link to="/c/$slug" params={{ slug: "for-boy" }} className={navLink}>{t("navForBoy")}</Link>
           <Link to="/c/$slug" params={{ slug: "for-girl" }} className={navLink}>{t("navForGirl")}</Link>
