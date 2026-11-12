@@ -13,30 +13,32 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FitImage } from "@/components/FadeImage";
 import { ProductModal } from "@/components/ProductModal";
+import {
+  CatalogFilters,
+  parseCatalogSearch,
+  useFilteredProducts,
+  type CatalogSearch,
+} from "@/components/CatalogFilters";
 import { ChoiceView } from "@/components/ChoiceView";
 import { ProductGridSkeleton } from "@/components/ProductGridSkeleton";
 import { Ornament } from "@/components/Reveal";
 import { boxCount, boxItemKey, boxPrice, type BoxItem } from "@/lib/box";
 import { lineKey, useCart } from "@/lib/cart";
-import { categories } from "@/lib/catalog";
 import { useCurrency } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
 import { choiceLabels, useProducts, validChoice, type Product } from "@/lib/products";
 import { useSettings } from "@/lib/settings";
 
-type BuildSearch = {
+type BuildSearch = CatalogSearch & {
   // Key of a designed box in the cart that is being changed.
   edit?: string | undefined;
-  cat?: string | undefined;
 };
 
 export const Route = createFileRoute("/build")({
+  // Search and filters live in the address, as on "all gift boxes".
   validateSearch: (s: Record<string, unknown>): BuildSearch => ({
+    ...parseCatalogSearch(s),
     edit: typeof s["edit"] === "string" && s["edit"] ? s["edit"].slice(0, 2000) : undefined,
-    cat:
-      typeof s["cat"] === "string" && categories.some((c) => c.slug === s["cat"])
-        ? s["cat"]
-        : undefined,
   }),
   head: () => ({
     meta: [
@@ -135,8 +137,12 @@ function BuildPage() {
     setDrawerOpen(true);
   };
 
-  const shownCats = categories.filter((c) => catalog.some((p) => p.categories.includes(c.slug)));
-  const shown = search.cat ? catalog.filter((p) => p.categories.includes(search.cat!)) : catalog;
+  const shown = useFilteredProducts(catalog, search);
+  // Clearing the filters keeps the box being edited.
+  const setFilters = (patch: Partial<CatalogSearch>) =>
+    navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true, resetScroll: false });
+  const clearFilters = () =>
+    navigate({ search: { edit: search.edit }, replace: true, resetScroll: false });
 
   const tray = (
     <BoxTray
@@ -194,35 +200,18 @@ function BuildPage() {
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_340px]">
           <div>
-            {shownCats.length > 1 && (
-              <div
-                className="mb-5 flex flex-wrap gap-2"
-                role="group"
-                aria-label={t("filterOccasion")}
-              >
-                {[{ slug: "", label: null }, ...shownCats].map((c) => {
-                  const on = (search.cat ?? "") === c.slug;
-                  return (
-                    <button
-                      key={c.slug}
-                      type="button"
-                      aria-pressed={on}
-                      onClick={() =>
-                        navigate({
-                          search: (s) => ({ ...s, cat: c.slug || undefined }),
-                          replace: true,
-                        })
-                      }
-                      className={`min-h-10 rounded-full border px-4 text-sm transition ${
-                        on
-                          ? "border-navy bg-navy text-pearl"
-                          : "border-navy/15 bg-white/80 text-navy hover:border-gold"
-                      }`}
-                    >
-                      {c.label ? tl(c.label) : t("kindAll")}
-                    </button>
-                  );
-                })}
+            {catalog.length > 0 && (
+              <div className="mb-6">
+                <CatalogFilters
+                  search={search}
+                  set={setFilters}
+                  clear={clearFilters}
+                  products={catalog}
+                  count={shown.length}
+                  showCount={!isLoading && !isError}
+                  searchLabel={t("searchItemsLabel")}
+                  items
+                />
               </div>
             )}
 
@@ -242,6 +231,11 @@ function BuildPage() {
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                {shown.length === 0 && (
+                  <p className="col-span-full rounded-2xl border border-gold/30 bg-white/80 p-8 text-center text-navy">
+                    {t("noItemsMatch")}
+                  </p>
+                )}
                 {shown.map((p) => (
                   <ItemCard
                     key={p.id}

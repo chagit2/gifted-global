@@ -53,9 +53,11 @@ function Dropdown({
   // The parent whose subcategories are unfolded (they start folded).
   const [unfolded, setUnfolded] = useState<string | null>(null);
   const ref = useClickOutside(() => setOpen(false));
+  // A menu with a single entry (Shabbat) shows its subcategories straight away.
+  const only = items.length === 1 ? items[0]!.slug : null;
   useEffect(() => {
-    if (!open) setUnfolded(null);
-  }, [open]);
+    setUnfolded(open ? only : null);
+  }, [open, only]);
   // Mouse hover opens the menu; leaving closes it after a short grace period so the
   // pointer can travel to the items. Touch users toggle it with a tap instead.
   const hovering = useRef(false);
