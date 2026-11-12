@@ -48,6 +48,7 @@ export const categories: Category[] = [
   { slug: "bar-mitzvah", group: "main", label: { he: "בר מצווה", fr: "Bar Mitsva", en: "Bar Mitzvah" } },
   { slug: "bat-mitzvah", group: "main", label: { he: "בת מצווה", fr: "Bat Mitsva", en: "Bat Mitzvah" } },
   { slug: "judaica", group: "main", label: { he: "יודאיקה", fr: "Judaïca", en: "Judaica" } },
+  { slug: "judaica-tzedakah", group: "sub", parent: "judaica", label: { he: "קופות צדקה", fr: "Boîtes de tsédaka", en: "Tzedakah boxes" } },
   { slug: "for-boy", group: "main", label: { he: "לבן", fr: "Garçon", en: "Boy" } },
   { slug: "for-girl", group: "main", label: { he: "לבת", fr: "Fille", en: "Girl" } },
 ];
