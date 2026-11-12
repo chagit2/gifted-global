@@ -72,3 +72,32 @@ export const parseContents = (raw: unknown): BoxContent[] =>
           unitPrice: Number(c.unitPrice) || 0,
         }))
     : [];
+
+// The box being designed is kept in this browser, so items can be added from
+// any page (a category page, say) and the box picked up on the custom box page.
+export const BOX_DRAFT = "boxDraft";
+export const BOX_DRAFT_EVENT = "boxdraftchange";
+
+export const readBoxDraft = (): BoxItem[] => {
+  try {
+    return parseBoxItems(JSON.parse(localStorage.getItem(BOX_DRAFT) ?? "[]"));
+  } catch {
+    return [];
+  }
+};
+
+// Puts one more of an item (with its chosen options) in the saved box.
+export const addToBoxDraft = (productId: string, choice: number[]) => {
+  const draft = readBoxDraft();
+  const key = boxItemKey({ productId, choice });
+  const found = draft.find((i) => boxItemKey(i) === key);
+  const next = found
+    ? draft.map((i) => (i === found ? { ...i, qty: Math.min(i.qty + 1, 99) } : i))
+    : [...draft, { productId, choice, qty: 1 }];
+  try {
+    localStorage.setItem(BOX_DRAFT, JSON.stringify(next));
+  } catch {
+    /* storage blocked */
+  }
+  window.dispatchEvent(new Event(BOX_DRAFT_EVENT));
+};

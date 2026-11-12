@@ -22,7 +22,7 @@ import {
 import { ChoiceView } from "@/components/ChoiceView";
 import { ProductGridSkeleton } from "@/components/ProductGridSkeleton";
 import { Ornament } from "@/components/Reveal";
-import { boxCount, boxItemKey, boxPrice, type BoxItem } from "@/lib/box";
+import { BOX_DRAFT, boxCount, boxItemKey, boxPrice, type BoxItem } from "@/lib/box";
 import { lineKey, useCart } from "@/lib/cart";
 import { useCurrency } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/build")({
 });
 
 // The box being designed survives a reload or a visit to another page.
-const DRAFT = "boxDraft";
+const DRAFT = BOX_DRAFT;
 
 function BuildPage() {
   const { t, tl } = useI18n();
