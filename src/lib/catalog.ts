@@ -31,6 +31,7 @@ export const categories: Category[] = [
   { slug: "shavuot", group: "holidays", label: { he: "שבועות", fr: "Chavouot", en: "Shavuot" } },
   { slug: "shabbat", group: "main", label: { he: "שבת", fr: "Chabbat", en: "Shabbat" } },
   { slug: "shabbat-challah-trays", group: "sub", parent: "shabbat", label: { he: "מגשים לחלה", fr: "Plateaux à challah", en: "Challah trays" } },
+  { slug: "shabbat-challah-covers", group: "sub", parent: "shabbat", label: { he: "מפיות לחלות", fr: "Couvre-challah", en: "Challah covers" } },
   { slug: "shabbat-napkin-holders", group: "sub", parent: "shabbat", label: { he: "מחזיקי מפיונים", fr: "Porte-serviettes", en: "Napkin holders" } },
   { slug: "shabbat-pot-trivets", group: "sub", parent: "shabbat", label: { he: "תחתיות לסיר", fr: "Dessous de plat", en: "Pot trivets" } },
   { slug: "shabbat-candle-trays", group: "sub", parent: "shabbat", label: { he: "מגשים לפמוטים", fr: "Plateaux pour chandeliers", en: "Candlestick trays" } },
