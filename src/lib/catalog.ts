@@ -40,6 +40,7 @@ export const categories: Category[] = [
   { slug: "housewarming", group: "main", label: { he: "חנוכת הבית", fr: "Crémaillère", en: "Housewarming" } },
   { slug: "housewarming-netilah", group: "sub", parent: "housewarming", label: { he: "נטלות", fr: "Netilot (gobelets d'ablution)", en: "Washing cups" } },
   { slug: "housewarming-towels", group: "sub", parent: "housewarming", label: { he: "מגבות נטילת ידיים", fr: "Serviettes d'ablution", en: "Hand-washing towels" } },
+  { slug: "housewarming-mezuzot", group: "sub", parent: "housewarming", label: { he: "מזוזות", fr: "Mezouzot", en: "Mezuzah cases" } },
   { slug: "birthday-child", group: "birthday", label: { he: "יומולדת · ילד/ה", fr: "Anniversaire · Enfant", en: "Birthday · Child" } },
   { slug: "birthday-teen", group: "birthday", label: { he: "יומולדת · נער/ה", fr: "Anniversaire · Ado", en: "Birthday · Teen" } },
   { slug: "birthday-adult", group: "birthday", label: { he: "יומולדת · מבוגר/ת", fr: "Anniversaire · Adulte", en: "Birthday · Adult" } },
