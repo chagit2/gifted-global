@@ -10,6 +10,7 @@ import {
   Languages,
   Plus,
   Puzzle,
+  Search,
   Star,
   X,
 } from "lucide-react";
@@ -74,8 +75,25 @@ export function ProductsAdmin() {
   const [error, setError] = useState<string | null>(null);
 
   const [hiddenOnly, setHiddenOnly] = useState(false);
+  // Free-text search over the name, subtitle and description in every
+  // language, and the product's id (e.g. the supplier's catalogue number).
+  const [query, setQuery] = useState("");
+  const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const matches = (p: Product) => {
+    if (!words.length) return true;
+    const text = [
+      p.id,
+      ...Object.values(p.name),
+      ...Object.values(p.subtitle),
+      ...Object.values(p.description),
+    ]
+      .join(" ")
+      .toLowerCase();
+    return words.every((w) => text.includes(w));
+  };
   const shown = all.filter(
     (p) =>
+      matches(p) &&
       (!filter || p.categories.includes(filter)) &&
       (!kindFilter || p.kind === kindFilter) &&
       (!hiddenOnly || !p.active),
@@ -236,6 +254,22 @@ export function ProductsAdmin() {
           </button>
         </div>
       </div>
+      <label className="relative mt-3 block">
+        <span className="sr-only">{t("adminSearchLabel")}</span>
+        <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-navy/45" />
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t("adminSearchPlaceholder")}
+          className={`${field} mt-0 ps-9`}
+        />
+      </label>
+      {words.length > 0 && (
+        <p className="mt-2 text-xs text-navy/70">
+          {t("adminSearchCount").replace("{n}", String(shown.length))}
+        </p>
+      )}
       {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
       {notice && <p className="mt-3 text-sm text-gold-deep">{notice}</p>}
 
